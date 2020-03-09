@@ -22,7 +22,7 @@ buildscript {
         JACOCO_VERSION = '0.8.4'
 
         PROJECT_DIR = "${projectDir}"
-        ROOT_DIR = "${PROJECT_DIR}/.."
+        ROOT_DIR = "${PROJECT_DIR}/../.."
     }
 
     repositories {

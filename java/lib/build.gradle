@@ -63,20 +63,23 @@ ext {
     JAVA_HOME = org.gradle.internal.jvm.Jvm.current().javaHome
     JAVA_INCLUDE = "${JAVA_HOME}/include"
 
-    ETC_DIR = "${PROJECT_DIR}/etc"
-    CBL_CORE_DIR = "${ROOT_DIR}/couchbase-lite-core"
-    CBL_JAVA_DIR = "${ROOT_DIR}/couchbase-lite-java"
-
-    CBL_NATIVE_DIR = "${buildDir}/native"
-    CBL_GENERATED_DIR = "${buildDir}/generated/sources"
-    CBL_JNI_INCLUDE_DIR = "${CBL_GENERATED_DIR}/include"
-    CBL_GENERATED_JAVA_DIR = "${CBL_GENERATED_DIR}/java"
+    CBL_CORE_DIR = "${ROOT_DIR}/core"
+    CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
+    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
+    CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
+    CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
 
     CBL_NATIVE_LIBRARIES = []
-    CBL_CORE_NATIVE_DIR = "${CBL_JAVA_DIR}/lite-core"
+    CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
     CBL_CRYPTO_LIB = "${CBL_CORE_NATIVE_DIR}/macos/x86_64/libmbedcrypto.a"
 
+    GENERATED_DIR = "${buildDir}/generated/sources"
     REPORTS_DIR = "${buildDir}/reports"
+    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
+
+    CBL_NATIVE_DIR = "${buildDir}/native"
+    CBL_JNI_INCLUDE_DIR = "${GENERATED_DIR}/include"
 }
 
 // comma separated list of annotations for tests that should not be run.
@@ -105,24 +108,25 @@ java {
     sourceSets {
         main {
             java.srcDirs = [
-                "src/main/java",                                    // Java specific code
-                "src/shared/ce/java",                               // Shared code between Java and Android (CE Only)
-                "src/shared/main/java",                             // Shared code between Java and Android
-                CBL_GENERATED_JAVA_DIR,                             // generated code
+                "${CBL_COMMON_DIR}/main/java",                   // Common
+                "${CBL_COMMON_JAVA_DIR}/main/java",              // Common Java
+                "${CBL_CE_COMMON_DIR}/main/java",                // CE Common
+                "${GENERATED_DIR}/java",
             ]
             resources.srcDirs = [
-                "src/main/resources",                               // Resource files
-                CBL_NATIVE_DIR,                                     // Native Libraries
+                "${CBL_COMMON_JAVA_DIR}/main/resources",         // Resource files
+                "${CBL_NATIVE_DIR}",                             // Native Libraries
             ]
         }
         test {
             java.srcDirs = [
-                "src/test/java",                                    // Java specific tests
-                "src/shared/test/java",                             // Shared tests between Java and Android
+                "${CBL_COMMON_DIR}/test/java",                   // Common tests
+                "${CBL_COMMON_JAVA_DIR}test/java",               // Common Java tests
+                "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
             ]
             resources.srcDirs = [
-                "src/shared/test/assets",                           // Shared test assets between Java and Android
-                "${CBL_CORE_DIR}/C/tests/data"                      // lite-core test assets
+                "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
+                "${CBL_COMMON_DIR}/shared/test/assets",          // Common test assets
             ]
         }
     }
@@ -151,7 +155,7 @@ dependencies {
 // Copy the version template into the source, inserting build info
 task generateCBLVersion(type: Copy) {
     outputs.upToDateWhen { false }
-    from("${CBL_JAVA_DIR}/lib/templates/CBLVersion.java") {
+    from("${CBL_COMMON_JAVA_DIR}/templates/CBLVersion.java") {
         filter(
             ReplaceTokens,
             tokens: [
@@ -161,7 +165,7 @@ task generateCBLVersion(type: Copy) {
                 BUILD  : BUILD_NUMBER.toString(),
                 COMMIT : BUILD_COMMIT.toString()])
     }
-    into "${CBL_GENERATED_JAVA_DIR}/com/couchbase/lite/internal/core"
+    into "${GENERATED_DIR}/java//com/couchbase/lite/internal/core"
 }
 compileJava.dependsOn generateCBLVersion
 
@@ -492,7 +496,7 @@ artifacts {
 publishing {
     publications {
         couchbaseLiteJava(MavenPublication) {
-            groupId group
+            groupId CBL_GROUP
             artifactId CBL_ARTIFACT_ID
             version BUILD_VERSION
 
