@@ -44,18 +44,17 @@ plugins {
 // ----------------------------------------------------------------
 
 ext {
-    CBL_ORG = 'couchbase'
     CBL_GROUP = 'com.couchbase.lite'
     CBL_ARTIFACT_ID = 'couchbase-lite-android'
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
     CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/LICENSE_community.txt"
-    CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-android-ce.git'
-    CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-android-ce/issues'
+    CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root.git'
+    CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-java-ce-root/issues'
     CBL_SITE_URL = 'https://developer.couchbase.com/mobile/'
 
     BUILD_TIME = Instant.now().toString()
-    BUILD_RELEASE = file("$ROOT_DIR/version.txt").text.trim()
+    BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
     BUILD_COMMIT = getBuildCommit()
@@ -67,9 +66,9 @@ ext {
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
 
-    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
     LIB_MODULE_DIR = "${PROJECT_DIR}/lib"
     REPORTS_DIR = "${buildDir}/reports"
+    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 }
 
 // defining this property in the file ~/.gradle/gradle.properties
@@ -84,7 +83,7 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // local.properties
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+properties.load(project.rootProject.file("${ROOT_DIR}/local.properties").newDataInputStream())
 
 
 // ----------------------------------------------------------------
@@ -101,10 +100,10 @@ android {
     ndkVersion '20.1.5948944'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion ANDROID_MIN_SDK
         //noinspection OldTargetApi
-        targetSdkVersion 27
-        versionCode 1
+        targetSdkVersion ANDROID_TARGET_SDK
+        versionCode 20800
         versionName BUILD_VERSION
         project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
 
@@ -184,7 +183,7 @@ android {
                 "${CBL_CE_COMMON_DIR}/main/java",                // CE Common
             ]
             res.srcDirs = [
-                "${CBL_COMMON_ANDROID_DIR}/main/res",            // shared resources
+                "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
             ]
         }
         androidTest {
@@ -192,11 +191,11 @@ android {
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests
-                "${CBL_CE_COMMON_DIR}/lib/src/shared/test/java", // CE Common tests
+                "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
             ]
             assets.srcDirs = [
                 "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
-                "${CBL_COMMON_DIR}/test/assets",                 // shared assets
+                "${CBL_COMMON_DIR}/test/assets",                 // Common assets
             ]
         }
     }
@@ -214,15 +213,15 @@ repositories {
 
 dependencies {
     compileOnly 'com.android.support:support-annotations:28.0.0'
-    compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.12'
 
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:okhttp:3.14.4'
 
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     testImplementation 'junit:junit:4.12'
 
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
@@ -237,10 +236,10 @@ dependencies {
     javadocDeps files("${buildDir}/generated/source/buildConfig/debug")
     javadocDeps files("${buildDir}/generated/source/buildConfig/release")
     //noinspection GradleDependency
-    javadocDeps 'com.android.support:support-annotations:27.1.1'
-    javadocDeps 'com.google.code.findbugs:annotations:3.0.1'
+    javadocDeps 'com.android.support:support-annotations:28.0.0'
+    javadocDeps 'com.github.spotbugs:spotbugs-annotations:3.1.12'
     //noinspection GradleDependency
-    javadocDeps 'com.squareup.okhttp3:okhttp:3.9.1'
+    javadocDeps 'com.squareup.okhttp3:okhttp:3.14.4'
 }
 
 task javadoc(type: Javadoc) {
@@ -270,7 +269,7 @@ task javadoc(type: Javadoc) {
 // Static analysis
 // ----------------------------------------------------------------
 
-def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', '**/gen/**', "okhttp3/**"]
+def FILE_FILTER = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', '**/gen/**', "okhttp3/**"]
 
 /////// Checkstyle
 checkstyle {
@@ -287,7 +286,7 @@ task checkstyle(type: Checkstyle) {
 
     source android.sourceSets.main.java.srcDirs
     include '**/*.java'
-    exclude fileFilter
+    exclude FILE_FILTER
 
     classpath = files()
 
@@ -316,7 +315,7 @@ task pmd(type: Pmd) {
 
     source = android.sourceSets.main.java.srcDirs
     include '**/*.java'
-    exclude fileFilter
+    exclude FILE_FILTER
 
     reports {
         xml {
@@ -334,7 +333,7 @@ task pmd(type: Pmd) {
 spotbugs { toolVersion = '3.1.12' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
-        description "Spotbugs with $reportType report"
+        description "Spotbugs with ${reportType} report"
         group 'verification'
 
         afterEvaluate { dependsOn tasks.find { t -> t.name.endsWith 'compileDebugSources' } }
@@ -347,7 +346,7 @@ spotbugs { toolVersion = '3.1.12' }
             dir -> fileTree(dir: dir, include: '**/*.java').getFiles()
         }.flatten()
 
-        classes = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
+        classes = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: FILE_FILTER)
         classpath = files()
 
         excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
@@ -367,10 +366,14 @@ spotbugs { toolVersion = '3.1.12' }
 
 
 // ----------------------------------------------------------------
-// Testing
+// Coverage
 // ----------------------------------------------------------------
 
 jacoco { toolVersion = JACOCO_VERSION }
+
+task coverage(dependsOn: ['createDebugCoverageReport', 'coveralls']) {
+    android.buildTypes.findByName('debug').testCoverageEnabled = true
+}
 
 
 // ----------------------------------------------------------------
@@ -491,10 +494,6 @@ task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', '
 task unitTest(dependsOn: ['smokeTest', 'testDebugUnitTest'])
 task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
 
-task coverage(dependsOn: ['createDebugCoverageReport', 'coveralls']) {
-    android.buildTypes.findByName('debug').testCoverageEnabled = true
-}
-
 ///////// CI tasks
 task ciCheck(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
 task ciPublish(dependsOn: ['generatePomFileForMavenJavaPublication', 'publishMavenJavaPublicationToMavenRepository'])
@@ -519,26 +518,25 @@ clean.doLast {
     project.delete "${LIB_MODULE_DIR}/.cxx"
 }
 
-def getLicenseVersion() {
-    def version = "master"
-    try {
-        version = 'git rev-parse --short HEAD'.execute([], file("${ROOT_DIR}/product-texts")).text.trim()
-    }
-    catch (Exception ignore) {
-    }
-    return version
-}
+
+// ----------------------------------------------------------------
+// Extensions
+// ----------------------------------------------------------------
+
+def getLicenseVersion() { return getGitCommit("${ROOT_DIR}/legal", "master") }
 
 def getBuildCommit() {
-    def commit = "unknown"
+    def commit = getGitCommit(PROJECT_DIR, "unknown")
     try {
-        commit = 'git rev-parse --short HEAD'.execute([], file(PROJECT_DIR)).text.trim()
-        if ('git status -uno --porcelain'.execute([], file(PROJECT_DIR)).text.length() <= 0) {
-            commit += "+"
-        }
+        if ('git status -uno --porcelain'.execute([], file(PROJECT_DIR)).text.length() <= 0) { commit += "+" }
     }
-    catch (Exception ignore) {
-    }
+    catch (Exception ignore) { }
     return commit
+}
+
+def getGitCommit(repo, dflt) {
+    try { return 'git rev-parse --short HEAD'.execute([], file(repo).text.trim()) }
+    catch (Exception ignore) { }
+    return dflt
 }
 
