@@ -420,11 +420,11 @@ test {
 
         events = [
             "failed",
-//            "passed",
-//            "skipped"
+            "passed",
+            "skipped"
         ]
 
-//        showStandardStreams = true
+        //showStandardStreams = true
 
         showCauses = true
         showExceptions = true
