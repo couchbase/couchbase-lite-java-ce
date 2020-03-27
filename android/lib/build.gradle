@@ -181,6 +181,7 @@ android {
                 "${CBL_COMMON_DIR}/main/java",                   // Common
                 "${CBL_COMMON_ANDROID_DIR}/main/java",           // Common Android
                 "${CBL_CE_COMMON_DIR}/main/java",                // CE Common
+                "src/main/java",
             ]
             res.srcDirs = [
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources

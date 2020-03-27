@@ -110,6 +110,7 @@ java {
                 "${CBL_COMMON_DIR}/main/java",                   // Common
                 "${CBL_COMMON_JAVA_DIR}/main/java",              // Common Java
                 "${CBL_CE_COMMON_DIR}/main/java",                // CE Common
+                "src/main/java",
                 "${GENERATED_DIR}/java",
             ]
             resources.srcDirs = [
