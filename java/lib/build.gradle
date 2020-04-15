@@ -38,6 +38,9 @@ plugins {
     id 'maven-publish'
     id 'jacoco'
     id 'com.github.kt3k.coveralls'
+
+    // handy plugin for discovering task dependencies
+    //id 'com.dorongold.task-tree' version "1.5"
 }
 
 
@@ -555,9 +558,10 @@ task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml'])
 task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
 
-task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml', 'test'])
-task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml', 'test'])
+task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml'])
+task ciBuild(dependsOn: ['ciCheck', 'assemble', 'test'])
 task ciPublish(dependsOn: ['generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
+task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml', 'test'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {
