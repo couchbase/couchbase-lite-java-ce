@@ -93,7 +93,7 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // local.properties
 Properties properties = new Properties()
-properties.load(project.rootProject.file("${ROOT_DIR}/local.properties").newDataInputStream())
+properties.load(project.rootProject.file("${PROJECT_DIR}/local.properties").newDataInputStream())
 
 
 // ----------------------------------------------------------------
