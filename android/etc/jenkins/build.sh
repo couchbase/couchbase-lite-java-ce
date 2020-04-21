@@ -1,9 +1,9 @@
 #
-# CI Build script for Enterprise Android
+# Build Couchbase Lite Android, Community Edition
 #
 GROUP='com.couchbase.lite'
-PRODUCT='coucbase-lite-android-ee'
-EDITION='enterprise'
+PRODUCT='coucbase-lite-android'
+EDITION='community'
 
 # These versions must match the versions in lib/build.gradle
 NDK_VERSION='20.1.5948944'
@@ -34,7 +34,7 @@ fi
 
 SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager"
 
-echo "======== BUILD Couchbase Lite Android, Enterprise Edition v`cat ../version.txt`-${BUILD_NUMBER}"
+echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1

@@ -1,9 +1,6 @@
 #
-# Run automated tests
+# Test Couchbase Lite Android, Enterprise Edition
 #
-GROUP='com.couchbase.lite'
-PRODUCT='couchbase-lite-android-ee'
-EDITION='enterprise'
 
 function usage() {
     echo "Usage: $0 <build number> <reports path>"
@@ -24,7 +21,7 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-echo "======== Run automated tests on device: ${ANDROID_SERIAL}"
+echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
 ./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
 echo "======== Copy test reports"

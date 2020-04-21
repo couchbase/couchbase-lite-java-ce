@@ -1,9 +1,9 @@
+
 #
-# Promote the candidate build to an internal release
+# Publish Couchbase Lite Android, Community Edition
 #
-GROUP='com.couchbase.lite'
 PRODUCT='couchbase-lite-android'
-EDITION='enterprise'
+EDITION='community'
 
 MAVEN_URL="http://mobile.maven.couchbase.com/maven2/internalmaven"
 
@@ -37,12 +37,12 @@ if [ -z "$WORKSPACE" ]; then
     usage
 fi
 
-echo "======== Publish candidate build to internal maven"
+echo "======== PUBLISH Couchbase Lite Android, Enterprise Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
 ## Something like this:
 ## curl -X POST  -H "Content-Type: application/json" \
-##     --data '{"API_Key": "<promote key>", "groupName": "com.couchbase.lite", "packageName": "couchbase-lite-android", "version": "2.7.0-43", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
+##     --data '{"API_Key": "<promote key>", "groupName": "com.couchbase.lite", "packageName": "couchbase-lite-android-ee", "version": "2.7.0-43", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
 ##      http://mobile.maven.couchbase.com/api/promotions/promote
 ## At present that call fails to promote the entire package (bad PK copying the source tar)
 ## so, for now, just republish the same bits.
