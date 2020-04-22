@@ -1,35 +1,26 @@
 
-# Couchbase Lite 2.0
+# Couchbase Lite Android
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Build Status](https://travis-ci.org/couchbase/couchbase-lite-android.svg?branch=master)](https://travis-ci.org/couchbase/couchbase-lite-android)
-
-**Couchbase Lite** is an embedded lightweight, document-oriented (NoSQL), syncable database engine.
-
-Couchbase Lite 2.0 has a completely new set of APIs. The implementation is on top of [Couchbase Lite Core](https://github.com/couchbase/couchbase-lite-core), which is also a new cross-platform implementation of database CRUD and query features, as well as document versioning.
-
-## Issues
-Please file any issues concerning the Couchbase Lite Android product in the root project, couchbase-lite-android-ce,
-[here](https://github.com/couchbase/couchbase-lite-android-ce)
+# Issues
+Please file any issues concerning the Couchbase Lite Android product in the root project, couchbase-lite-android-ce-root,
+[here](https://github.com/couchbase/couchbase-lite-android-ce-root)
 
 ## Requirements
 
-- Android 4.4+ (API 19+)
-- Supported architectures: armeabi-v7a, arm64-v8a and x86
-- Android Studio 3.+
+- Android 5.1.1+ (API 22+)
+- Supported architectures: armeabi-v7a, arm64-v8a, x86 and x86_64
+- Android Studio 3.6+
 
 ## Installation
 
 Download the latest AAR or grab via Maven
-
-### Download
-- https://www.couchbase.com/downloads
 
 ### Gradle
 Add the following in the dependencies section of the application's build.gradle (the one in the app folder).
 
 ```
 dependencies {
-    implementation 'com.couchbase.lite:couchbase-lite-android:2.5.0'
+    implementation 'com.couchbase.lite:couchbase-lite-android:2.8.0'
 }
 ```
 
@@ -38,25 +29,45 @@ dependencies {
 <dependency>
   <groupId>com.couchbase.lite</groupId>
   <artifactId>couchbase-lite-android</artifactId>
-  <version>2.0.0</version>
+  <version>2.8.0</version>
 </dependency>
 ```
 
+### Download
+- https://www.couchbase.com/downloads
+
 ## Documentation
 
-- [Developer Guide](https://developer.couchbase.com/documentation/mobile/2.0/couchbase-lite/java.html)
+- [Developer Guide] (https://docs.couchbase.com/couchbase-lite/2.8/java-android.html)
 
 ## How to build from source
 
-**THIS MODULE CAN NO LONGER BE BUILT BY ITSELF**
-To build couchbase lite, clone https://github.com/couchbase/couchbase-lite-android-ce.git
+You will first need a local properties file that provides the locations for an Android
+SDK, NDK, and CMake.  It will probably look something like this: ```
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#Tue Dec 17 10:21:05 PST 2019
+sdk.dir=/Users/ladygaga/Library/Android/sdk
+ndk.dir=/Users/ladygaga/Library/Android/sdk/ndk/20.1.5948944
+cmake.dir=/Users/ladygaga/Library/Android/sdk/cmake/3.10.2.4988404
+```
+
+Once local.properties is properly configured, a normal gradle build should work:
+
+`./gradlew assemble`
+
+Most normal gradle targets should work.  There are a couple of special ones at the bottom of `lib/build.gradle`
 
 ## Sample Apps
 
 - [Todo](https://github.com/couchbaselabs/mobile-training-todo/tree/feature/2.0)
 
 ## ProGuard
-If you are using ProGuard you might need to add the following options:
+If you are using ProGuard you might need to add the following options in your applications proguard config:
 ```
 # OkHttp3
 -dontwarn okhttp3.**

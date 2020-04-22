@@ -1,69 +1,50 @@
 ## Overview
 
-CBL-Java supports three platforms including linux, windows, and macos (only 64 bits arch supported). CBL-Java contains native shared library for its JNI that needs to be built separately on each platform and merge them together into one single jar file along with the java classes. Moreover the distribution package for the linux platform will include the dependency libraries required by CBL-Java's JNI including libc++, libicu, and libz.
+CBL-Java supports three platforms including linux, windows, and macos (only 64 bits arch supported). CBL-Java contains code for a native shared library for its JNI that are built separately on each platform.  Once built, the three are merged into a single jar file along with the compiled java classes. The distribution package for the linux platform also includes library dependencies required by CBL-Java's JNI including libc++, libicu, and libz.
 
-The sections below will outline the steps for Jenkins server to build CBL-Java on each platform and merge them together. The linux platform will need to be the main one as it also needs to package the additional dependecies.
+The sections below will outline the steps necessary to build CBL-Java on each platform and merge them together. The linux platform will need to be the main one as it also needs to package the additional dependecies.
 
-Note that the environment variables referenced in this document are based on the CBL-Andriod's jenkins task (http://mobile.jenkins.couchbase.com/job/couchbase-lite-android-edition-build-post-25/configure).
 
-## MacOS
+## How to build couchbase-lite-java-ee
 
-### Preparation
-1. Download and extract the tar ball into ${WORKSPACE}
-2. echo "${RELEASE}" > "${WORKSPACE}/version.txt"
+#### 1 Create local.properties required by build.gradle
 
-### Build Steps for EE
-1. cd ${WORKSPACE}/couchbase-lite-java-ee"
-2. ../couchbase-lite-java/etc/jenkins/build_macos.sh ${BLD_NUM} EE
-3. The distribution zip file will be at lib/build/distributions/couchbase-lite-java-ee-${RELEASE}-{BLD_NUM}.zip
-4. Upload the zip file to a location that will be downloaded and used later.
+While this file is necessary, unlike it's Android analog, in need not contain any configuration information
 
-### Build Steps for CE
-1. cd ${WORKSPACE}/couchbase-lite-java"
-2. ./etc/jenkins/build_macos.sh ${BLD_NUM} CE
-3. The distribution zip file will be at lib/build/distributions/couchbase-lite-java-${RELEASE}-{BLD_NUM}.zip
-4. Upload the zip file to a location that will be downloaded and used later.
+```
+$ touch local.properties
+```
 
-## Windows
 
-### Preparation
-1. Download and extract the tar ball into %WORKSPACE%
-2. echo %RELEASE% > %WORKSPACE%\version.txt
+#### 2 Build couchbase-lite-core
 
-### Build Steps for EE
-1. cd %WORKSPACE%\couchbase-lite-java-ee"
-2. ..\couchbase-lite-java\etc\jenkins\build_windows.bat 2017 %BLD_NUM% EE (Note: 2017 indicates the Visual Studio 2017 version, the value could be 2015, 2017 or 2019)
-3. The distribution zip file will be at lib\build\distributions\couchbase-lite-java-ee-%RELEASE%-%BLD_NUM%.zip
-4. Upload the zip file to a location that will be downloaded and used later.
+The -d option causes the tool to build a DEBUG version of LiteCOre
 
-### Build Steps for CE
-1. cd %WORKSPACE%\couchbase-lite-java"
-2. .\etc\jenkins\build_windows.bat 2017 %BLD_NUM% CE (Note: 2017 indicates the Visual Studio 2017 is used, the version could be 2015, 2017 or 2019)
-3. The distribution zip file will be at lib\build\distributions\couchbase-lite-java-%RELEASE%-%BLD_NUM%.zip
-4. Upload the zip file to a location that will be downloaded and used later.
+**MacOS / Linux**
 
-## Linux (Main)
+```
+$ ../../common/tools/build_litecore.sh -e CE [-d] 
+```
 
-### Preparation
-1. Download and extract the tar ball into ${WORKSPACE}
-2. echo "${RELEASE}" > "${WORKSPACE}/version.txt"
-3. Download the CBL-JAVA macos zip file and use couchbase-lite-java/etc/jenkins/extract_libs.sh <zip file> <path-to-couchbase-lite-java> to extract the file.
-4. Download the CBL-JAVA windows zip file and use couchbase-lite-java/etc/jenkins/extract_libs.sh <zip file> <path-to-couchbase-lite-java> to extract the file.
+**Windows**
 
-The Step 3 and 4 will extract Lite-Core and JNI native libraries of macos and windows to couchbase-lite-java/lite-core directory.
+```
+$ ..\couchbase-lite-java\scripts\build_litecore.bat 2019 CE [d]
+```
+** Assuming that the Visual Studio 2019 with C++ development libraries was installed.
 
-### Build Steps for EE
-1. cd ${WORKSPACE}/couchbase-lite-java-ee"
-2. ../couchbase-lite-java/etc/jenkins/build_linux.sh ${BLD_NUM} EE
-3. The build_linux.sh script will publish the build artifact to ci maven specified in the script file.
-4. Start couchbase-lite-java-unit-tests jenkins task in order to test the built artifact. The couchbase-lite-java-unit-tests will need to be created and the script to run the test has not been developed yet.
-5. If step 4 is successful, ../couchbase-lite-java/etc/jenkins/publish.sh ${BLD_NUM}. This will publish the artifact to the internal maven that can be consumed by QE.
-6. The step 5 also generated a distribution zip file at lib/build/distributions/couchbase-lite-java-ee-%RELEASE%-%BLD_NUM%.zip. Upload the zip file to the latestbuilds.service.couchbase.com server.
+### 3. Build couchbase-lite-java
 
-### Build Steps for CE
-1. cd ${WORKSPACE}/couchbase-lite-java"
-2. ./etc/jenkins/build_linux.sh ${BLD_NUM} CE
-3. The build_linux.sh script will publish the build artifact to ci-maven specified in the script file.
-4. Start couchbase-lite-java-unit-tests jenkins task in order to test the built artifact. The couchbase-lite-java-unit-tests will need to be created and the script to run the test has not been developed yet.
-5. If step 4 is successful, ./etc/jenkins/publish.sh ${BLD_NUM}. This will publish the artifact to the internal maven that can be consumed by QE.
-6. The step 5 also generated a distribution zip file at lib/build/distributions/couchbase-lite-java-%RELEASE%-%BLD_NUM%.zip. Upload the zip file to the latestbuilds.service.couchbase.com server.
+#### 3.1 Build and Test
+
+```
+$ ./gradlew build 
+```
+
+#### 3.2 Create distribution zip file
+
+```
+$ ./gradlew distZip 
+```
+
+The generated zip file will located at `build/distribution` directory.
