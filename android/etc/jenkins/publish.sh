@@ -42,7 +42,7 @@ if ! hash mvn 2>/dev/null; then
     exit 1
 fi
 
-echo "======== PUBLISH Couchbase Lite Android, Enterprise Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
+echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
 ## Something like this:
@@ -51,12 +51,12 @@ echo "======== PUBLISH Couchbase Lite Android, Enterprise Edition v`cat ../../ve
 ##      http://mobile.maven.couchbase.com/api/promotions/promote
 ## At present that call fails to promote the entire package (bad PK copying the source tar)
 ## so, for now, just republish the same bits.
-./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || exit 1
+./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
 
 echo "======== Copy artifacts to staging directory"
 POM_FILE='pom.xml'
-cp lib/build/outputs/aar/*.aar "${ARTIFACTS}"
-cp lib/build/libs/*.jar "${ARTIFACTS}"
+cp lib/build/outputs/aar/*.aar "${ARTIFACTS}/"
+cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp -a lib/build/reports "${ARTIFACTS}/reports"
 cp lib/build/publications/mavenJava/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
 
@@ -65,10 +65,10 @@ DEPS_DIR="${WORKSPACE}/dependencies"
 rm -rf "${DEPS_DIR}"
 mkdir -p "${DEPS_DIR}"
 pushd "${DEPS_DIR}"
-cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml || exit 1
-sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" "${POM_FILE}" || exit 1
-diff "${POM_FILE}" "${POM_FILE}.bak"
-mvn install dependency:copy-dependencies || exit 1
+cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
+sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
+diff pom.xml pom.xml.bak || true
+mvn install dependency:copy-dependencies
 popd
 
 echo "======== Create zip"
@@ -76,10 +76,10 @@ ZIP_STAGING="${WORKSPACE}/staging"
 rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
-cp "${DEPS_DIR}/target/dependency/"*.jar . || exit 1
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" ./LICENSE.TXT || exit 1
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "./${PRODUCT}-${VERSION}.aar" || exit 1
-zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" * || exit 1
+cp "${DEPS_DIR}/target/dependency/"*.jar .
+cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" ./LICENSE.TXT
+cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "./${PRODUCT}-${VERSION}.aar"
+zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
 find "${ARTIFACTS}"

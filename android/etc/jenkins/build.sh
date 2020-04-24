@@ -47,10 +47,13 @@ ndk.dir=${SDK_HOME}/ndk/${NDK_VERSION}
 cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 
+echo "======== Check"
+./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}"
+
 echo "======== Build"
-./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
+./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}"
 
 echo "======== Publish artifacts"
-./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || exit 1
+./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}"
 
 echo "======== BUILD COMPLETE"

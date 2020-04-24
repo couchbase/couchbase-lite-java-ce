@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Test Couchbase Lite Android, Enterprise Edition
+# Test Couchbase Lite Java, Community Edition for MacOS
 #
 
 function usage() {
@@ -22,11 +22,13 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
-./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}"
+
+echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+./gradlew ciTest --info --console=plain || exit 1
 
 echo "======== Copy test reports"
-cp -rp test/build/reports/* "${REPORTS}/"
+cp -a lib/build/reports/* "${REPORTS}"
 
+find "${REPORTS}"
 echo "======== TEST COMPLETE"
 

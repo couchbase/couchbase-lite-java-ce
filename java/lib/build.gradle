@@ -382,7 +382,7 @@ task pmd(type: Pmd) {
 spotbugs { toolVersion = '3.1.12' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
-        description "Spotbugs with ${reportType} report}"
+        description "Spotbugs with ${reportType} report"
         group 'verification'
 
         dependsOn 'compileJava'
@@ -554,14 +554,17 @@ publishing {
 // Tasks
 // ----------------------------------------------------------------
 
+///////// Dev tasks
 task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml'])
 task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
 
+///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml'])
-task ciBuild(dependsOn: ['ciCheck', 'assemble', 'test'])
-task ciPublish(dependsOn: ['generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
-task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml', 'test'])
+task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml'])
+task ciBuild(dependsOn: ['assemble'])
+task ciTest(dependsOn: ['test'])
+task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {
