@@ -1,3 +1,4 @@
+#!/bin/bash -e
 #
 # Test Couchbase Lite Android, Enterprise Edition
 #

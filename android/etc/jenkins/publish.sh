@@ -1,4 +1,4 @@
-
+#!/bin/bash -e
 #
 # Publish Couchbase Lite Android, Community Edition
 #
@@ -37,6 +37,11 @@ if [ -z "$WORKSPACE" ]; then
     usage
 fi
 
+if ! hash mvn 2>/dev/null; then
+    echo "Cannot find the 'mvn' command.  Please be sure it is on the PATH"
+    exit 1
+fi
+
 echo "======== PUBLISH Couchbase Lite Android, Enterprise Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
@@ -52,20 +57,18 @@ echo "======== Copy artifacts to staging directory"
 POM_FILE='pom.xml'
 cp lib/build/outputs/aar/*.aar "${ARTIFACTS}"
 cp lib/build/libs/*.jar "${ARTIFACTS}"
-cp -a lib/build/reports "${ARTIFACTS}"
+cp -a lib/build/reports "${ARTIFACTS}/reports"
 cp lib/build/publications/mavenJava/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
 
-echo "======== Update package type in pom"
-ZIP_BUILD="${WORKSPACE}/zip-build"
-rm -rf "${ZIP_BUILD}"
-mkdir -p "${ZIP_BUILD}"
-pushd "${ZIP_BUILD}"
-cp "${ARTIFACTS}/${POM_FILE}" . || exit 1
+echo "======== Pull dependencies for zip"
+DEPS_DIR="${WORKSPACE}/dependencies"
+rm -rf "${DEPS_DIR}"
+mkdir -p "${DEPS_DIR}"
+pushd "${DEPS_DIR}"
+cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml || exit 1
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" "${POM_FILE}" || exit 1
 diff "${POM_FILE}" "${POM_FILE}.bak"
-
-echo "======== Fetch library dependencies"
-/home/couchbase/jenkins/tools/hudson.tasks.Maven_MavenInstallation/M3/bin/mvn install dependency:copy-dependencies || exit 1
+mvn install dependency:copy-dependencies || exit 1
 popd
 
 echo "======== Create zip"
@@ -73,11 +76,12 @@ ZIP_STAGING="${WORKSPACE}/staging"
 rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
-cp "${ZIP_BUILD}/target/dependency/"*.jar . || exit 1
+cp "${DEPS_DIR}/target/dependency/"*.jar . || exit 1
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" ./LICENSE.TXT || exit 1
 cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "./${PRODUCT}-${VERSION}.aar" || exit 1
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" * || exit 1
 popd
 
+find "${ARTIFACTS}"
 echo "======== PUBLICATION COMPLETE"
 

@@ -1,9 +1,7 @@
+#!/bin/bash -e
 #
 # Build Couchbase Lite Android, Community Edition
 #
-GROUP='com.couchbase.lite'
-PRODUCT='coucbase-lite-android'
-EDITION='community'
 
 # These versions must match the versions in lib/build.gradle
 NDK_VERSION='20.1.5948944'
