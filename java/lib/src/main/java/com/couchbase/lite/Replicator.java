@@ -1,6 +1,4 @@
 //
-// AbstractReplicator.java
-//
 // Copyright (c) 2017 Couchbase, Inc All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,4 +33,6 @@ public final class Replicator extends AbstractReplicator {
         if (target instanceof URLEndpoint) { return getRemoteC4Replicator(((URLEndpoint) target).getURL()); }
         throw new IllegalStateException("unrecognized endpoint type: " + target);
     }
+
+    protected void handleOffline(@NonNull ActivityLevel prevLevel, boolean nowOnline) { }
 }
