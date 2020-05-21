@@ -2,7 +2,6 @@
 #
 # Test Couchbase Lite Java, Community Edition for MacOS
 #
-
 function usage() {
     echo "Usage: $0 <build number> <reports path>"
     exit 1
@@ -21,7 +20,6 @@ REPORTS="$2"
 if [ -z "REPORTS" ]; then
     usage
 fi
-
 
 echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 ./gradlew ciTest --info --console=plain || exit 1

@@ -22,7 +22,6 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-
 echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 ./gradlew ciTest --info --console=plain || exit 1
 

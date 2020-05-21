@@ -50,7 +50,7 @@ echo "======== Build mbedcrypto ..."
 
 echo "======== Check"
 touch local.properties
-./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}"
+./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
 for PLATFORM in macos windows; do
   ARTIFACT="${PRODUCT}-${VERSION}-${BUILD_NUMBER}-${PLATFORM}.zip"
@@ -64,7 +64,7 @@ for PLATFORM in macos windows; do
 done
 
 echo "======== Build"
-./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}"
+./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
 find lib/build/distributions
 echo "======== BUILD COMPLETE"

@@ -1,8 +1,9 @@
-@echo ON
 
-:: Build Couchbase Lite Java, Community Edition for Windows
+echo on
 
-SET liteCoreRepoUrl="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
+rem Build Couchbase Lite Java, Community Edition for Windows
+
+set liteCoreRepoUrl="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 
 if "%2%" == "" (
     echo Usage: build_windows.bat ^<VS Generator: 2015,2017,2019^> ^<BUILD_NUMBER^>
@@ -17,23 +18,22 @@ set scriptDir=%CD%
 popd
 set toolsDir=%scriptDir%\..\..\..\..\common\tools
 
-
 echo ======== BUILD Couchbase Lite Java, Community Edition
 
 echo ======== Download Lite Core
-powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE || goto error
+powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE
 
 echo ======== Build mbedcrypto
-call %toolsDir%\build_litecore.bat %vsGen% CE mbedcrypto || goto error
+call %toolsDir%\build_litecore.bat %vsGen% CE mbedcrypto
 
 echo ======== Build
 echo "" > local.properties
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
 
 echo ======== BUILD COMPLETE
-
-goto :eof
+exit /B 0
 
 :error
 echo Failed with error %ERRORLEVEL%.
-exit /b %ERRORLEVEL%
+exit /B %ERRORLEVEL%
+

@@ -2,7 +2,6 @@
 #
 # Publish Couchbase Lite Java, Community Edition
 #
-
 PRODUCT='couchbase-lite-java'
 
 function usage() {
@@ -35,7 +34,7 @@ if [ -z "$WORKSPACE" ]; then
 fi
 
 echo "======== PUBLISH Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
-cp "lib/build/distributions/${PRODUCT}-${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-macos.zip"
+cp "lib/build/distributions/${PRODUCT}-${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-macos.zip" || exit 1
 
 find "${ARTIFACTS}"
 echo "======== PUBLICATION COMPLETE"

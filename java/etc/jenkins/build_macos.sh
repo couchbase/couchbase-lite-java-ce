@@ -33,7 +33,7 @@ echo "======== Build mbedcrypto ..."
 
 echo "======== Build"
 touch local.properties
-./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}"
+./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
 find lib/build/distributions
 echo "======== BUILD COMPLETE"
