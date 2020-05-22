@@ -12,7 +12,7 @@ set buildNumber=%1%
 set reportsDir=%2%
 
 echo ======== TEST Couchbase Lite Java, Community Edition 
-call gradlew.bat ciTest || goto error
+call gradlew.bat ciTest --info --console=plain || goto error
 
 echo ======== Copy test reports
 xcopy lib\build\reports %reportsDir% /S /C /I /Y
