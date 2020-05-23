@@ -51,7 +51,6 @@ popd
 echo "======== Copy artifacts to staging directory"
 cp "lib/build/distributions/${PRODUCT}-${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
-cp -a lib/build/reports "${ARTIFACTS}/reports" || true
 cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xml"
 
 find "${ARTIFACTS}"

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Publish Couchbase Lite Java, Community Edition
 #

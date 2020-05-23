@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Test Couchbase Lite Java, Community Edition for MacOS
 #
@@ -21,12 +21,17 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-./gradlew ciTest --info --console=plain || exit 1
+STATUS=0
 
-echo "======== Copy test reports"
-cp -a lib/build/reports/* "${REPORTS}"
+echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+./gradlew ciTest --info --console=plain || STATUS=1
+
+echo "======== Publish reports"
+pushd lib/build/reports
+zip -r "${REPORTS}/test-reports-macos" tests
+popd
 
 find "${REPORTS}"
 echo "======== TEST COMPLETE"
+exit $STATUS
 

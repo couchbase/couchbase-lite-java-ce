@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Build Couchbase Lite Android, Community Edition
 #
@@ -12,11 +12,11 @@ MAVEN_URL="http://mobile.maven.couchbase.com/maven2/cimaven"
 
 
 function usage() {
-    echo "Usage: $0 <sdk path> <build number>"
+    echo "Usage: $0 <sdk path> <build number> <reports dir>"
     exit 1
 }
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     usage
 fi
 
@@ -27,6 +27,11 @@ fi
 
 BUILD_NUMBER="$2"
 if [ -z "$BUILD_NUMBER" ]; then
+    usage
+fi
+
+REPORTS="$3"
+if [ -z "REPORTS" ]; then
     usage
 fi
 
@@ -55,5 +60,10 @@ echo "======== Build"
 
 echo "======== Publish artifacts"
 ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}"
+
+echo "======== Publish reports"
+pushd lib/build
+zip -r "${REPORTS}/analysis-reports-android" reports
+popd
 
 echo "======== BUILD COMPLETE"

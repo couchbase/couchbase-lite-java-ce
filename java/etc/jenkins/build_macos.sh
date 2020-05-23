@@ -1,8 +1,7 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Build Couchbase Lite Java, Community Edition for MacOS
 #
-
 NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 
 function usage() {
@@ -21,7 +20,6 @@ fi
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
-
 
 echo "======== BUILD Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 

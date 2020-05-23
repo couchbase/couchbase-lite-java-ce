@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Test Couchbase Lite Android, Enterprise Edition
 #
@@ -25,8 +25,10 @@ fi
 echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
 ./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}"
 
-echo "======== Copy test reports"
-cp -rp test/build/reports/* "${REPORTS}/"
+echo "======== Publish reports"
+pushd test/build/reports/androidTests
+zip -r "${REPORTS}/test-reports-android" connected
+popd
 
 echo "======== TEST COMPLETE"
 
