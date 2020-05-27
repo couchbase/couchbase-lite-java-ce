@@ -27,7 +27,6 @@ echo ======== Build mbedcrypto
 call %toolsDir%\build_litecore.bat %vsGen% CE mbedcrypto
 
 echo ======== Build
-echo "" > local.properties
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
 
 echo ======== BUILD COMPLETE
