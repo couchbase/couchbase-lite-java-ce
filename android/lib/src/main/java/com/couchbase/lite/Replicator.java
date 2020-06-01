@@ -51,7 +51,6 @@ public final class Replicator extends AbstractReplicator {
                 });
     }
 
-
     @Override
     protected C4Replicator createReplicatorForTarget(Endpoint target) throws LiteCoreException {
         if (target instanceof URLEndpoint) { return getRemoteC4Replicator(((URLEndpoint) target).getURL()); }

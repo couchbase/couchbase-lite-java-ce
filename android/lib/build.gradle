@@ -100,7 +100,7 @@ android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
     // if you change this, be sure to update /etc/jenkins/build.sh
-    ndkVersion '20.1.5948944'
+    ndkVersion '21.2.6472646'
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
@@ -217,7 +217,7 @@ repositories {
 
 dependencies {
     compileOnly 'com.android.support:support-annotations:28.0.0'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.12'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.3'
 
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:okhttp:3.14.4'
@@ -241,7 +241,7 @@ dependencies {
     javadocDeps files("${buildDir}/generated/source/buildConfig/release")
     //noinspection GradleDependency
     javadocDeps 'com.android.support:support-annotations:28.0.0'
-    javadocDeps 'com.github.spotbugs:spotbugs-annotations:3.1.12'
+    javadocDeps 'com.github.spotbugs:spotbugs-annotations:4.0.3'
     //noinspection GradleDependency
     javadocDeps 'com.squareup.okhttp3:okhttp:3.14.4'
 }
@@ -308,7 +308,7 @@ task checkstyle(type: Checkstyle) {
 
 /////// PMD
 pmd {
-    toolVersion '6.21.0'
+    toolVersion '6.24.0'
     ruleSets = []
 }
 task pmd(type: Pmd) {
@@ -334,7 +334,7 @@ task pmd(type: Pmd) {
 }
 
 /////// SpotBugs
-spotbugs { toolVersion = '3.1.12' }
+spotbugs { toolVersion = '4.0.3' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
