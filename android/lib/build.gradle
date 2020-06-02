@@ -334,6 +334,10 @@ task pmd(type: Pmd) {
 }
 
 /////// SpotBugs
+// If SpotBug is run on code generated with Java 11
+// it will generate quite a few extraneous NULLCHECK warnings.
+// Sadly the problem is Java 11 code generation: the only solution
+// is to disable the check.
 spotbugs { toolVersion = '4.0.3' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
