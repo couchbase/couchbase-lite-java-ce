@@ -32,6 +32,6 @@ zip -r "${REPORTS}/test-reports-linux" reports
 popd
 
 find "${REPORTS}"
-echo "======== TEST COMPLETE"
+echo "======== TEST COMPLETE ${STATUS}"
 exit $STATUS
 

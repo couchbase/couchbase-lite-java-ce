@@ -20,6 +20,6 @@ pushd lib\build\reports
 7z a -tzip -r "%reportsDir%\test-reports-windows.zip" tests
 popd
 
-echo ======== TEST COMPLETE
+echo ======== TEST COMPLETE %status%
 exit /B %status%
 
