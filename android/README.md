@@ -38,12 +38,13 @@ dependencies {
 
 ## Documentation
 
-- [Developer Guide] (https://docs.couchbase.com/couchbase-lite/2.8/java-android.html)
+- [Developer Guide](https://docs.couchbase.com/couchbase-lite/2.8/java-android.html)
 
 ## How to build from source
 
 You will first need a local properties file that provides the locations for an Android
-SDK, NDK, and CMake.  It will probably look something like this: ```
+SDK, NDK, and CMake.  It will probably look something like this:
+```
 ## This file must *NOT* be checked into Version Control Systems,
 # as it contains information specific to your local configuration.
 #
@@ -85,5 +86,5 @@ If you are using ProGuard you might need to add the following options in your ap
 
 ## License
 
-Apache 2 [license](LICENSE).
+Apache 2 [license](https://info.couchbase.com/rs/302-GJY-034/images/2017-10-30_License_Agreement.pdf).
 

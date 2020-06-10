@@ -1,5 +1,4 @@
 /build
-/*.sqlite3
 /.couchbase
-/.cbl-test*
+/.test
 
