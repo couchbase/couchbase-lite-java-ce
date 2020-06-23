@@ -326,7 +326,7 @@ javadoc {
 // Static analysis
 // ----------------------------------------------------------------
 
-def FILE_FILTER = ['**/gen/**', "okhttp3/**"]
+def FILE_FILTER = ['**/gen/**', "okhttp3/**", "org/json/**"]
 
 /////// Checkstyle
 checkstyle {

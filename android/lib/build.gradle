@@ -102,7 +102,7 @@ android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
     // if you change this, be sure to update /etc/jenkins/build.sh
-    ndkVersion '21.2.6472646'
+    ndkVersion '21.3.6528147'
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
