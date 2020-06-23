@@ -83,6 +83,8 @@ ext {
 
     CBL_NATIVE_DIR = "${buildDir}/native"
     CBL_JNI_INCLUDE_DIR = "${GENERATED_DIR}/include"
+
+    OKHTTP_VERSION = "3.14.7"
 }
 
 // build platform
@@ -150,7 +152,7 @@ dependencies {
     compileOnly 'com.android.support:support-annotations:28.0.0'
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.3'
 
-    implementation 'com.squareup.okhttp3:okhttp:3.14.4'
+    implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
     implementation 'org.json:json:20180813'
 

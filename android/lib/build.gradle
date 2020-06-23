@@ -72,6 +72,8 @@ ext {
     LIB_MODULE_DIR = "${PROJECT_DIR}/lib"
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
+
+    OKHTTP_VERSION = "3.14.7"
 }
 
 // defining this property in the file ~/.gradle/gradle.properties
@@ -220,7 +222,7 @@ dependencies {
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.3'
 
     //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:okhttp:3.14.4'
+    implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     testImplementation 'junit:junit:4.12'
@@ -243,7 +245,7 @@ dependencies {
     javadocDeps 'com.android.support:support-annotations:28.0.0'
     javadocDeps 'com.github.spotbugs:spotbugs-annotations:4.0.3'
     //noinspection GradleDependency
-    javadocDeps 'com.squareup.okhttp3:okhttp:3.14.4'
+    javadocDeps "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 }
 
 task javadoc(type: Javadoc) {
