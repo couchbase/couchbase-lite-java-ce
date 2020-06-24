@@ -21,6 +21,7 @@ import com.android.build.gradle.tasks.LintGlobalTask
 import com.github.spotbugs.SpotBugsTask
 
 import java.time.Instant
+import java.util.regex.Pattern
 
 
 // ----------------------------------------------------------------
@@ -538,7 +539,7 @@ def getBuildId() {
     try { hostname = "hostname".execute().text.trim() }
     catch (Exception ignore) { }
 
-    return "${getCommit("couchbase-lite-java-ce-root", "unofficial").substring(0, 7)}@${hostname}"
+    return "${getCommit("couchbase-lite-java-ce-root", "unofficial").substring(0, 10)}@${hostname}"
 }
 
 def getCommit(project, dflt) {
@@ -546,7 +547,7 @@ def getCommit(project, dflt) {
     try {
         manifest = new FileReader("${ROOT_DIR}/../manifest.xml")
 
-        def revEx = Pattern.compile("<project.* name=\"${project}\".* revision=\"([\\dabcdef]{40})\"")
+        def revEx = Pattern.compile("<project.* name=\\\"couchbase-lite-java-ee-root\\\".* revision=\\\"([\\dabcdef]{40})\\\"")
 
         def l
         while ((l = manifest.readLine()) != null) {
