@@ -498,7 +498,7 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
+task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml', 'compileDebugAndroidTestJavaWithJavac'])
 task unitTest(dependsOn: ['smokeTest', 'testDebugUnitTest'])
 task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
 

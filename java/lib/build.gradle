@@ -563,7 +563,7 @@ publishing {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml'])
+task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
 
