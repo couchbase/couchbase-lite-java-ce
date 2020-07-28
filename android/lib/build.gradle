@@ -204,6 +204,9 @@ android {
                 "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
                 "${CBL_COMMON_DIR}/test/assets",                 // Common assets
             ]
+            res.srcDirs = [
+                "${CBL_COMMON_ANDROID_DIR}/androidTest/res",     // Common test resources
+            ]
         }
     }
 
