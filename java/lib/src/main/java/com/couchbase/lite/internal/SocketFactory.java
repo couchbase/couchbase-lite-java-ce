@@ -20,12 +20,20 @@ import android.support.annotation.NonNull;
 import com.couchbase.lite.ReplicatorConfiguration;
 import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket;
+import com.couchbase.lite.internal.replicator.CBLTrustManager;
 
 
 public class SocketFactory {
-    public SocketFactory(@NonNull ReplicatorConfiguration ignore) { }
+    private final CBLTrustManager.CBLTrustManagerListener trustManagerListener;
+
+    public SocketFactory(
+        @NonNull ReplicatorConfiguration ignore,
+        CBLTrustManager.CBLTrustManagerListener trustManagerListener) {
+        this.trustManagerListener = trustManagerListener;
+    }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
-        return AbstractCBLWebSocket.createCBLWebSocket(handle, scheme, hostname, port, path, options);
+        return AbstractCBLWebSocket.createCBLWebSocket(
+            handle, scheme, hostname, port, path, options, trustManagerListener);
     }
 }
