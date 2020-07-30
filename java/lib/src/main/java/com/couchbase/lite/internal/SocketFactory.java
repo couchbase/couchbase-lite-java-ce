@@ -17,15 +17,27 @@ package com.couchbase.lite.internal;
 
 import android.support.annotation.NonNull;
 
+import java.security.cert.Certificate;
+import java.util.List;
+
 import com.couchbase.lite.ReplicatorConfiguration;
 import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket;
+import com.couchbase.lite.internal.utils.Fn;
 
 
 public class SocketFactory {
-    public SocketFactory(@NonNull ReplicatorConfiguration ignore) { }
+    @NonNull
+    private final Fn.Consumer<List<Certificate>> serverCertsListener;
+
+    public SocketFactory(
+        @NonNull ReplicatorConfiguration ignore,
+        Fn.Consumer<List<Certificate>> serverCertsListener) {
+        this.serverCertsListener = serverCertsListener;
+    }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
-        return AbstractCBLWebSocket.createCBLWebSocket(handle, scheme, hostname, port, path, options);
+        return AbstractCBLWebSocket.createCBLWebSocket(
+            handle, scheme, hostname, port, path, options, serverCertsListener);
     }
 }
