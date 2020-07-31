@@ -56,7 +56,7 @@ ext {
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
     CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/LICENSE_community.txt"
-    CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root.git'
+    CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root'
     CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-java-ce-root/issues'
     CBL_SITE_URL = 'https://developer.couchbase.com/mobile/'
 
@@ -71,13 +71,12 @@ ext {
     CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
-    CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
 
     CBL_NATIVE_LIBRARIES = []
     CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
-    CBL_CRYPTO_LIB = "${CBL_CORE_NATIVE_DIR}/macos/x86_64/libmbedcrypto.a"
 
     GENERATED_DIR = "${buildDir}/generated/sources"
     REPORTS_DIR = "${buildDir}/reports"
@@ -211,6 +210,7 @@ model {
     toolChains {
         visualCpp(VisualCpp)
         clang(Clang)
+        gcc(Gcc)
     }
 
     repositories {
@@ -237,9 +237,9 @@ model {
                 binaries.withType(StaticLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
-                        staticLibraryFile = file(CBL_CRYPTO_LIB)
+                        staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/libmbedcrypto.a")
                     } else if (os.linux) {
-                        staticLibraryFile = file(CBL_CRYPTO_LIB)
+                        staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/libmbedcrypto.a")
                     } else if (os.windows) {
                         staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/mbedcrypto.lib")
                     }
@@ -273,29 +273,28 @@ model {
             }
 
             binaries.all {
-                if (targetPlatform.operatingSystem.macOsX) {
+                if (targetPlatform.operatingSystem.windows) {
+                    cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}/win32"
+                    cppCompiler.args "/MD"
+                }
+                else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
                     cppCompiler.args '-std=c++11'
                     cppCompiler.args '-stdlib=libc++'
                     linker.args '-stdlib=libc++'
-                } else if (targetPlatform.operatingSystem.linux) {
+                }
+                else if (targetPlatform.operatingSystem.linux) {
                     def libCxxIncDir = properties.getProperty('LINUX_LIBCXX_INCDIR')
                     if (libCxxIncDir != null) { cppCompiler.args '-isystem', libCxxIncDir }
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
-                    cppCompiler.args '-std=c++11'
-                    cppCompiler.args '-stdlib=libc++'
                     def libCxxLibDir = properties.getProperty('LINUX_LIBCXX_LIBDIR')
                     if (libCxxLibDir != null) { linker.args '-L', libCxxLibDir }
-                    linker.args '-stdlib=libc++'
-                } else if (targetPlatform.operatingSystem.windows) {
-                    cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
-                    cppCompiler.args "-I${JAVA_INCLUDE}"
-                    cppCompiler.args "-I${JAVA_INCLUDE}/win32"
-                    cppCompiler.args "/MD"
                 }
             }
         }
@@ -430,6 +429,10 @@ spotbugs { toolVersion = '4.0.3' }
 
 test {
     if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
+
+    if (System.env.LD_LIBRARY_PATH != null) {
+        jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
+    }
 
     testLogging {
         outputs.upToDateWhen { false }
@@ -568,7 +571,7 @@ task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
 
 ///////// CI tasks
-task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml'])
+task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
 task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml'])
 task ciBuild(dependsOn: ['assemble'])
 task ciTest(dependsOn: ['test'])
@@ -588,12 +591,6 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 // Extensions
 // ----------------------------------------------------------------
-
-def getGitCommit(repo, dflt) {
-    try { return 'git rev-parse --short HEAD'.execute([], file(repo).text.trim()) }
-    catch (Exception ignore) { }
-    return dflt
-}
 
 def setupJNILibraryBuildTasks(library, platform) {
     tasks.whenTaskAdded { task ->
@@ -627,9 +624,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
 
     task generateNativeLibraryMD5(dependsOn: ["copyJni", "copyLiteCore"]) {
         doFirst {
-            fileTree(dir: "${CBL_NATIVE_DIR}/libs", exclude: "**/*.MD5").each { File file ->
-                ant.checksum(file: file)
-            }
+            fileTree(dir: "${CBL_NATIVE_DIR}/libs", exclude: "**/*.MD5").each { File file -> ant.checksum(file: file) }
         }
     }
 

@@ -24,6 +24,7 @@ fi
 STATUS=0
 
 echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+export LD_LIBRARY_PATH="${ROOT}/common/lite-core/support/linux/x86_64:${LD_LIBRARY_PATH}"
 ./gradlew ciTest --info --console=plain || STATUS=1
 
 echo "======== Publish reports"
