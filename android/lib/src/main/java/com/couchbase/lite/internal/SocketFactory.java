@@ -21,7 +21,9 @@ import android.support.annotation.NonNull;
 import java.security.cert.Certificate;
 import java.util.List;
 
+import com.couchbase.lite.Endpoint;
 import com.couchbase.lite.ReplicatorConfiguration;
+import com.couchbase.lite.URLEndpoint;
 import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket;
 import com.couchbase.lite.internal.utils.Fn;
@@ -29,20 +31,27 @@ import com.couchbase.lite.internal.utils.Fn;
 
 public class SocketFactory {
     @NonNull
+    private final Endpoint endpoint;
+    @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
     public SocketFactory(
-            @NonNull ReplicatorConfiguration ignore,
-            @NonNull Fn.Consumer<List<Certificate>> serverCertsListener) {
+        @NonNull ReplicatorConfiguration config,
+        @NonNull Fn.Consumer<List<Certificate>> serverCertsListener) {
+        this.endpoint = config.getTarget();
         this.serverCertsListener = serverCertsListener;
     }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
-        if (Build.VERSION.SDK_INT < 21) {
+        if (endpoint instanceof URLEndpoint) {
+            if (Build.VERSION.SDK_INT >= 21) {
+                return AbstractCBLWebSocket.createCBLWebSocket(
+                    handle, scheme, hostname, port, path, options, serverCertsListener);
+            }
+
             throw new UnsupportedOperationException("Couchbase sockets require Android version >= 21");
         }
 
-        return AbstractCBLWebSocket.createCBLWebSocket(
-                handle, scheme, hostname, port, path, options, serverCertsListener);
+        throw new UnsupportedOperationException("Unrecognized endpoint type: " + endpoint.getClass());
     }
 }

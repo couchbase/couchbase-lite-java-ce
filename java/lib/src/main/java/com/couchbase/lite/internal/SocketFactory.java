@@ -20,7 +20,9 @@ import android.support.annotation.NonNull;
 import java.security.cert.Certificate;
 import java.util.List;
 
+import com.couchbase.lite.Endpoint;
 import com.couchbase.lite.ReplicatorConfiguration;
+import com.couchbase.lite.URLEndpoint;
 import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket;
 import com.couchbase.lite.internal.utils.Fn;
@@ -28,16 +30,23 @@ import com.couchbase.lite.internal.utils.Fn;
 
 public class SocketFactory {
     @NonNull
+    private final Endpoint endpoint;
+    @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
     public SocketFactory(
-        @NonNull ReplicatorConfiguration ignore,
+        @NonNull ReplicatorConfiguration config,
         Fn.Consumer<List<Certificate>> serverCertsListener) {
+        this.endpoint = config.getTarget();
         this.serverCertsListener = serverCertsListener;
     }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
-        return AbstractCBLWebSocket.createCBLWebSocket(
-            handle, scheme, hostname, port, path, options, serverCertsListener);
+        if (endpoint instanceof URLEndpoint) {
+            return AbstractCBLWebSocket.createCBLWebSocket(
+                handle, scheme, hostname, port, path, options, serverCertsListener);
+        }
+
+        throw new UnsupportedOperationException("Unrecognized endpoint type: " + endpoint.getClass());
     }
 }
