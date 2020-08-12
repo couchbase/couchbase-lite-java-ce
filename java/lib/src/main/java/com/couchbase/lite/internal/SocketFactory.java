@@ -33,23 +33,23 @@ public class SocketFactory {
     @NonNull
     private final Endpoint endpoint;
     @NonNull
-    private final Fn.Provider<CBLCookieStore> cookieStoreProvider;
+    private final CBLCookieStore cookieStore;
     @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
     public SocketFactory(
         @NonNull ReplicatorConfiguration config,
-        @NonNull Fn.Provider<CBLCookieStore> cookieStoreProvider,
+        @NonNull CBLCookieStore cookieStore,
         @NonNull Fn.Consumer<List<Certificate>> serverCertsListener) {
         this.endpoint = config.getTarget();
-        this.cookieStoreProvider = cookieStoreProvider;
+        this.cookieStore = cookieStore;
         this.serverCertsListener = serverCertsListener;
     }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
         if (endpoint instanceof URLEndpoint) {
             return AbstractCBLWebSocket.createCBLWebSocket(
-                handle, scheme, hostname, port, path, options, cookieStoreProvider, serverCertsListener);
+                handle, scheme, hostname, port, path, options, cookieStore, serverCertsListener);
         }
 
         throw new UnsupportedOperationException("Unrecognized endpoint type: " + endpoint.getClass());

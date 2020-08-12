@@ -34,16 +34,16 @@ public class SocketFactory {
     @NonNull
     private final Endpoint endpoint;
     @NonNull
-    private final Fn.Provider<CBLCookieStore> cookieStoreProvider;
+    private final CBLCookieStore cookieStore;
     @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
     public SocketFactory(
         @NonNull ReplicatorConfiguration config,
-        @NonNull Fn.Provider<CBLCookieStore> cookieStoreProvider,
+        @NonNull CBLCookieStore cookieStore,
         @NonNull Fn.Consumer<List<Certificate>> serverCertsListener) {
         this.endpoint = config.getTarget();
-        this.cookieStoreProvider = cookieStoreProvider;
+        this.cookieStore = cookieStore;
         this.serverCertsListener = serverCertsListener;
     }
 
@@ -51,7 +51,7 @@ public class SocketFactory {
         if (endpoint instanceof URLEndpoint) {
             if (Build.VERSION.SDK_INT >= 21) {
                 return AbstractCBLWebSocket.createCBLWebSocket(
-                    handle, scheme, hostname, port, path, options, cookieStoreProvider, serverCertsListener);
+                    handle, scheme, hostname, port, path, options, cookieStore, serverCertsListener);
             }
 
             throw new UnsupportedOperationException("Couchbase sockets require Android version >= 21");
