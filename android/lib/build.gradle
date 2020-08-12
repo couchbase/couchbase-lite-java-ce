@@ -283,7 +283,7 @@ def FILE_FILTER = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifes
 
 /////// Checkstyle
 checkstyle {
-    toolVersion = "8.29"
+    toolVersion = "8.35"
 
     configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
     configProperties = ['configDir': file("${ETC_DIR}/checkstyle")]
@@ -314,7 +314,7 @@ task checkstyle(type: Checkstyle) {
 
 /////// PMD
 pmd {
-    toolVersion '6.24.0'
+    toolVersion '6.26.0'
     ruleSets = []
 }
 task pmd(type: Pmd) {
@@ -344,7 +344,7 @@ task pmd(type: Pmd) {
 // it will generate quite a few extraneous NULLCHECK warnings.
 // Sadly the problem is Java 11 code generation: the only solution
 // is to disable the check.
-spotbugs { toolVersion = '4.0.3' }
+spotbugs { toolVersion = '4.1.1' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
