@@ -83,6 +83,8 @@ android {
         sourceCompatibility 1.8
     }
 
+    kotlinOptions.jvmTarget = '1.8'
+
     sourceSets {
         main {
             manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/androidTest/AndroidManifest.xml"
