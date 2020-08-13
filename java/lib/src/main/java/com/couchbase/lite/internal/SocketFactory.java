@@ -25,6 +25,7 @@ import com.couchbase.lite.ReplicatorConfiguration;
 import com.couchbase.lite.URLEndpoint;
 import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket;
+import com.couchbase.lite.internal.replicator.CBLCookieStore;
 import com.couchbase.lite.internal.utils.Fn;
 
 
@@ -32,19 +33,23 @@ public class SocketFactory {
     @NonNull
     private final Endpoint endpoint;
     @NonNull
+    private final CBLCookieStore cookieStore;
+    @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
     public SocketFactory(
         @NonNull ReplicatorConfiguration config,
-        Fn.Consumer<List<Certificate>> serverCertsListener) {
+        @NonNull CBLCookieStore cookieStore,
+        @NonNull Fn.Consumer<List<Certificate>> serverCertsListener) {
         this.endpoint = config.getTarget();
+        this.cookieStore = cookieStore;
         this.serverCertsListener = serverCertsListener;
     }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
         if (endpoint instanceof URLEndpoint) {
             return AbstractCBLWebSocket.createCBLWebSocket(
-                handle, scheme, hostname, port, path, options, serverCertsListener);
+                handle, scheme, hostname, port, path, options, cookieStore, serverCertsListener);
         }
 
         throw new UnsupportedOperationException("Unrecognized endpoint type: " + endpoint.getClass());
