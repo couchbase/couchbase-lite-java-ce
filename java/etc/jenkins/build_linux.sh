@@ -60,7 +60,7 @@ for PLATFORM in macos windows; do
    LOCAL_ARTIFACT="${WORKSPACE}/${ARTIFACT}"
 
    echo "Downloading artifact: ${REMOTE_ARTIFACT}"
-   curl -L "${REMOTE_ARTIFACT}" -o "${LOCAL_ARTIFACT}"
+   curl -f -L "${REMOTE_ARTIFACT}" -o "${LOCAL_ARTIFACT}" || exit 1
 
    echo "Extracting artifact: ${LOCAL_ARTIFACT}"
    "${TOOLS_DIR}/extract_libs.sh" "${LOCAL_ARTIFACT}" "${WORKSPACE}"

@@ -16,15 +16,10 @@ set buildNumber=%2%
 set artifactsDir=%3%
 
 echo ======== PUBLISH Couchbase Lite Java, Community Edition  
-call gradlew.bat ciPublish -PbuildNumber=%buildNumber% -PmavenUrl=%mavenUrl% || goto error
+call gradlew.bat ciPublish -PbuildNumber=%buildNumber% -PmavenUrl=%mavenUrl%
 
 echo "======== Copy artifacts to staging directory"
-copy lib\build\distributions\%product%-%version%-%buildNumber%.zip %artifactsDir%\%product%-%version%-%buildNumber%-windows.zip || goto error
+copy lib\build\distributions\%product%-%version%-%buildNumber%.zip %artifactsDir%\%product%-%version%-%buildNumber%-windows.zip
 
 echo ======== PUBLICATION COMPLETE
 exit /B 0
-
-:error
-echo Failed with error %ERRORLEVEL%.
-exit /B %ERRORLEVEL%
-
