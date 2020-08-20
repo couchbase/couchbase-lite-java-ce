@@ -22,6 +22,8 @@ buildscript {
         JACOCO_VERSION = '0.8.5'
 
         ANDROID_MIN_SDK = 19
+
+        // greater than 27 and automated tests fail on CLEARTEXT violations
         ANDROID_TARGET_SDK = 27
 
         PROJECT_DIR = "${projectDir}"

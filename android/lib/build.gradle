@@ -466,12 +466,39 @@ publishing {
 project.afterEvaluate {
     publishing {
         publications {
-            mavenJava(MavenPublication) {
+            libRelease(MavenPublication) {
                 groupId CBL_GROUP
                 artifactId CBL_ARTIFACT_ID
                 version BUILD_VERSION
 
                 artifact bundleReleaseAar
+                artifact sourcesJar
+                artifact javadocJar
+
+                pom.withXml {
+                    def root = asNode()
+                    // Workaround for description:
+                    root.appendNode('description', CBL_DESCRIPTION)
+                    root.children().last() + pomConfig
+
+                    // maven-publish workaround to include dependencies
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+            libDebug(MavenPublication) {
+                groupId CBL_GROUP
+                artifactId CBL_ARTIFACT_ID
+                version BUILD_VERSION
+
+                artifact bundleDebugAar
                 artifact sourcesJar
                 artifact javadocJar
 
@@ -503,14 +530,14 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml', 'compileDebugAndroidTestJavaWithJavac'])
+task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
 task unitTest(dependsOn: ['smokeTest', 'testDebugUnitTest'])
 task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
 task ciBuild(dependsOn: ['assembleRelease'])
-task ciPublish(dependsOn: ['generatePomFileForMavenJavaPublication', 'publishMavenJavaPublicationToMavenRepository'])
+task ciPublish(dependsOn: ['generatePomFileForMavenJavaPublication', 'publishLibReleasePublicationToMavenRepository'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {
