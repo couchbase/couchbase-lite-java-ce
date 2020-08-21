@@ -537,7 +537,7 @@ task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
 task ciBuild(dependsOn: ['assembleRelease'])
-task ciPublish(dependsOn: ['generatePomFileForMavenJavaPublication', 'publishLibReleasePublicationToMavenRepository'])
+task ciPublish(dependsOn: ['generatePomFileForLibReleasePublication', 'publishLibReleasePublicationToMavenRepository'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {

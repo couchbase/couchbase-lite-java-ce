@@ -36,6 +36,7 @@ if [ -z "REPORTS" ]; then
 fi
 
 SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager"
+STATUS=0
 
 echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
@@ -53,17 +54,23 @@ cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 
 echo "======== Check"
-./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}"
+./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
-echo "======== Build"
-./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}"
+if  [ $STATUS -eq 0 ]; then
+    echo "======== Build"
+    ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || STATUS=6
+fi
 
-echo "======== Publish artifacts"
-./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}"
+if  [ $STATUS -eq 0 ]; then
+    echo "======== Publish artifacts"
+    ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
+fi
 
 echo "======== Publish reports"
 pushd lib/build
 zip -r "${REPORTS}/analysis-reports-android" reports
 popd
 
-echo "======== BUILD COMPLETE"
+echo "======== BUILD COMPLETE (${STATUS})"
+exit $STATUS
+
