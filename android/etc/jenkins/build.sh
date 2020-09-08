@@ -6,7 +6,7 @@
 # These versions must match the versions in lib/build.gradle
 NDK_VERSION='21.3.6528147'
 CMAKE_VERSION='3.10.2.4988404'
-BUILD_TOOLS_VERSION='29.0.3'
+BUILD_TOOLS_VERSION='30.0.2'
 
 MAVEN_URL="http://mobile.maven.couchbase.com/maven2/cimaven"
 

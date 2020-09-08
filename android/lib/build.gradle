@@ -128,12 +128,11 @@ android {
         }
     }
 
+    kotlinOptions { jvmTarget = '1.8' }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
-    kotlinOptions.jvmTarget = '1.8'
 
     buildTypes {
         // NOTE: testCoverageEnabled is managed in the `coverage` task
