@@ -18,7 +18,7 @@
 // as is possible.
 //
 import com.android.build.gradle.tasks.LintGlobalTask
-import com.github.spotbugs.SpotBugsTask
+import com.github.spotbugs.snom.SpotBugsTask
 
 import java.time.Instant
 import java.util.regex.Pattern
@@ -36,7 +36,6 @@ plugins {
     id 'com.github.spotbugs'
     id 'maven-publish'
     id 'jacoco'
-    id 'com.github.kt3k.coveralls'
 
     // handy plugin for discovering task dependencies
     //id 'com.dorongold.task-tree' version "1.5"
@@ -66,7 +65,7 @@ ext {
     CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
-    CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
 
@@ -87,6 +86,11 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
+// Set true to enable coverage
+// The incantation for generating a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+def COVERAGE = project.hasProperty("coverage")
+
 // local.properties
 Properties properties = new Properties()
 properties.load(project.rootProject.file("${PROJECT_DIR}/local.properties").newDataInputStream())
@@ -102,14 +106,30 @@ version = BUILD_VERSION
 android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
+
     // if you change this, be sure to update /etc/jenkins/build.sh
     ndkVersion '21.3.6528147'
+
+    externalNativeBuild {
+        cmake {
+            // if you change this, be sure to update /etc/jenkins/build.sh
+            version "3.10.2"
+            path "${CBL_COMMON_DIR}/CMakeLists.txt"
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    kotlinOptions { jvmTarget = '1.8' }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
         //noinspection OldTargetApi
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 20800
+        versionCode 30000
         versionName BUILD_VERSION
         project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
 
@@ -122,29 +142,23 @@ android {
             cmake { targets 'LiteCoreJNI' }
         }
 
+        buildConfigField "String", "VERSION_NAME", "\"${BUILD_VERSION}\""
+        buildConfigField "String", "BUILD_TIME", "\"${BUILD_TIME}\""
+        buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         if (TEST_FILTER != null) {
             testInstrumentationRunnerArguments notAnnotation: TEST_FILTER
         }
     }
 
-    kotlinOptions { jvmTarget = '1.8' }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-
     buildTypes {
-        // NOTE: testCoverageEnabled is managed in the `coverage` task
-
         debug {
-            buildConfigField "String", "BUILD_TIME", "\"${BUILD_TIME}\""
-            buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
-            buildConfigField "boolean", "ENTERPRISE", "false"
-            buildConfigField "boolean", "CBL_DEBUG", "true"
+            ndk.debugSymbolLevel 'FULL'
 
             debuggable true
             minifyEnabled false
+            testCoverageEnabled COVERAGE
 
             externalNativeBuild {
                 cmake {
@@ -152,14 +166,12 @@ android {
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
+
+            buildConfigField "boolean", "ENTERPRISE", "false"
+            buildConfigField "boolean", "CBL_DEBUG", "true"
         }
 
         release {
-            buildConfigField "String", "BUILD_TIME", "\"${BUILD_TIME}\""
-            buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
-            buildConfigField "boolean", "ENTERPRISE", "false"
-            buildConfigField "boolean", "CBL_DEBUG", "false"
-
             debuggable false
             minifyEnabled false
             testCoverageEnabled false
@@ -170,14 +182,9 @@ android {
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
-        }
-    }
 
-    externalNativeBuild {
-        cmake {
-            // if you change this, be sure to update /etc/jenkins/build.sh
-            version "3.10.2"
-            path "${CBL_COMMON_DIR}/CMakeLists.txt"
+            buildConfigField "boolean", "ENTERPRISE", "true"
+            buildConfigField "boolean", "CBL_DEBUG", "false"
         }
     }
 
@@ -224,13 +231,13 @@ repositories {
 
 dependencies {
     compileOnly 'com.android.support:support-annotations:28.0.0'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.3'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.2'
 
     //noinspection GradleDependency
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -248,7 +255,7 @@ dependencies {
     javadocDeps files("${buildDir}/generated/source/buildConfig/release")
     //noinspection GradleDependency
     javadocDeps 'com.android.support:support-annotations:28.0.0'
-    javadocDeps 'com.github.spotbugs:spotbugs-annotations:4.0.3'
+    javadocDeps 'com.github.spotbugs:spotbugs-annotations:4.1.2'
     //noinspection GradleDependency
     javadocDeps "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 }
@@ -345,7 +352,7 @@ task pmd(type: Pmd) {
 // it will generate quite a few extraneous NULLCHECK warnings.
 // Sadly the problem is Java 11 code generation: the only solution
 // is to disable the check.
-spotbugs { toolVersion = '4.1.1' }
+spotbugs { toolVersion = '4.1.2' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
@@ -357,12 +364,9 @@ spotbugs { toolVersion = '4.1.1' }
         reportLevel = "medium"
         ignoreFailures = false
 
-        source = android.sourceSets.main.java.srcDirs.collect {
-            dir -> fileTree(dir: dir, include: '**/*.java').getFiles()
-        }.flatten()
+        sourceDirs = project.files(android.sourceSets.main.java.srcDirs)
 
-        classes = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: FILE_FILTER)
-        classpath = files()
+        classDirs = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: FILE_FILTER)
 
         excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
 
@@ -384,10 +388,24 @@ spotbugs { toolVersion = '4.1.1' }
 // Coverage
 // ----------------------------------------------------------------
 
-jacoco { toolVersion = JACOCO_VERSION }
+// The incantation for generating a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+task jacocoTestReport(type: JacocoReport) {
+    description = "Generate Jacoco coverage reports"
+    group = "reporting"
 
-task coverage(dependsOn: ['createDebugCoverageReport', 'coveralls']) {
-    android.buildTypes.findByName('debug').testCoverageEnabled = true
+    afterEvaluate {
+        sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
+        classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
+
+        if (COVERAGE) { connectedDebugAndroidTest.finalizedBy jacocoTestReport }
+    }
+
+    executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 
@@ -532,6 +550,7 @@ project.afterEvaluate {
 task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
 task unitTest(dependsOn: ['smokeTest', 'testDebugUnitTest'])
 task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
+if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
@@ -554,9 +573,7 @@ project.afterEvaluate {
 // delete .externalNativeBuild and .cxx directories to force rerun of cmake.
 // This is necessary because 'clean' deletes the file 'zconf.h' which is in
 // .../build/intermediates, causing subsequent builds to fail.
-clean.doLast {
-    project.delete "${LIB_MODULE_DIR}/.cxx"
-}
+clean.doLast { project.delete "${LIB_MODULE_DIR}/.cxx" }
 
 
 // ----------------------------------------------------------------
@@ -578,7 +595,7 @@ def getCommit(project, dflt) {
     try {
         manifest = new FileReader("${ROOT_DIR}/../manifest.xml")
 
-        def revEx = Pattern.compile("<project.* name=\\\"couchbase-lite-java-ee-root\\\".* revision=\\\"([\\dabcdef]{40})\\\"")
+        def revEx = Pattern.compile("<project.* name=\"${project}\".* revision=\"([\\dabcdef]{40})\"")
 
         def l
         while ((l = manifest.readLine()) != null) {

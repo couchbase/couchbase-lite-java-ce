@@ -20,7 +20,7 @@ Add the following in the dependencies section of the application's build.gradle 
 
 ```
 dependencies {
-    implementation 'com.couchbase.lite:couchbase-lite-android:2.8.0'
+    implementation 'com.couchbase.lite:couchbase-lite-android:3.0.0'
 }
 ```
 

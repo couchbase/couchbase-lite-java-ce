@@ -17,7 +17,7 @@
 // Please try to keep this build file as similar to the other family build files
 // as is possible.
 //
-import com.github.spotbugs.SpotBugsTask
+import com.github.spotbugs.snom.SpotBugsTask
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.internal.os.OperatingSystem
@@ -39,7 +39,6 @@ plugins {
     id 'com.github.spotbugs'
     id 'maven-publish'
     id 'jacoco'
-    id 'com.github.kt3k.coveralls'
 
     // handy plugin for discovering task dependencies
     //id 'com.dorongold.task-tree' version "1.5"
@@ -60,6 +59,7 @@ ext {
     CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-java-ce-root/issues'
     CBL_SITE_URL = 'https://developer.couchbase.com/mobile/'
 
+    BUILD_TIME = Instant.now().toString()
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
@@ -99,6 +99,11 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
+
+// Set true to enable coverage
+// the incantation to get a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+def COVERAGE = project.hasProperty("coverage")
 
 // local.properties
 Properties properties = new Properties()
@@ -232,9 +237,11 @@ model {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/libLiteCore.dylib")
-                    } else if (os.linux) {
+                    }
+                    else if (os.linux) {
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/libLiteCore.so")
-                    } else if (os.windows) {
+                    }
+                    else if (os.windows) {
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/LiteCore.dll")
                         sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/LiteCore.lib")
                     }
@@ -246,9 +253,11 @@ model {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
                         staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/libmbedcrypto.a")
-                    } else if (os.linux) {
+                    }
+                    else if (os.linux) {
                         staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/libmbedcrypto.a")
-                    } else if (os.windows) {
+                    }
+                    else if (os.windows) {
                         staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/mbedcrypto.lib")
                     }
                 }
@@ -272,9 +281,7 @@ model {
                 }
             }
 
-            binaries.withType(StaticLibraryBinarySpec) {
-                buildable = false
-            }
+            binaries.withType(StaticLibraryBinarySpec) { buildable = false }
 
             binaries.withType(SharedLibraryBinarySpec) { binary ->
                 setupJNILibraryBuildTasks(binary.sharedLibraryFile, targetPlatform)
@@ -398,7 +405,7 @@ task pmd(type: Pmd) {
 // it will generate quite a few extraneous NULLCHECK warnings.
 // Sadly the problem is Java 11 code generation: the only solution
 // is to disable the check.
-spotbugs { toolVersion = '4.1.1' }
+spotbugs { toolVersion = '4.1.2' }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
@@ -410,10 +417,9 @@ spotbugs { toolVersion = '4.1.1' }
         reportLevel = "medium"
         ignoreFailures = false
 
-        source = sourceSets.main.java.srcDirs
+        sourceDirs = project.files(sourceSets.main.java.srcDirs)
 
-        classes = fileTree(dir: "${buildDir}/classes/java/main", excludes: FILE_FILTER)
-        classpath = files()
+        classDirs = fileTree(dir: "${buildDir}/classes/java/main", excludes: FILE_FILTER)
 
         excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
 
@@ -436,16 +442,18 @@ spotbugs { toolVersion = '4.1.1' }
 // ----------------------------------------------------------------
 
 test {
-    if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
-
     if (System.env.LD_LIBRARY_PATH != null) {
         jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
     }
 
+    if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
+
+    jacoco { enabled = COVERAGE }
+
     testLogging {
         outputs.upToDateWhen { false }
 
-        events = [ "failed", "skipped" ] 
+        events = ["failed", "skipped"]
 
         //showStandardStreams = true
 
@@ -453,6 +461,28 @@ test {
         showExceptions = true
         showStackTraces = true
         exceptionFormat = 'full'
+    }
+}
+
+
+// ----------------------------------------------------------------
+// Coverage
+// ----------------------------------------------------------------
+
+// the incantation to get a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+jacoco { toolVersion = JACOCO_VERSION }
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(classDirectories.files.collect {
+            fileTree(dir: it, exclude: FILE_FILTER)
+        })
+
+        if (COVERAGE) { test.finalizedBy jacocoTestReport }
+    }
+    reports {
+        xml.enabled true
+        html.enabled true
     }
 }
 
@@ -577,6 +607,7 @@ publishing {
 task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
+if (COVERAGE) { task coverage(dependsOn: ['test']) }
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
@@ -619,7 +650,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
     }
 
     task copyLiteCore(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
-        from ("${CBL_CORE_NATIVE_DIR}") {
+        from("${CBL_CORE_NATIVE_DIR}") {
             include "macos/**"
             include "linux/**"
             include "windows/**"
@@ -667,7 +698,7 @@ def getCommit(project, dflt) {
     try {
         manifest = new FileReader("${ROOT_DIR}/../manifest.xml")
 
-        def revEx = Pattern.compile("<project.* name=\\\"couchbase-lite-java-ee-root\\\".* revision=\\\"([\\dabcdef]{40})\\\"")
+        def revEx = Pattern.compile("<project.* name=\"couchbase-lite-java-ee-root\".* revision=\"([\\dabcdef]{40})\"")
 
         def l
         while ((l = manifest.readLine()) != null) {
