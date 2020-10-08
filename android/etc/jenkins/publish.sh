@@ -61,7 +61,7 @@ cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
 
 echo "======== Pull dependencies for zip"
 DEPS_DIR="${WORKSPACE}/dependencies"
-rm -rf "${DEPS_DIR}"
+rm -rf "${DEPS_DIR}" || true
 mkdir -p "${DEPS_DIR}"
 pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
@@ -72,12 +72,13 @@ popd
 
 echo "======== Create zip"
 ZIP_STAGING="${WORKSPACE}/staging"
-rm -rf "${ZIP_STAGING}"
+rm -rf "${ZIP_STAGING}" || true
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
-cp "${DEPS_DIR}/target/dependency/"*.jar .
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" ./LICENSE.TXT
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "./${PRODUCT}-${VERSION}.aar"
+mkdir license lib
+cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
+cp "${DEPS_DIR}/target/dependency/"*.jar lib
+cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODUCT}-${VERSION}.aar"
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 

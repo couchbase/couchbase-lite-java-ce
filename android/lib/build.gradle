@@ -73,6 +73,7 @@ ext {
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
+    DEPENDENCIES = ["okio", "okhttp"]
     OKHTTP_VERSION = "3.14.7"
 }
 
@@ -162,7 +163,7 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-19', '-DCMAKE_BUILD_TYPE=Debug'
+                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-23', '-DCMAKE_BUILD_TYPE=Debug'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
@@ -178,7 +179,7 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-19', '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-23', '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
@@ -248,7 +249,7 @@ dependencies {
 
 // Say something once, why say it again?  Because gradle.
 // This is the only way I could figure out, to get some of these things onto the javadoc classpath
-// This is just and extreme hack.  My apologies.
+// This is just an extreme hack.  My apologies.
 configurations { javadocDeps }
 dependencies {
     javadocDeps files("${buildDir}/generated/source/buildConfig/debug")
@@ -390,6 +391,9 @@ spotbugs { toolVersion = '4.1.2' }
 
 // The incantation for generating a coverage report is:
 //     ./gradlew -Pcoverage=true coverage
+// The reason for this is that we want to be able to generate
+// binaries that have not been instrumented and do not require
+// the jacoco package when run
 task jacocoTestReport(type: JacocoReport) {
     description = "Generate Jacoco coverage reports"
     group = "reporting"
@@ -492,24 +496,26 @@ project.afterEvaluate {
                 artifact sourcesJar
                 artifact javadocJar
 
+                // include dependencies
                 pom.withXml {
                     def root = asNode()
-                    // Workaround for description:
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    // maven-publish workaround to include dependencies
-                    def dependenciesNode = asNode().appendNode('dependencies')
+                    def dependenciesNode = root.appendNode('dependencies')
 
-                    // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                    // Include only configured dependencies
                     configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
                     }
                 }
             }
+
             libDebug(MavenPublication) {
                 groupId CBL_GROUP
                 artifactId CBL_ARTIFACT_ID
@@ -519,21 +525,22 @@ project.afterEvaluate {
                 artifact sourcesJar
                 artifact javadocJar
 
+                // include dependencies
                 pom.withXml {
                     def root = asNode()
-                    // Workaround for description:
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    // maven-publish workaround to include dependencies
-                    def dependenciesNode = asNode().appendNode('dependencies')
+                    def dependenciesNode = root.appendNode('dependencies')
 
-                    // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                    // Include only configured dependencies
                     configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
                     }
                 }
             }
@@ -613,4 +620,3 @@ def getCommit(project, dflt) {
 
     return dflt
 }
-
