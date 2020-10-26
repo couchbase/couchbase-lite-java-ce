@@ -126,6 +126,9 @@ android {
 
     kotlinOptions { jvmTarget = '1.8' }
 
+    // mumbo-jumbo to prevent "More than one file was found" message
+    packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
+
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
         //noinspection OldTargetApi
@@ -163,7 +166,7 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-23', '-DCMAKE_BUILD_TYPE=Debug'
+                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-22', '-DCMAKE_BUILD_TYPE=Debug'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
@@ -179,7 +182,7 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-23', '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-22', '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
