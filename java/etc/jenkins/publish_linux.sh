@@ -34,24 +34,23 @@ if [ -z "$WORKSPACE" ]; then
     usage
 fi
 
+DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
+
 echo "======== PUBLISH Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || exit 1
 
-echo "======== Add license to zip"
-LICENSE_DIR="${WORKSPACE}/license"
-rm -rf "${LICENSE_DIR}"
-mkdir -p "${LICENSE_DIR}"
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_community.txt" "${LICENSE_DIR}/LICENSE.TXT" || exit 1
-
-pushd lib/build/distributions
-zip -u "${PRODUCT}-${VERSION}-${BUILD_NUMBER}.zip" "${LICENSE_DIR}/LICENSE.TXT"
-rm -rf "${LICENSE_DIR}"
-popd
-
 echo "======== Copy artifacts to staging directory"
-cp "lib/build/distributions/${PRODUCT}-${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/"
+cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xml"
+
+echo "======== Add license to zip"
+cd "${WORKSPACE}"
+LICENSE_DIR="${DIST_NAME}/license"
+rm -rf "${LICENSE_DIR}" || true
+mkdir -p "${LICENSE_DIR}"
+cp "cbl-java/legal/mobile/couchbase-lite/license/LICENSE_community.txt" "${LICENSE_DIR}/LICENSE.txt" || exit 1
+zip -u "${ARTIFACTS}/${DIST_NAME}.zip" "${LICENSE_DIR}/LICENSE.txt"
 
 find "${ARTIFACTS}"
 echo "======== PUBLICATION COMPLETE"
