@@ -4,6 +4,7 @@
 #
 PRODUCT='couchbase-lite-java'
 MAVEN_URL="http://mobile.maven.couchbase.com/maven2/internalmaven"
+STATUS=0
 
 function usage() {
     echo "Usage: $0 <release version> <build number> <artifacts path> <workspace path>"
@@ -37,7 +38,7 @@ fi
 DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
 
 echo "======== PUBLISH Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
-./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || exit 1
+./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=5
 
 echo "======== Copy artifacts to staging directory"
 cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/"
@@ -47,11 +48,12 @@ cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xm
 echo "======== Add license to zip"
 cd "${WORKSPACE}"
 LICENSE_DIR="${DIST_NAME}/license"
-rm -rf "${LICENSE_DIR}" || true
+rm -rf "${LICENSE_DIR}"
 mkdir -p "${LICENSE_DIR}"
-cp "cbl-java/legal/mobile/couchbase-lite/license/LICENSE_community.txt" "${LICENSE_DIR}/LICENSE.txt" || exit 1
+cp "cbl-java/legal/mobile/couchbase-lite/license/LICENSE_community.txt" "${LICENSE_DIR}/LICENSE.txt" || STATUS=5
 zip -u "${ARTIFACTS}/${DIST_NAME}.zip" "${LICENSE_DIR}/LICENSE.txt"
 
+echo "======== PUBLICATION COMPLETE: ${STATUS}"
 find "${ARTIFACTS}"
-echo "======== PUBLICATION COMPLETE"
+exit $STATUS
 

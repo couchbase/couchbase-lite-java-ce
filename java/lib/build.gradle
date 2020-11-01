@@ -601,8 +601,7 @@ task unitTest(dependsOn: ['smokeTest', 'test'])
 task fullTest(dependsOn: ['unitTest'])
 
 ///////// CI tasks
-task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
-task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml'])
+task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml'])
 task ciBuild(dependsOn: ['assemble'])
 task ciTest(dependsOn: ['test'])
 task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
