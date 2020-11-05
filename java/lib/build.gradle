@@ -635,8 +635,7 @@ task fullTest(dependsOn: ['unitTest'])
 if (COVERAGE) { task coverage(dependsOn: ['test']) }
 
 ///////// CI tasks
-task ciCheck(dependsOn: ['checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
-task ciCheckWindows(dependsOn: ['pmd', 'spotbugsXml'])
+task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml'])
 task ciBuild(dependsOn: ['assemble'])
 task ciTest(dependsOn: ['test'])
 task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
@@ -644,8 +643,8 @@ task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublic
 // ordering (roughly last to first)
 project.afterEvaluate {
     tasks.withType(Javadoc) { shouldRunAfter test }
-    test.shouldRunAfter unitTest
     test.shouldRunAfter smokeTest
+    testClasses.shouldRunAfter tasks.withType(SpotBugsTask)
     tasks.withType(SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
     tasks.withType(Pmd) { shouldRunAfter tasks.withType(Checkstyle) }
     tasks.withType(Checkstyle) { shouldRunAfter compileJava }

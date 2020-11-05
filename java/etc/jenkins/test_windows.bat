@@ -13,11 +13,11 @@ set reportsDir=%2%
 set status=0
 
 echo ======== TEST Couchbase Lite Java, Community Edition 
-call gradlew.bat ciTest --info --console=plain || set status=1
+call gradlew.bat ciTest --info --console=plain || set status=5
 
 echo ======== Publish test reports
-pushd lib\build\reports
-7z a -tzip -r "%reportsDir%\test-reports-windows.zip" tests
+pushd lib\build
+7z a -tzip -r "%reportsDir%\test-reports-windows.zip" reports
 popd
 
 echo ======== TEST COMPLETE %status%

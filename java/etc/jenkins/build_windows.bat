@@ -20,13 +20,16 @@ set toolsDir=%scriptDir%\..\..\..\..\common\tools
 
 echo ======== BUILD Couchbase Lite Java, Community Edition
 
+echo ======== Clean up
+call %toolsDir%\clean_litecore.bat
+
 echo ======== Download Lite Core
 powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE
 
 echo ======== Build mbedcrypto
 call %toolsDir%\build_litecore.bat %vsGen% CE mbedcrypto
 
-echo ======== Build
+echo ======== Build Java
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
 
 echo ======== BUILD COMPLETE
@@ -35,4 +38,3 @@ exit /B 0
 :error
 echo Failed with error %ERRORLEVEL%.
 exit /B %ERRORLEVEL%
-
