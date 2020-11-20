@@ -61,18 +61,18 @@ cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
 
 echo "======== Pull dependencies for zip"
 DEPS_DIR="${WORKSPACE}/dependencies"
-rm -rf "${DEPS_DIR}" || true
+rm -rf "${DEPS_DIR}"
 mkdir -p "${DEPS_DIR}"
 pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
-diff pom.xml pom.xml.bak || true
+diff pom.xml pom.xml.bak
 mvn install dependency:copy-dependencies
 popd
 
 echo "======== Create zip"
 ZIP_STAGING="${WORKSPACE}/staging"
-rm -rf "${ZIP_STAGING}" || true
+rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
 mkdir license lib
