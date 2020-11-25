@@ -6,6 +6,8 @@
 PRODUCT="couchbase-lite-java"
 LATESTBUILDS_URL="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
 NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
+MAVEN_URL="http://mobile.maven.couchbase.com/maven2/cimaven"
+
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
@@ -63,6 +65,9 @@ echo "======== Build mbedcrypto ..."
 
 echo "======== Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
+
+echo "======== Publish CI Build (temporary)"
+./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
 
 echo "======== BUILD COMPLETE"
 find lib/build/distributions
