@@ -106,7 +106,7 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
 
     testImplementation "com.couchbase.lite:couchbase-lite-android:${BUILD_VERSION}"
 }

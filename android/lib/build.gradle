@@ -235,13 +235,13 @@ repositories {
 
 dependencies {
     compileOnly 'com.android.support:support-annotations:28.0.0'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.2'
+    compileOnly "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
 
     //noinspection GradleDependency
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -259,7 +259,7 @@ dependencies {
     javadocDeps files("${buildDir}/generated/source/buildConfig/release")
     //noinspection GradleDependency
     javadocDeps 'com.android.support:support-annotations:28.0.0'
-    javadocDeps 'com.github.spotbugs:spotbugs-annotations:4.1.2'
+    javadocDeps "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
     //noinspection GradleDependency
     javadocDeps "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 }
@@ -356,7 +356,7 @@ task pmd(type: Pmd) {
 // it will generate quite a few extraneous NULLCHECK warnings.
 // Sadly the problem is Java 11 code generation: the only solution
 // is to disable the check.
-spotbugs { toolVersion = '4.1.2' }
+spotbugs { toolVersion = SPOTBUGS_VERSION }
 ['Html', 'Xml'].each { reportType ->
     task("spotbugs${reportType}", type: SpotBugsTask) {
         description "Spotbugs with ${reportType} report"

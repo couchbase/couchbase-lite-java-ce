@@ -18,6 +18,7 @@ buildscript {
     ext {
         KOTLIN_VERSION = '1.4.10'
         JACOCO_VERSION = '0.8.5'
+        SPOTBUGS_VERSION = '4.2.0'
 
         PROJECT_DIR = "${projectDir}"
         ROOT_DIR = "${PROJECT_DIR}/../.."
