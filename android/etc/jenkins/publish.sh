@@ -5,7 +5,7 @@
 PRODUCT='couchbase-lite-android'
 EDITION='community'
 
-MAVEN_URL="http://mobile.maven.couchbase.com/maven2/internalmaven"
+MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
 
 
 function usage() {
@@ -48,7 +48,7 @@ echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../ver
 ## Something like this:
 ## curl -X POST  -H "Content-Type: application/json" \
 ##     --data '{"API_Key": "<promote key>", "groupName": "com.couchbase.lite", "packageName": "couchbase-lite-android-ee", "version": "2.7.0-43", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
-##      http://mobile.maven.couchbase.com/api/promotions/promote
+##      http://proget.build.couchbase.com/api/promotions/promote
 ## At present that call fails to promote the entire package (bad PK copying the source tar)
 ## so, for now, just republish the same bits.
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
