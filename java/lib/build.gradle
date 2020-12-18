@@ -446,6 +446,9 @@ test {
         jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
     }
 
+    workingDir = new File(workingDir, ".test")
+    if (!workingDir.exists()) { workingDir.mkdirs() }
+
     if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
 
     jacoco { enabled = COVERAGE }
