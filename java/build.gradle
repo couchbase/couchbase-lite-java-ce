@@ -16,7 +16,7 @@
 //
 buildscript {
     ext {
-        KOTLIN_VERSION = '1.4.10'
+        KOTLIN_VERSION = '1.4.21'
         JACOCO_VERSION = '0.8.5'
         SPOTBUGS_VERSION = '4.2.0'
 
