@@ -443,6 +443,9 @@ test {
         jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
     }
 
+    workingDir = new File(workingDir, ".test")
+    if (!workingDir.exists()) { workingDir.mkdirs() }
+
     testLogging {
         outputs.upToDateWhen { false }
 
