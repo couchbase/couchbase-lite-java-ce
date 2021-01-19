@@ -17,6 +17,8 @@ package com.couchbase.lite.internal;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.security.cert.Certificate;
 import java.util.List;
@@ -38,6 +40,9 @@ public class SocketFactory {
     @NonNull
     private final Fn.Consumer<List<Certificate>> serverCertsListener;
 
+    @Nullable
+    private Fn.Consumer<C4Socket> listener;
+
     public SocketFactory(
         @NonNull ReplicatorConfiguration config,
         @NonNull CBLCookieStore cookieStore,
@@ -48,15 +53,24 @@ public class SocketFactory {
     }
 
     public C4Socket createSocket(long handle, String scheme, String hostname, int port, String path, byte[] options) {
+        C4Socket socket = null;
+
         if (endpoint instanceof URLEndpoint) {
-            if (Build.VERSION.SDK_INT >= 21) {
-                return AbstractCBLWebSocket.createCBLWebSocket(
-                    handle, scheme, hostname, port, path, options, cookieStore, serverCertsListener);
+            if (Build.VERSION.SDK_INT < 21) {
+                throw new UnsupportedOperationException("Couchbase sockets require Android version >= 21");
             }
 
-            throw new UnsupportedOperationException("Couchbase sockets require Android version >= 21");
+            socket = AbstractCBLWebSocket.createCBLWebSocket(
+                handle, scheme, hostname, port, path, options, cookieStore, serverCertsListener);
         }
+
+        if (listener != null) { listener.accept(socket); }
+
+        if (socket != null) { return socket; }
 
         throw new UnsupportedOperationException("Unrecognized endpoint type: " + endpoint.getClass());
     }
+
+    @VisibleForTesting
+    public void setListener(@Nullable Fn.Consumer<C4Socket> listener) { this.listener = listener; }
 }
