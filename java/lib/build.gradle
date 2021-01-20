@@ -633,8 +633,8 @@ publishing {
 
 ///////// Dev tasks
 task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
-task unitTest(dependsOn: ['smokeTest', 'test'])
-task fullTest(dependsOn: ['unitTest'])
+task devTest(dependsOn: ['test'])
+task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['test']) }
 
 ///////// CI tasks

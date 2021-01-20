@@ -558,8 +558,8 @@ project.afterEvaluate {
 
 ///////// Dev tasks
 task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
-task unitTest(dependsOn: ['smokeTest', 'testDebugUnitTest'])
-task fullTest(dependsOn: ['unitTest', 'connectedDebugAndroidTest'])
+task devTest(dependsOn: ['connectedDebugAndroidTest'])
+task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
@@ -570,7 +570,6 @@ task ciPublish(dependsOn: ['generatePomFileForLibReleasePublication', 'publishLi
 // ordering (roughly last to first)
 project.afterEvaluate {
     tasks.withType(Javadoc) { shouldRunAfter connectedDebugAndroidTest }
-    connectedDebugAndroidTest.shouldRunAfter unitTest
     connectedDebugAndroidTest.shouldRunAfter smokeTest
     testDebugUnitTest.shouldRunAfter smokeTest
     tasks.withType(SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
