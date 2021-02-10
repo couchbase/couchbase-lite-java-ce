@@ -446,7 +446,7 @@ test {
         jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
     }
 
-    workingDir = new File(workingDir, ".test")
+    workingDir = new File(workingDir, ".test-" + new Date(0).format('yymmddHHmm'))
     if (!workingDir.exists()) { workingDir.mkdirs() }
 
     if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
