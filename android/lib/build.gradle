@@ -66,7 +66,7 @@ ext {
     CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
-    CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
 
@@ -74,6 +74,7 @@ ext {
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
+    DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = "3.14.7"
 }
 
@@ -483,12 +484,14 @@ project.afterEvaluate {
                     // maven-publish workaround to include dependencies
                     def dependenciesNode = asNode().appendNode('dependencies')
 
-                    // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                    // Include only configured dependencies
                     configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
                     }
                 }
             }
@@ -510,12 +513,14 @@ project.afterEvaluate {
                     // maven-publish workaround to include dependencies
                     def dependenciesNode = asNode().appendNode('dependencies')
 
-                    // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                    // Include only configured dependencies
                     configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
                     }
                 }
             }
