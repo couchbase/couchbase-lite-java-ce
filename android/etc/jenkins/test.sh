@@ -4,9 +4,9 @@
 #
 
 # These versions must match the versions in lib/build.gradle
-NDK_VERSION='21.3.6528147'
-CMAKE_VERSION='3.10.2.4988404'
-BUILD_TOOLS_VERSION='30.0.2'
+NDK_VERSION='22.0.7026061'
+CMAKE_VERSION='3.18.1'
+BUILD_TOOLS_VERSION='30.0.3'
 
 
 function usage() {

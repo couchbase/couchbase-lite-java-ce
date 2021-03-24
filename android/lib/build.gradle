@@ -110,7 +110,7 @@ android {
     buildToolsVersion BUILD_TOOLS_VERSION
 
     // if you change this, be sure to update /etc/jenkins/build.sh
-    ndkVersion '21.3.6528147'
+    ndkVersion '22.0.7026061' // '21.3.6528147'
 
     externalNativeBuild {
         cmake {
