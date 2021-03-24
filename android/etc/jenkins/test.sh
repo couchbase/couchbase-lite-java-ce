@@ -46,7 +46,6 @@ ${SDK_MGR} "ndk;${NDK_VERSION}"
 
 cat <<EOF >> local.properties
 sdk.dir=${SDK_HOME}
-cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 
 echo "======== Test"

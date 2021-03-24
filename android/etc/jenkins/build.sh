@@ -49,7 +49,6 @@ ${SDK_MGR} "ndk;${NDK_VERSION}"
 # The Jenkins script has already put passwords into local.properties
 cat <<EOF >> local.properties
 sdk.dir=${SDK_HOME}
-cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 
 echo "======== Check"
