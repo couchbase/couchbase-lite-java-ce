@@ -33,20 +33,19 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager"
+SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager --channel=1 --install"
 STATUS=0
 
 echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
 
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
-${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
-${SDK_MGR} --install "cmake;${CMAKE_VERSION}"
-${SDK_MGR} --install "ndk;${NDK_VERSION}"
+${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
+${SDK_MGR} "cmake;${CMAKE_VERSION}"
+${SDK_MGR} "ndk;${NDK_VERSION}"
 
 cat <<EOF >> local.properties
 sdk.dir=${SDK_HOME}
-ndk.dir=${SDK_HOME}/ndk/${NDK_VERSION}
 cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 

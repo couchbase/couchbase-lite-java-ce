@@ -53,7 +53,6 @@ SDK, NDK, and CMake.  It will probably look something like this:
 # header note.
 #Tue Dec 17 10:21:05 PST 2019
 sdk.dir=/Users/ladygaga/Library/Android/sdk
-ndk.dir=/Users/ladygaga/Library/Android/sdk/ndk/22.0.7026061
 cmake.dir=/Users/ladygaga/Library/Android/sdk/cmake/3.18.1
 ```
 
