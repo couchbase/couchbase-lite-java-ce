@@ -293,12 +293,16 @@ model {
                     cppCompiler.args "-I${JAVA_INCLUDE}"
                     cppCompiler.args "-I${JAVA_INCLUDE}/win32"
                     cppCompiler.args "/MD"
+                    cppCompiler.args "/EHsc"
+                    cppCompiler.args "/wd4068"
+                    cppCompiler.args "/std:c++17"
+                    cppCompiler.args "-DCOUCHBASE_ENTERPRISE"
                 }
                 else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
-                    cppCompiler.args '-std=c++11'
+                    cppCompiler.args '-std=c++17'
                     cppCompiler.args '-stdlib=libc++'
                     linker.args '-stdlib=libc++'
                 }
