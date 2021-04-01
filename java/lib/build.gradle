@@ -296,7 +296,6 @@ model {
                     cppCompiler.args "/EHsc"
                     cppCompiler.args "/wd4068"
                     cppCompiler.args "/std:c++17"
-                    cppCompiler.args "-DCOUCHBASE_ENTERPRISE"
                 }
                 else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
