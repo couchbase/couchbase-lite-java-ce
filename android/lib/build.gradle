@@ -296,7 +296,11 @@ def FILE_FILTER = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifes
 
 /////// Checkstyle
 checkstyle {
-    toolVersion = "8.35"
+    toolVersion = "8.41.1"
+    dependencies {
+        checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
+        checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
+    }
 
     configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
     configProperties = ['configDir': file("${ETC_DIR}/checkstyle")]
