@@ -52,10 +52,9 @@ echo "======== Test"
 ./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
 echo "======== Publish reports"
-pushd test/build/reports/androidTests
-zip -r "${REPORTS}/test-reports-android" connected
-pwd
-ls -al
+pushd test/build/reports/androidTests/connected/flavors
+zip -r "${REPORTS}/test-reports-android" debugAndroidTest
+find "${REPORTS}"
 popd
 
 echo "======== TEST COMPLETE"
