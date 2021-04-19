@@ -54,6 +54,8 @@ echo "======== Test"
 echo "======== Publish reports"
 pushd test/build/reports/androidTests
 zip -r "${REPORTS}/test-reports-android" connected
+pwd
+ls -al
 popd
 
 echo "======== TEST COMPLETE"
