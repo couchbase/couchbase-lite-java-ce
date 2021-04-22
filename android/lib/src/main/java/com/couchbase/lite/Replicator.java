@@ -26,12 +26,13 @@ import com.couchbase.lite.internal.replicator.NetworkConnectivityManager;
 
 
 public final class Replicator extends AbstractReplicator {
+    @Nullable
     private final AndroidConnectivityObserver connectivityObserver;
 
     /**
      * Initializes a replicator with the given configuration.
      *
-     * @param config the configuration
+     * @param config replicator configuration
      */
     public Replicator(@NonNull ReplicatorConfiguration config) {
         this(CouchbaseLiteInternal.getNetworkConnectivityManager(), config);
@@ -50,7 +51,6 @@ public final class Replicator extends AbstractReplicator {
             ? null
             : new AndroidConnectivityObserver(mgr, Replicator.this::getC4Replicator);
     }
-
 
     @Override
     protected C4Replicator createReplicatorForTarget(Endpoint target) throws LiteCoreException {

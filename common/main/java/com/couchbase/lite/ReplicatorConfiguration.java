@@ -16,14 +16,61 @@
 package com.couchbase.lite;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.util.List;
+import java.util.Map;
+
+import com.couchbase.lite.internal.ImmutableReplicatorConfiguration;
 
 
 public final class ReplicatorConfiguration extends AbstractReplicatorConfiguration {
-    public ReplicatorConfiguration(@NonNull ReplicatorConfiguration config) { this(config, false); }
 
+    //---------------------------------------------
+    // Constructors
+    //---------------------------------------------
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) { super(database, target); }
 
-    ReplicatorConfiguration(@NonNull ReplicatorConfiguration config, boolean readOnly) { super(config, readOnly); }
+    public ReplicatorConfiguration(@NonNull ReplicatorConfiguration config) { super(config); }
+
+    ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
+
+    // for Kotlin
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    ReplicatorConfiguration(
+        @NonNull Database database,
+        @NonNull Replicator.Type type,
+        boolean continuous,
+        @Nullable Authenticator authenticator,
+        @Nullable Map<String, String> headers,
+        @Nullable byte[] pinnedServerCertificate,
+        @Nullable List<String> channels,
+        @Nullable List<String> documentIDs,
+        @Nullable ReplicationFilter pushFilter,
+        @Nullable ReplicationFilter pullFilter,
+        @Nullable ConflictResolver conflictResolver,
+        int maxRetries,
+        long maxRetryWaitTime,
+        long heartbeat,
+        @NonNull Endpoint target,
+        boolean acceptOnlySelfSignedServerCertificate) {
+        super(
+            database,
+            type,
+            continuous,
+            authenticator,
+            headers,
+            pinnedServerCertificate,
+            channels,
+            documentIDs,
+            pushFilter,
+            pullFilter,
+            conflictResolver,
+            maxRetries,
+            maxRetryWaitTime,
+            heartbeat,
+            target);
+    }
 
     @Override
     ReplicatorConfiguration getReplicatorConfiguration() { return this; }

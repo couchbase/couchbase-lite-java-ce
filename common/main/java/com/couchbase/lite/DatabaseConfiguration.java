@@ -15,10 +15,9 @@
 //
 package com.couchbase.lite;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import com.couchbase.lite.internal.ImmutableDatabaseConfiguration;
 
 
 /**
@@ -30,17 +29,15 @@ public final class DatabaseConfiguration extends AbstractDatabaseConfiguration {
     // Constructors
     //---------------------------------------------
 
-    @SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
-    public DatabaseConfiguration() { this(null, false); }
+    public DatabaseConfiguration() { this((DatabaseConfiguration) null); }
 
-    public DatabaseConfiguration(@NonNull DatabaseConfiguration config) { this(config, false); }
+    public DatabaseConfiguration(@Nullable DatabaseConfiguration config) { super(config); }
 
-    DatabaseConfiguration(@Nullable DatabaseConfiguration config, boolean readOnly) { super(config, readOnly); }
+    DatabaseConfiguration(@Nullable ImmutableDatabaseConfiguration config) { super(config); }
 
     //---------------------------------------------
     // protected methods
     //---------------------------------------------
-
     @Override
     protected DatabaseConfiguration getDatabaseConfiguration() { return this; }
 }

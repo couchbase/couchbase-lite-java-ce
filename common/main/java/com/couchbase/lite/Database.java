@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 
+import com.couchbase.lite.internal.ImmutableDatabaseConfiguration;
 import com.couchbase.lite.internal.core.C4Constants;
 import com.couchbase.lite.internal.utils.Preconditions;
 
@@ -34,17 +35,17 @@ public final class Database extends AbstractDatabase {
      * @param config a config with the new location
      * @throws CouchbaseLiteException on copy failure
      */
-    public static void copy(
-        @NonNull File path,
-        @NonNull String name,
-        @NonNull DatabaseConfiguration config)
+    public static void copy(@NonNull File path, @NonNull String name, @NonNull DatabaseConfiguration config)
         throws CouchbaseLiteException {
-        Preconditions.assertNotNull(path, "path");
-        Preconditions.assertNotNull(name, "name");
         Preconditions.assertNotNull(config, "config");
-
-        AbstractDatabase.copy(path, name, config, C4Constants.EncryptionAlgorithm.NONE, null);
+        AbstractDatabase.copy(path, name, config.getDirectory(), C4Constants.EncryptionAlgorithm.NONE, null);
     }
+
+    static void copy(@NonNull File path, @NonNull String name, @NonNull ImmutableDatabaseConfiguration config)
+        throws CouchbaseLiteException {
+        AbstractDatabase.copy(path, name, config.getDirectory(), C4Constants.EncryptionAlgorithm.NONE, null);
+    }
+
 
     //---------------------------------------------
     // Constructors
@@ -57,7 +58,7 @@ public final class Database extends AbstractDatabase {
      * @param name   The name of the database: May NOT contain capital letters!
      * @throws CouchbaseLiteException if any error occurs during the open operation.
      */
-    public Database(@NonNull String name) throws CouchbaseLiteException {super(name, new DatabaseConfiguration()); }
+    public Database(@NonNull String name) throws CouchbaseLiteException {super(name); }
 
     /**
      * Construct a  AbstractDatabase with a given name and database config.
@@ -71,10 +72,16 @@ public final class Database extends AbstractDatabase {
         super(name, config);
     }
 
+    Database(@NonNull String name, @NonNull ImmutableDatabaseConfiguration config) throws CouchbaseLiteException {
+        super(name, config);
+    }
+
+
     //---------------------------------------------
-    // Package visible: Implementing abstract methods for Encryption
+    // Package visible
     //---------------------------------------------
 
+    // Implementation of abstract methods for Encryption
     @Override
     int getEncryptionAlgorithm() { return C4Constants.EncryptionAlgorithm.NONE; }
 

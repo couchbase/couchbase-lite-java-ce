@@ -27,7 +27,7 @@ public final class Replicator extends AbstractReplicator {
     /**
      * Initializes a replicator with the given configuration.
      *
-     * @param config The Replicator configuration object
+     * @param config replicator configuration
      */
     public Replicator(@NonNull ReplicatorConfiguration config) { super(config); }
 

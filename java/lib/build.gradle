@@ -707,7 +707,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
 def getNativeLibraryResourcePath(platform) {
     def os = ""
     if (platform.operatingSystem.isMacOsX())
-        os = "macos";
+        os = "macos"
     else if (platform.operatingSystem.isWindows())
         os = "windows"
     else if (platform.operatingSystem.isLinux())
