@@ -347,10 +347,11 @@ def FILE_FILTER = ['**/gen/**', "okhttp3/**", "org/json/**"]
 
 /////// Checkstyle
 checkstyle {
-    toolVersion = "8.41.1"
+    toolVersion = "8.42"
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
+        checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.8.jar'])
     }
 
     configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
