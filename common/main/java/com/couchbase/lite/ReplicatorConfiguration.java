@@ -39,10 +39,10 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
 
     // for Kotlin
-    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.UnnecessaryFullyQualifiedName"})
     ReplicatorConfiguration(
         @NonNull Database database,
-        @NonNull Replicator.Type type,
+        @NonNull com.couchbase.lite.ReplicatorType type,
         boolean continuous,
         @Nullable Authenticator authenticator,
         @Nullable Map<String, String> headers,

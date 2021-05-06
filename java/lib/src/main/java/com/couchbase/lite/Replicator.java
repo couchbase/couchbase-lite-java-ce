@@ -40,5 +40,5 @@ public final class Replicator extends AbstractReplicator {
         throw new IllegalStateException("unrecognized endpoint type: " + target);
     }
 
-    protected void handleOffline(@NonNull ActivityLevel prevLevel, boolean nowOnline) { }
+    protected void handleOffline(@NonNull ReplicatorActivityLevel prevLevel, boolean nowOnline) { }
 }
