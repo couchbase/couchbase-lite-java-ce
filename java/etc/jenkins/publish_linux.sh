@@ -45,14 +45,6 @@ cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xml"
 
-echo "======== Add license to zip"
-cd "${WORKSPACE}"
-LICENSE_DIR="${DIST_NAME}/license"
-rm -rf "${LICENSE_DIR}"
-mkdir -p "${LICENSE_DIR}"
-cp "cbl-java/legal/mobile/couchbase-lite/license/LICENSE_community.txt" "${LICENSE_DIR}/LICENSE.txt" || STATUS=5
-zip -u "${ARTIFACTS}/${DIST_NAME}.zip" "${LICENSE_DIR}/LICENSE.txt"
-
 echo "======== PUBLICATION COMPLETE: ${STATUS}"
 find "${ARTIFACTS}"
 exit $STATUS

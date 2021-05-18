@@ -432,6 +432,7 @@ task jacocoTestReport(type: JacocoReport) {
 def mavenRepoUser = properties.getProperty('maven.repo.user')
 def mavenRepoPass = properties.getProperty('maven.repo.pass')
 
+// Annoying workaround for Android POM generation
 def pomConfig = {
     name "${CBL_GROUP}:${CBL_ARTIFACT_ID}"
     description CBL_DESCRIPTION
@@ -571,7 +572,7 @@ if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
 task ciBuild(dependsOn: ['assembleRelease'])
-task ciPublish(dependsOn: ['generatePomFileForLibReleasePublication', 'publishLibReleasePublicationToMavenRepository'])
+task ciPublish(dependsOn: ['javadocJar', 'generatePomFileForLibReleasePublication', 'publishLibReleasePublicationToMavenRepository'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {
