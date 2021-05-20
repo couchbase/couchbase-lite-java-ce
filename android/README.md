@@ -63,26 +63,14 @@ Once local.properties is properly configured, a normal gradle build should work:
 
 Most normal gradle targets should work.  There are a couple of special ones at the bottom of `lib/build.gradle`
 
+## Using the Library
+
+If you minify (Proguard) an application that uses CouchbaseLite you will need to add a few rules to your
+Proguard configuration.  The rules are listed [here](https://docs.couchbase.com/couchbase-lite/2.7/java-android.html#ruleset)
+
 ## Sample Apps
 
 - [Todo](https://github.com/couchbaselabs/mobile-training-todo/tree/feature/2.0)
-
-## ProGuard
-If you are using ProGuard you might need to add the following options in your applications proguard config:
-```
-# OkHttp3
--dontwarn okhttp3.**
--dontwarn okio.**
--dontwarn javax.annotation.**
--dontwarn org.conscrypt.**
-# A resource is loaded with a relative path so the package of this class must be preserved.
--keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
-
-# CBL2.x
--keep class com.couchbase.litecore.**{ *; }
--keep class com.couchbase.lite.**{ *; }
-
-```
 
 ## License
 
