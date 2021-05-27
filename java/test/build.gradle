@@ -98,7 +98,7 @@ repositories {
     mavenLocal()
     maven { url "http://proget.build.couchbase.com/maven2/cimaven/" }
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

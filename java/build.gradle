@@ -16,7 +16,7 @@
 //
 buildscript {
     ext {
-        KOTLIN_VERSION = '1.5.0'
+        KOTLIN_VERSION = '1.5.10'
         JACOCO_VERSION = '0.8.6'
         SPOTBUGS_VERSION = '4.2.2'
 
@@ -27,7 +27,7 @@ buildscript {
     repositories {
         google()
         maven { url "https://plugins.gradle.org/m2/" }
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
