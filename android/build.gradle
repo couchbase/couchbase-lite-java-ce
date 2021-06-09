@@ -22,9 +22,7 @@ buildscript {
         SPOTBUGS_VERSION = '4.2.2'
 
         ANDROID_MIN_SDK = 22
-
-        // greater than 27 and automated tests fail on CLEARTEXT violations
-        ANDROID_TARGET_SDK = 27
+        ANDROID_TARGET_SDK = 30
 
         PROJECT_DIR = "${projectDir}"
         ROOT_DIR = "${PROJECT_DIR}/../.."

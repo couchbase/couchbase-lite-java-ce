@@ -132,7 +132,6 @@ android {
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
-        //noinspection OldTargetApi
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30000
         versionName BUILD_VERSION
@@ -206,8 +205,11 @@ android {
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
             ]
         }
+        debug {
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/debug/AndroidManifest.xml"
+        }
         androidTest {
-            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/main/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/androidTest/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests

@@ -69,7 +69,7 @@ android {
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 20800
+        versionCode 30000
         versionName BUILD_VERSION
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -77,13 +77,6 @@ android {
             testInstrumentationRunnerArguments notAnnotation: TEST_FILTER
         }
     }
-
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-
-    kotlinOptions.jvmTarget = '1.8'
 
     sourceSets {
         main {
@@ -94,6 +87,7 @@ android {
             ]
         }
         androidTest {
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/androidTest/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests
