@@ -23,8 +23,7 @@ buildscript {
 
         ANDROID_MIN_SDK = 19
 
-        // greater than 27 and automated tests fail on CLEARTEXT violations
-        ANDROID_TARGET_SDK = 27
+        ANDROID_TARGET_SDK = 30
 
         PROJECT_DIR = "${projectDir}"
         ROOT_DIR = "${PROJECT_DIR}/../.."
@@ -33,7 +32,7 @@ buildscript {
     repositories {
         google()
         maven { url "https://plugins.gradle.org/m2/" }
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {

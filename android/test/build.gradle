@@ -69,7 +69,7 @@ android {
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 20800
+        versionCode 20806
         versionName BUILD_VERSION
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -94,6 +94,7 @@ android {
             ]
         }
         androidTest {
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/androidTest/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests
@@ -114,7 +115,7 @@ repositories {
     mavenLocal()
     maven { url "http://proget.build.couchbase.com/maven2/cimaven/" }
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

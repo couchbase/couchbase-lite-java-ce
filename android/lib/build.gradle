@@ -110,7 +110,7 @@ android {
         minSdkVersion ANDROID_MIN_SDK
         //noinspection OldTargetApi
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 20800
+        versionCode 20806
         versionName BUILD_VERSION
         project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
 
@@ -195,8 +195,11 @@ android {
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
             ]
         }
+        debug {
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/debug/AndroidManifest.xml"
+        }
         androidTest {
-            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/main/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/androidTest/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests
@@ -220,7 +223,7 @@ android {
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
