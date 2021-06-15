@@ -1,0 +1,359 @@
+//
+// build.gradle
+//
+// Copyright (c) 2017, 2018, 2019 Couchbase, Inc. All rights reserved.
+//
+// Licensed under the Couchbase License Agreement (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//     https://info.couchbase.com/rs/302-GJY-034/images/2017-10-30_License_Agreement.pdf
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Please try to keep this build file as similar to the other family build files
+// as is possible.
+//
+import java.time.Instant
+import java.util.regex.Pattern
+
+
+// ----------------------------------------------------------------
+// Plugins
+// ----------------------------------------------------------------
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+
+// ----------------------------------------------------------------
+// Constants
+// ----------------------------------------------------------------
+
+ext {
+    CBL_GROUP = 'com.couchbase.lite.kotlin'
+    CBL_ARTIFACT_ID = 'couchbase-lite-android-ee-kt'
+    CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
+    CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
+    CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/LICENSE_community.txt"
+    CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root.git'
+    CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-java-ce-root/issues'
+    CBL_SITE_URL = 'https://developer.couchbase.com/mobile/'
+
+    BUILD_TIME = Instant.now().toString()
+    BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
+    BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
+    BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
+    BUILD_COMMIT = getBuildId()
+
+    CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
+    CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_COMMON_KT_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/kt-android"
+    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
+    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
+
+    SUPPORT_VERSION = '28.0.0'
+}
+
+// Target repo for maven publish
+def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
+
+// local.properties
+Properties properties = new Properties()
+properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
+
+
+// ----------------------------------------------------------------
+// Build
+// ----------------------------------------------------------------
+
+group = CBL_GROUP
+version = BUILD_VERSION
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION
+    buildToolsVersion BUILD_TOOLS_VERSION
+
+    // mumbo-jumbo to prevent "More than one file was found" message
+    packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
+
+    defaultConfig {
+        minSdkVersion ANDROID_MIN_SDK
+        targetSdkVersion ANDROID_TARGET_SDK
+        versionCode 30000
+        versionName BUILD_VERSION
+        project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
+
+        buildConfigField "String", "VERSION_NAME", "\"${BUILD_VERSION}\""
+        buildConfigField "String", "BUILD_TIME", "\"${BUILD_TIME}\""
+        buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            buildConfigField "boolean", "ENTERPRISE", "false"
+            buildConfigField "boolean", "CBL_DEBUG", "true"
+        }
+
+        release {
+            debuggable false
+            minifyEnabled false
+            buildConfigField "boolean", "ENTERPRISE", "false"
+            buildConfigField "boolean", "CBL_DEBUG", "true"
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/main/AndroidManifest.xml"
+            java.srcDirs = [
+                "${CBL_COMMON_DIR}/main/kotlin",
+                "${CBL_COMMON_KT_ANDROID_DIR}/main/kotlin",
+                "${CBL_EE_COMMON_DIR}/main/kotlin",
+                "${projectDir}/src/main/kotlin"
+            ]
+        }
+        debug {
+            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/debug/AndroidManifest.xml"
+        }
+        androidTest {
+            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/androidTest/AndroidManifest.xml"
+            java.srcDirs = [
+                "${CBL_COMMON_DIR}/test/kotlin",
+                "${CBL_COMMON_KT_ANDROID_DIR}/androidTest/kotlin",
+                "${CBL_EE_COMMON_DIR}/test/kotlin",
+                "${projectDir}/src/androidTest/kotlin"
+            ]
+            assets.srcDirs = [
+            ]
+            res.srcDirs = [
+            ]
+        }
+    }
+
+    lintOptions {
+        disable 'UseSparseArrays'
+        abortOnError false
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "com.android.support:support-annotations:${SUPPORT_VERSION}"
+
+    implementation project(path: ':ee:android')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
+}
+
+/////// Static Analysis
+
+/////// Coverage Report
+
+/////// Documentation
+
+
+// ----------------------------------------------------------------
+// Publication
+// ----------------------------------------------------------------
+
+/////// Maven Publishing
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+
+def mavenRepoUser = properties.getProperty('maven.repo.user')
+def mavenRepoPass = properties.getProperty('maven.repo.pass')
+
+// Annoying workaround for Android POM generation
+def pomConfig = {
+    name "${CBL_GROUP}:${CBL_ARTIFACT_ID}"
+    description CBL_DESCRIPTION
+    url CBL_SITE_URL
+    licenses {
+        license {
+            name CBL_LICENSE
+            url CBL_LICENSE_URL
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            name "Couchbase Mobile"
+            email "mobile@couchbase.com"
+            organization 'Couchbase'
+            organizationUrl 'http://www.couchbase.com'
+        }
+    }
+    issueManagement {
+        system 'github'
+        url CBL_ISSUES_URL
+    }
+    scm {
+        url CBL_SITE_URL
+        connection CBL_PROJECT_URL
+        developerConnection CBL_PROJECT_URL
+    }
+}
+
+// Generate source.jar
+task sourcesJar(type: Jar) {
+    archiveBaseName = "${CBL_ARTIFACT_ID}"
+    archiveClassifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    repositories {
+        maven {
+            url MAVEN_URL
+            credentials {
+                username mavenRepoUser
+                password mavenRepoPass
+            }
+        }
+    }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            libRelease(MavenPublication) {
+                groupId CBL_GROUP
+                artifactId CBL_ARTIFACT_ID
+                version BUILD_VERSION
+
+                artifact bundleReleaseAar
+                artifact sourcesJar
+
+                // include dependencies
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', CBL_DESCRIPTION)
+                    root.children().last() + pomConfig
+
+                    def dependenciesNode = root.appendNode('dependencies')
+
+                    // Include only configured dependencies
+                    configurations.implementation.allDependencies.each {
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+
+            libDebug(MavenPublication) {
+                groupId CBL_GROUP
+                artifactId CBL_ARTIFACT_ID
+                version BUILD_VERSION
+
+                artifact bundleDebugAar
+                artifact sourcesJar
+
+                // include dependencies
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', CBL_DESCRIPTION)
+                    root.children().last() + pomConfig
+
+                    def dependenciesNode = root.appendNode('dependencies')
+
+                    // Include only configured dependencies
+                    configurations.implementation.allDependencies.each {
+                        if (DEPENDENCIES.contains(it.name)) {
+                            def dep = dependenciesNode.appendNode('dependency')
+                            dep.appendNode('groupId', it.group)
+                            dep.appendNode('artifactId', it.name)
+                            dep.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// ----------------------------------------------------------------
+// Tasks
+// ----------------------------------------------------------------
+
+///////// Dev tasks
+task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
+task devTest(dependsOn: ['connectedDebugAndroidTest'])
+task fullTest(dependsOn: ['smokeTest', 'devTest'])
+
+///////// CI tasks
+task ciCheck(dependsOn: ['test'])
+task ciBuild(dependsOn: ['assembleRelease'])
+task ciPublish(dependsOn: ['javadocJar', 'generatePomFileForLibReleasePublication', 'publishLibReleasePublicationToMavenRepository'])
+
+// ordering (roughly last to first)
+project.afterEvaluate {
+    tasks.withType(Javadoc) { shouldRunAfter connectedDebugAndroidTest }
+    connectedDebugAndroidTest.shouldRunAfter smokeTest
+    testDebugUnitTest.shouldRunAfter smokeTest
+}
+
+// Clean
+// delete .externalNativeBuild and .cxx directories to force rerun of cmake.
+// This is necessary because 'clean' deletes the file 'zconf.h' which is in
+// .../build/intermediates, causing subsequent builds to fail.
+clean.doLast { project.delete "${projectDir}/.cxx" }
+
+
+// ----------------------------------------------------------------
+// Extensions
+// ----------------------------------------------------------------
+
+def getLicenseVersion() { return getCommit("product-texts", "master") }
+
+def getBuildId() {
+    def hostname = "rogue"
+    try { hostname = "hostname".execute().text.trim() }
+    catch (Exception ignore) {}
+
+    return "${getCommit("couchbase-lite-java-ee-root", "unofficial").substring(0, 10)}@${hostname}"
+}
+
+def getCommit(project, dflt) {
+    def manifest = null
+    try {
+        manifest = new FileReader("${ROOT_DIR}/../manifest.xml")
+
+        def revEx = Pattern.compile("<project.* name=\"${project}\".* revision=\"([\\dabcdef]{40})\"")
+
+        def l
+        while ((l = manifest.readLine()) != null) {
+            def m = revEx.matcher(l)
+            if (m.find()) { return m.group(1) }
+        }
+    }
+    catch (Exception ignore) {}
+    finally {
+        if (manifest != null) {
+            try { manifest.close() }
+            catch (Exception ignore) {}
+        }
+    }
+
+    return dflt
+}

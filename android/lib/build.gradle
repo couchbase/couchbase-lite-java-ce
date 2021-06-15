@@ -69,7 +69,7 @@ ext {
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
 
-    LIB_MODULE_DIR = "${PROJECT_DIR}/lib"
+    LIB_MODULE_DIR = "${projectDir}/lib"
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
@@ -95,7 +95,7 @@ def COVERAGE = project.hasProperty("coverage")
 
 // local.properties
 Properties properties = new Properties()
-properties.load(project.rootProject.file("${PROJECT_DIR}/local.properties").newDataInputStream())
+properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
 
 
 // ----------------------------------------------------------------
@@ -187,7 +187,7 @@ android {
                 }
             }
 
-            buildConfigField "boolean", "ENTERPRISE", "true"
+            buildConfigField "boolean", "ENTERPRISE", "false"
             buildConfigField "boolean", "CBL_DEBUG", "false"
         }
     }

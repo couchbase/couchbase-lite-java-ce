@@ -109,7 +109,7 @@ def COVERAGE = project.hasProperty("coverage")
 
 // local.properties
 Properties properties = new Properties()
-properties.load(project.rootProject.file("${PROJECT_DIR}/local.properties").newDataInputStream())
+properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
 
 
 // ----------------------------------------------------------------

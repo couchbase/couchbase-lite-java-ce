@@ -20,8 +20,8 @@ buildscript {
         JACOCO_VERSION = '0.8.6'
         SPOTBUGS_VERSION = '4.2.2'
 
-        PROJECT_DIR = "${projectDir}"
-        ROOT_DIR = "${PROJECT_DIR}/../.."
+        ROOT_DIR = "${projectDir}/../.."
+        PROPS_FILE = "${projectDir}/local.properties"
     }
 
     repositories {
