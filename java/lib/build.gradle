@@ -313,6 +313,7 @@ model {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
+                    cppCompiler.args '-std=c++17'
                     def libCxxLibDir = properties.getProperty('LINUX_LIBCXX_LIBDIR')
                     if (libCxxLibDir != null) { linker.args '-L', libCxxLibDir }
                 }
