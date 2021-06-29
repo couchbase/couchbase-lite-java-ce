@@ -354,7 +354,7 @@ checkstyle {
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
-        checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.8.jar'])
+        checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
     }
 
     configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
