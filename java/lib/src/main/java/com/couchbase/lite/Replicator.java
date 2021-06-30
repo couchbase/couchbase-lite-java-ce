@@ -34,8 +34,9 @@ public final class Replicator extends AbstractReplicator {
     @VisibleForTesting
     Replicator(@Nullable NetworkConnectivityManager ignore, @NonNull ReplicatorConfiguration config) { super(config); }
 
+    @NonNull
     @Override
-    protected C4Replicator createReplicatorForTarget(Endpoint target) throws LiteCoreException {
+    protected C4Replicator createReplicatorForTarget(@NonNull Endpoint target) throws LiteCoreException {
         if (target instanceof URLEndpoint) { return getRemoteC4Replicator(((URLEndpoint) target).getURL()); }
         throw new IllegalStateException("unrecognized endpoint type: " + target);
     }

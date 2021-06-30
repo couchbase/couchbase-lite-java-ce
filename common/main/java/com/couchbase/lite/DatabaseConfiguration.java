@@ -15,6 +15,7 @@
 //
 package com.couchbase.lite;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.couchbase.lite.internal.ImmutableDatabaseConfiguration;
@@ -38,6 +39,7 @@ public final class DatabaseConfiguration extends AbstractDatabaseConfiguration {
     //---------------------------------------------
     // protected methods
     //---------------------------------------------
+    @NonNull
     @Override
     protected DatabaseConfiguration getDatabaseConfiguration() { return this; }
 }
