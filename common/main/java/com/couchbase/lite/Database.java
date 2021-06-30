@@ -15,6 +15,7 @@
 package com.couchbase.lite;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 
@@ -85,6 +86,7 @@ public final class Database extends AbstractDatabase {
     @Override
     int getEncryptionAlgorithm() { return C4Constants.EncryptionAlgorithm.NONE; }
 
+    @Nullable
     @Override
     byte[] getEncryptionKey() { return null; }
 }

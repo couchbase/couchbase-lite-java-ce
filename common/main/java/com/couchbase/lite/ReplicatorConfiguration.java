@@ -77,6 +77,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
             Preconditions.assertNotNull(target, "target"));
     }
 
+    @NonNull
     @Override
-    ReplicatorConfiguration getReplicatorConfiguration() { return this; }
+    protected ReplicatorConfiguration getReplicatorConfiguration() { return this; }
 }
