@@ -451,7 +451,7 @@ def pomConfig = {
             name "Couchbase Mobile"
             email "mobile@couchbase.com"
             organization 'Couchbase'
-            organizationUrl 'http://www.couchbase.com'
+            organizationUrl 'https://www.couchbase.com'
         }
     }
     issueManagement {
