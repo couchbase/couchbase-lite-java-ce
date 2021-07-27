@@ -12,14 +12,11 @@
 // for the test projects in sync
 //
 
-include ':ce:android:lib'
-project(':ce:android:lib').name = 'ee_android'
-project(':ce:android').projectDir = new File("${rootDir}/../android/lib")
-
 if (!hasProperty("automatedTests") || !automatedTests.toBoolean()) {
     // normal source development
     include ':lib'
-} else {
+}
+else {
     // the test application
     include ':test'
 }

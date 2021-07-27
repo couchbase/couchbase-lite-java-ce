@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Publish Couchbase Lite Android, Community Edition
+# Publish Couchbase Lite Kotlin Android, Community Edition
 #
-PRODUCT='couchbase-lite-android'
+PRODUCT='couchbase-lite-kt-android'
 EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
@@ -42,7 +42,7 @@ if ! hash mvn 2>/dev/null; then
     exit 1
 fi
 
-echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
+echo "======== PUBLISH Couchbase Lite Kotlin Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
 ## Something like this:
@@ -54,7 +54,7 @@ echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../ver
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
 
 echo "======== Copy artifacts to staging directory"
-POM_FILE='pom.xml'
+POM_FILE='pom-kt.xml'
 cp lib/build/outputs/aar/*.aar "${ARTIFACTS}/"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"

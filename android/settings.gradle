@@ -12,10 +12,4 @@
 // for the test projects in sync
 //
 
-if (!hasProperty("automatedTests") || !automatedTests.toBoolean()) {
-    // normal source development
-    include ':lib'
-} else {
-    // the test application
-    include ':test'
-}
+include ':lib'

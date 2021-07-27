@@ -32,8 +32,7 @@ fun ReplicatorConfiguration?.create(
     maxAttempts: Int? = null,
     maxAttemptWaitTime: Int? = null,
     heartbeat: Int? = null,
-    enableAutoPurge: Boolean? = null,
-    acceptOnlySelfSignedServerCertificate: Boolean? = null
+    enableAutoPurge: Boolean? = null
 ) = ReplicatorConfiguration(
     database ?: this?.database ?: error("Must specify a database"),
     type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
@@ -50,46 +49,9 @@ fun ReplicatorConfiguration?.create(
     maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
     heartbeat ?: this?.heartbeat ?: 0,
     enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
-    target ?: this?.target ?: error("Must specify a target"),
-    acceptOnlySelfSignedServerCertificate ?: this?.isAcceptOnlySelfSignedServerCertificate ?: false
-)
-
-val MessageEndpointListenerConfigurationFactory: MessageEndpointListenerConfiguration? = null
-fun MessageEndpointListenerConfiguration?.create(
-    database: Database? = null,
-    protocolType: ProtocolType? = null
-) = MessageEndpointListenerConfiguration(
-    database ?: this?.database ?: error("Must specify a database"),
-    protocolType ?: this?.protocolType ?: error("Must specify a protocol"),
-)
-
-val URLEndpointListenerConfigurationFactory: URLEndpointListenerConfiguration? = null
-fun URLEndpointListenerConfiguration?.create(
-    database: Database? = null,
-    networkInterface: String? = null,
-    port: Int? = null,
-    disableTls: Boolean? = null,
-    identity: TLSIdentity? = null,
-    authenticator: ListenerAuthenticator? = null,
-    readOnly: Boolean? = null,
-    enableDeltaSync: Boolean? = null,
-) = URLEndpointListenerConfiguration(
-    database ?: this?.database ?: error("Must specify a database"),
-    networkInterface ?: this?.networkInterface,
-    port ?: this?.port ?: error("Must specify a port"),
-    disableTls ?: this?.isTlsDisabled ?: false,
-    identity ?: this?.tlsIdentity,
-    authenticator ?: this?.authenticator,
-    readOnly ?: this?.isReadOnly ?: false,
-    enableDeltaSync ?: this?.isDeltaSyncEnabled ?: false
+    target ?: this?.target ?: error("Must specify a target")
 )
 
 val DatabaseConfigurationFactory: DatabaseConfiguration? = null
-fun DatabaseConfiguration?.create(
-    databasePath: String? = null,
-    encryptionKey: EncryptionKey? = null
-) = DatabaseConfiguration(
-    databasePath ?: this?.directory,
-    encryptionKey ?: this?.encryptionKey
-)
+fun DatabaseConfiguration?.create(databasePath: String? = null) = DatabaseConfiguration(databasePath ?: this?.directory)
 

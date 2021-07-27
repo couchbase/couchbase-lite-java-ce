@@ -56,8 +56,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
         int maxAttemptWaitTime,
         int heartbeat,
         boolean enableAutoPurge,
-        @NonNull Endpoint target,
-        boolean acceptOnlySelfSignedServerCertificate) {
+        @NonNull Endpoint target) {
         super(
             Preconditions.assertNotNull(database, "database"),
             Preconditions.assertNotNull(type, "type"),

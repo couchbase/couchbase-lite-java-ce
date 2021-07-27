@@ -4,8 +4,6 @@
 #
 
 # These versions must match the versions in lib/build.gradle
-NDK_VERSION='22.0.7026061'
-CMAKE_VERSION='3.18.1'
 BUILD_TOOLS_VERSION='30.0.3'
 
 
@@ -41,8 +39,6 @@ echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../versio
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
 ${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
-${SDK_MGR} "cmake;${CMAKE_VERSION}"
-${SDK_MGR} "ndk;${NDK_VERSION}"
 
 cat <<EOF >> local.properties
 sdk.dir=${SDK_HOME}

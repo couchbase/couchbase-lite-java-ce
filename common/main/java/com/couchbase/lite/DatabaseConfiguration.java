@@ -36,6 +36,9 @@ public final class DatabaseConfiguration extends AbstractDatabaseConfiguration {
 
     DatabaseConfiguration(@Nullable ImmutableDatabaseConfiguration config) { super(config); }
 
+    // for Kotlin
+    DatabaseConfiguration(@Nullable String dbDirectory) { super(dbDirectory); }
+
     //---------------------------------------------
     // protected methods
     //---------------------------------------------

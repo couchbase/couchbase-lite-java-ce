@@ -63,13 +63,12 @@ ext {
     BUILD_COMMIT = getBuildId()
 
     CBL_CORE_DIR = "${ROOT_DIR}/core"
-    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
 
-    LIB_MODULE_DIR = "${projectDir}/lib"
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
@@ -86,7 +85,7 @@ def TARGET_ABIS = (!hasProperty("targetAbis")) ? null : targetAbis.split(', *')
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
 // Target repo for maven publish
-def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
+def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
 
 // Set true to enable coverage
 // The incantation for generating a coverage report is:
@@ -94,8 +93,8 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 def COVERAGE = project.hasProperty("coverage")
 
 // local.properties
-Properties properties = new Properties()
-properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
+Properties PROPERTIES = new Properties()
+PROPERTIES.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
 
 
 // ----------------------------------------------------------------
@@ -166,7 +165,10 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-22', '-DCMAKE_BUILD_TYPE=Debug'
+                    arguments '-DANDROID_STL=c++_static',
+                        '-DANDROID_TOOLCHAIN=clang',
+                        '-DANDROID_PLATFORM=android-22',
+                        '-DCMAKE_BUILD_TYPE=Debug'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
@@ -182,7 +184,10 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    arguments '-DANDROID_STL=c++_static', "-DANDROID_TOOLCHAIN=clang", '-DANDROID_PLATFORM=android-22', '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                    arguments '-DANDROID_STL=c++_static',
+                        '-DANDROID_TOOLCHAIN=clang',
+                        '-DANDROID_PLATFORM=android-22',
+                        '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
             }
@@ -199,7 +204,7 @@ android {
                 "${CBL_COMMON_DIR}/main/java",                   // Common
                 "${CBL_COMMON_ANDROID_DIR}/main/java",           // Common Android
                 "${CBL_CE_COMMON_DIR}/main/java",                // CE Common
-                "src/main/java",
+                "${projectDir}/src/main/java",
             ]
             res.srcDirs = [
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
@@ -214,6 +219,7 @@ android {
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",    // Common Android tests
                 "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
+                "${projectDir}/src/androidTest/java",            // CE Android tests
             ]
             assets.srcDirs = [
                 "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
@@ -431,8 +437,8 @@ task jacocoTestReport(type: JacocoReport) {
 /////// Maven Publishing
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 
-def mavenRepoUser = properties.getProperty('maven.repo.user')
-def mavenRepoPass = properties.getProperty('maven.repo.pass')
+def mavenRepoUser = PROPERTIES.getProperty('maven.repo.user')
+def mavenRepoPass = PROPERTIES.getProperty('maven.repo.pass')
 
 // Annoying workaround for Android POM generation
 def pomConfig = {
@@ -591,7 +597,7 @@ project.afterEvaluate {
 // delete .externalNativeBuild and .cxx directories to force rerun of cmake.
 // This is necessary because 'clean' deletes the file 'zconf.h' which is in
 // .../build/intermediates, causing subsequent builds to fail.
-clean.doLast { project.delete "${LIB_MODULE_DIR}/.cxx" }
+clean.doLast { project.delete "${projectDir}/.cxx" }
 
 
 // ----------------------------------------------------------------
