@@ -64,11 +64,11 @@ if  [ $STATUS -eq 0 ]; then
     ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
 fi
 
-echo "======== Publish reports"
+echo "======== Archive reports"
 pushd lib/build
 zip -r "${REPORTS}/analysis-reports-android" reports
 popd
 
-echo "======== BUILD COMPLETE (${STATUS})"
+echo "======== BUILD COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
 exit $STATUS
 

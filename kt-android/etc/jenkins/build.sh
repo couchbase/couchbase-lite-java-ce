@@ -56,11 +56,11 @@ if  [ $STATUS -eq 0 ]; then
 fi
 
 # No reports yet...
-#echo "======== Publish reports"
+#echo "======== Archive reports"
 #pushd lib/build
 #zip -r "${REPORTS}/analysis-reports-kt-android" reports
 #popd
 
-echo "======== BUILD COMPLETE (${STATUS})"
+echo "======== BUILD COMPLETE (${STATUS}) Couchbase Lite Kotlin Android, Community Edition"
 exit $STATUS
 

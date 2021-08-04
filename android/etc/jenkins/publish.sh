@@ -84,5 +84,5 @@ zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
 find "${ARTIFACTS}"
-echo "======== PUBLICATION COMPLETE"
+echo "======== PUBLICATION COMPLETE Couchbase Lite Android, Community Edition"
 
