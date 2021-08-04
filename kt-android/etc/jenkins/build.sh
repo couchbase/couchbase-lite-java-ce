@@ -55,10 +55,11 @@ if  [ $STATUS -eq 0 ]; then
     ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
 fi
 
-echo "======== Publish reports"
-pushd lib/build
-zip -r "${REPORTS}/analysis-reports-kt-android" reports
-popd
+# No reports yet...
+#echo "======== Publish reports"
+#pushd lib/build
+#zip -r "${REPORTS}/analysis-reports-kt-android" reports
+#popd
 
 echo "======== BUILD COMPLETE (${STATUS})"
 exit $STATUS
