@@ -42,6 +42,8 @@ if ! hash mvn 2>/dev/null; then
     exit 1
 fi
 
+STATUS=0
+
 echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
@@ -51,7 +53,7 @@ echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../ver
 ##      http://proget.build.couchbase.com/api/promotions/promote
 ## At present that call fails to promote the entire package (bad PK copying the source tar)
 ## so, for now, just republish the same bits.
-./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
+./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
 
 echo "======== Copy artifacts to staging directory"
 POM_FILE='pom.xml'
@@ -84,5 +86,6 @@ zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
 find "${ARTIFACTS}"
-echo "======== PUBLICATION COMPLETE Couchbase Lite Android, Community Edition"
+echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
+exit $STATUS
 
