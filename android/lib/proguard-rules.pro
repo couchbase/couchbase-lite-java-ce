@@ -25,15 +25,15 @@
 #-renamesourcefileattribute SourceFile
 
 
-## OkHttp3
-#-dontwarn okhttp3.**
-#-dontwarn okio.**
-#-dontwarn javax.annotation.**
-#-dontwarn org.conscrypt.**
-## A resource is loaded with a relative path so the package of this class must be preserved.
-#-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
-#
 ## CBL2.x
-#-keep class com.couchbase.litecore.**{ *; }
-#-keep class com.couchbase.lite.**{ *; }
+-keep class com.couchbase.lite.ConnectionStatus { <init>(...); }
+-keep class com.couchbase.lite.LiteCoreException { static <methods>; }
+-keep class com.couchbase.lite.internal.core.C4* {
+    static <methods>;
+    <fields>;
+    <init>(...);
+ }
+-keepclassmembers class com.couchbase.lite.internal.replicator.CBLTrustManager {
+    public java.util.List checkServerTrusted(java.security.cert.X509Certificate[], java.lang.String, java.lang.String);
+}
 
