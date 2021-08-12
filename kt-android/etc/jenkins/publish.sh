@@ -69,7 +69,7 @@ pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
 diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies
+mvn install dependency:copy-dependencies -Dmaven.repo.remote="${MAVEN_URL}"
 popd
 
 echo "======== Create zip"
