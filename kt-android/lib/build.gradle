@@ -29,6 +29,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'maven-publish'
+    id("org.jetbrains.dokka") version "1.5.0"
 }
 
 
@@ -223,6 +224,13 @@ def pomConfig = {
     }
 }
 
+// Generate dokka.jar
+task dokkaJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveBaseName = "${CBL_ARTIFACT_ID}"
+    archiveClassifier = 'javadoc'
+    from "${buildDir}/dokka/javadoc"
+}
+
 // Generate source.jar
 task sourcesJar(type: Jar) {
     setArchiveBaseName("${CBL_ARTIFACT_ID}")
@@ -230,7 +238,10 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-artifacts { archives sourcesJar }
+artifacts {
+    archives dokkaJar
+    archives sourcesJar
+}
 
 publishing {
     repositories {
@@ -257,6 +268,7 @@ project.afterEvaluate {
                 version BUILD_VERSION
 
                 artifact bundleReleaseAar
+                artifact dokkaJar
                 artifact sourcesJar
 
                 // include dependencies
@@ -279,6 +291,7 @@ project.afterEvaluate {
                 version BUILD_VERSION
 
                 artifact bundleDebugAar
+                artifact dokkaJar
                 artifact sourcesJar
 
                 // include dependencies
