@@ -2,7 +2,7 @@
 #
 # Publish Couchbase Lite Kotlin Android, Community Edition
 #
-PRODUCT='couchbase-lite-kt-android'
+PRODUCT='couchbase-lite-android-ktx'
 EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
@@ -56,7 +56,7 @@ echo "======== PUBLISH Couchbase Lite Kotlin Android, Community Edition v`cat ..
 ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" --debug || STATUS=7
 
 echo "======== Copy artifacts to staging directory"
-POM_FILE='pom-kt.xml'
+POM_FILE='pom-ktx.xml'
 cp lib/build/outputs/aar/*.aar "${ARTIFACTS}/"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
