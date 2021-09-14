@@ -44,7 +44,7 @@ ext {
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
-    CBL_COMMON_KT_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/kt-android"
+    CBL_COMMON_ANDROID_KTX_DIR = "${CBL_COMMON_ROOT_DIR}/android-ktx"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_CE_ANDROID_DIR = "${CBL_CE_ROOT_DIR}/android"
@@ -84,22 +84,22 @@ android {
 
     sourceSets {
         main {
-            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/main/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/main/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/main/kotlin",
-                "${CBL_COMMON_KT_ANDROID_DIR}/main/kotlin",
+                "${CBL_COMMON_ANDROID_KTX_DIR}/main/kotlin",
                 "${CBL_CE_COMMON_DIR}/main/kotlin",
                 "${projectDir}/src/main/kotlin",
             ]
             res.srcDirs = [
-                "${CBL_COMMON_KT_ANDROID_DIR}/main/res",
+                "${CBL_COMMON_ANDROID_KTX_DIR}/main/res",
             ]
         }
         debug {
-            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/debug/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/debug/AndroidManifest.xml"
         }
         androidTest {
-            manifest.srcFile "${CBL_COMMON_KT_ANDROID_DIR}/androidTest/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",
@@ -107,7 +107,7 @@ android {
                 "${CBL_CE_COMMON_DIR}/test/java",
                 "${CBL_CE_COMMON_DIR}/test/kotlin",
                 "${CBL_CE_ANDROID_DIR}/lib/src/androidTest/java",
-                "${CBL_COMMON_KT_ANDROID_DIR}/androidTest/kotlin",
+                "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/kotlin",
                 "${projectDir}/src/androidTest/kotlin",
             ]
             assets.srcDirs = [
@@ -115,7 +115,7 @@ android {
                 "${CBL_COMMON_DIR}/test/assets",
             ]
             res.srcDirs = [
-                "${CBL_COMMON_KT_ANDROID_DIR}/androidTest/res",
+                "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/res",
             ]
         }
     }

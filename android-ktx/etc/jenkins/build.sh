@@ -58,7 +58,7 @@ fi
 # No reports yet...
 #echo "======== Archive reports"
 #pushd lib/build
-#zip -r "${REPORTS}/analysis-reports-kt-android" reports
+#zip -r "${REPORTS}/analysis-reports-android-ktx" reports
 #popd
 
 echo "======== BUILD COMPLETE (${STATUS}) Couchbase Lite Kotlin Android, Community Edition"
