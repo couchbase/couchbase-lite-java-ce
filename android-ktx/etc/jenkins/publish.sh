@@ -43,11 +43,6 @@ if ! hash mvn 2>/dev/null; then
     echo "Cannot find the 'mvn' command.  Please be sure it is on the PATH"
     exit 1
 fi
-# set up local proget maven profile
-if [ ! -f ~/.m2 ]; then
-    mkdir ~/.m2
-    cp "${COMMON_ETC}/mvn/settings.xml" ~/.m2
-fi
 
 STATUS=0
 
@@ -76,7 +71,7 @@ pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
 diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies -PCblInternalMaven
+mvn install dependency:copy-dependencies -gs "${COMMON_ETC}/mvn/settings.xml" -PCblInternalMaven
 popd
 
 echo "======== Create zip"
