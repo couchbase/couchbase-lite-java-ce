@@ -66,8 +66,16 @@ ext {
     CBL_ANDROID_TYPE = 'aar'
 }
 
+// comma separated list of annotations for tests that should not be run.
+def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
+
 // Target repo for maven publish
 def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
+
+// Set true to enable coverage
+// The incantation for generating a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+def COVERAGE = project.hasProperty("coverage")
 
 // local.properties
 Properties PROPERTIES = new Properties()
@@ -91,7 +99,7 @@ android {
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 30000
+        versionCode 30100
         versionName BUILD_VERSION
         project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
 
@@ -109,6 +117,8 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+            testCoverageEnabled COVERAGE
+
             buildConfigField "boolean", "ENTERPRISE", "false"
             buildConfigField "boolean", "CBL_DEBUG", "true"
         }
@@ -183,11 +193,33 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
-/////// Static Analysis
 
-/////// Coverage Report
+// ----------------------------------------------------------------
+// Coverage
+// ----------------------------------------------------------------
 
-/////// Documentation
+// The incantation for generating a coverage report is:
+//     ./gradlew -Pcoverage=true coverage
+// The reason for this is that we want to be able to generate
+// binaries that have not been instrumented and do not require
+// the jacoco package when run
+task jacocoTestReport(type: JacocoReport) {
+    description = "Generate Jacoco coverage reports"
+    group = "reporting"
+
+    afterEvaluate {
+        sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
+        classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
+
+        if (COVERAGE) { connectedDebugAndroidTest.finalizedBy jacocoTestReport }
+    }
+
+    executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
 
 
 // ----------------------------------------------------------------
@@ -328,6 +360,7 @@ project.afterEvaluate {
 task smokeTest(dependsOn: ['compileDebugSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
 task fullTest(dependsOn: ['smokeTest', 'devTest'])
+if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
 task ciBuild(dependsOn: ['assembleRelease'])

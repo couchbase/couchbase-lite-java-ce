@@ -56,11 +56,6 @@ ext {
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-def COVERAGE = project.hasProperty("coverage")
-
 
 // ----------------------------------------------------------------
 // Build
@@ -112,9 +107,39 @@ dependencies {
 
 
 // ----------------------------------------------------------------
+// Testing
+// ----------------------------------------------------------------
+
+test {
+    if (System.env.LD_LIBRARY_PATH != null) {
+        jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
+    }
+
+    workingDir = new File(workingDir, ".test-" + new Date().format('yyMMddHHmm'))
+    if (!workingDir.exists()) { workingDir.mkdirs() }
+
+    if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
+
+    testLogging {
+        outputs.upToDateWhen { false }
+
+        events = ["failed", "skipped"]
+
+        // showStandardStreams = true
+
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = 'full'
+    }
+}
+
+
+// ----------------------------------------------------------------
 // Tasks
 // ----------------------------------------------------------------
 
 // This target requires setting the property "automatedTests" true.
 // See settings.gradle for explanation.
 task ciTest(dependsOn: ['test'])
+
