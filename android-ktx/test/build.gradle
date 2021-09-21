@@ -135,7 +135,7 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"

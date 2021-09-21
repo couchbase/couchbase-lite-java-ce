@@ -249,7 +249,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation 'androidx.test:runner:1.4.0'

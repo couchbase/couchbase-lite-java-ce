@@ -165,7 +165,7 @@ dependencies {
     testCompileOnly 'androidx.annotation:annotation:1.2.0'
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 // Copy the version template into the source, inserting build info
