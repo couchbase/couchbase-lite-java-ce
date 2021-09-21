@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Publish Couchbase Lite Kotlin Android, Community Edition
+# Publish Couchbase Lite Android Kotlin Extensions, Community Edition
 #
 PRODUCT='couchbase-lite-android-ktx'
 EDITION='community'
@@ -46,7 +46,7 @@ fi
 
 STATUS=0
 
-echo "======== PUBLISH Couchbase Lite Kotlin Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
+echo "======== PUBLISH Couchbase Lite Android Kotlin Extensions, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 
 ## Really should promote the existing package, instead of re-publishing
 ## Something like this:
@@ -82,12 +82,12 @@ pushd "${ZIP_STAGING}"
 mkdir license lib docs
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
-cp "${ARTIFACTS}/"*-javadoc.jar "docs/${PRODUCT}-${VERSION}-javadoc.jar"
+cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${PRODUCT}-${VERSION}-javadoc.jar"
 cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODUCT}-${VERSION}.aar"
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
 find "${ARTIFACTS}"
-echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Kotlin Android, Community Edition"
+echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android Kotlin Extensions, Community Edition"
 exit $STATUS
 

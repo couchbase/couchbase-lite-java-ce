@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Build Couchbase Lite Kotlin Android, Community Edition
+# Build Couchbase Lite Android Kotlin Extensions, Community Edition
 #
 
 # These versions must match the versions in lib/build.gradle
@@ -36,7 +36,7 @@ fi
 SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1 --install"
 STATUS=0
 
-echo "======== BUILD Couchbase Lite Kotlin Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+echo "======== BUILD Couchbase Lite Android Kotlin Extensions, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
@@ -61,6 +61,6 @@ fi
 #zip -r "${REPORTS}/analysis-reports-android-ktx" reports
 #popd
 
-echo "======== BUILD COMPLETE (${STATUS}) Couchbase Lite Kotlin Android, Community Edition"
+echo "======== BUILD COMPLETE (${STATUS}) Couchbase Lite Android Kotlin Extensions, Community Edition"
 exit $STATUS
 
