@@ -148,7 +148,7 @@ android {
         buildConfigField "String", "BUILD_TIME", "\"${BUILD_TIME}\""
         buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         if (TEST_FILTER != null) {
             testInstrumentationRunnerArguments notAnnotation: TEST_FILTER
         }
@@ -252,8 +252,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:core:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 /////// JavaDoc
