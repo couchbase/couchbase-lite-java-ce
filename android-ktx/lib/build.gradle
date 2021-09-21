@@ -345,6 +345,7 @@ project.afterEvaluate {
                     dep.appendNode('groupId', CBL_GROUP)
                     dep.appendNode('artifactId', CBL_ANDROID_LIB)
                     dep.appendNode('version', BUILD_VERSION)
+                    dep.appendNode('type', CBL_ANDROID_TYPE)
                 }
             }
         }
