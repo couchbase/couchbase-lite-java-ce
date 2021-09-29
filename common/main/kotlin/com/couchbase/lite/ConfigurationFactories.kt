@@ -15,7 +15,37 @@
 //
 package com.couchbase.lite
 
+
+/**
+ * Configuration factory for new ReplicatorConfigurations
+ * Usage:
+ *     val replConfig = ReplicatorConfigurationFactory.create(...)
+ */
 val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
+
+/**
+ * Create a FullTextIndexConfiguration, overriding the receiver's
+ * values with the passed parameters:
+ *
+ * @param database (required) the local database.
+ * @param target (required) The max size of the log file in bytes.
+ * @param type replicator type: push, pull, or push and pull: default is push and pull.
+ * @param continuous continuous flag: true for continuous, false by default.
+ * @param authenticator connection authenticator.
+ * @param headers extra HTTP headers to send in all requests to the remote target.
+ * @param pinnedServerCertificate target server's SSL certificate.
+ * @param channels Sync Gateway channel names.
+ * @param documentIDs IDs of documents to be replicated: default is all documents.
+ * @param pushFilter filter for pushed documents.
+ * @param pullFilter filter for pulled documents.
+ * @param conflictResolver conflict resolver.
+ * @param maxAttempts max retry attempts after connection failure.
+ * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
+ * @param heartbeat heartbeat interval, in seconds.
+ * @param enableAutoPurge auto-purge enabled.
+ *
+ * @see com.couchbase.lite.ReplicatorConfiguration
+ */
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
     target: Endpoint? = null,
