@@ -9,7 +9,7 @@ Please file any issues concerning the Couchbase Lite Android product in the root
 
 - Android 5.1.1+ (API 22+)
 - Supported architectures: armeabi-v7a, arm64-v8a, x86 and x86_64
-- Android Studio 3.6+
+- Android Studio
 
 ## Installation
 
@@ -29,7 +29,7 @@ dependencies {
 <dependency>
   <groupId>com.couchbase.lite</groupId>
   <artifactId>couchbase-lite-android</artifactId>
-  <version>2.8.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ dependencies {
 
 ## Documentation
 
-- [Developer Guide](https://docs.couchbase.com/couchbase-lite/2.8/java-android.html)
+- [Developer Guide](https://docs.couchbase.com/couchbase-lite/3.0/android/quickstart.html)
 
 ## How to build from source
 
