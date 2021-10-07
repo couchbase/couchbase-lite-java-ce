@@ -55,7 +55,7 @@ echo "======== PUBLISH Couchbase Lite Android Kotlin Extensions, Community Editi
 ##      http://proget.build.couchbase.com/api/promotions/promote
 ## At present that call fails to promote the entire package (bad PK copying the source tar)
 ## so, for now, just republish the same bits.
-./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" --debug || STATUS=7
+./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
 
 echo "======== Copy artifacts to staging directory"
 POM_FILE='pom-ktx.xml'

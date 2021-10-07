@@ -258,30 +258,25 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
-/////// JavaDoc
 
-// Say something once, why say it again?  Because gradle.
-// This is the only way I could figure out, to get some of these things onto the javadoc classpath
-// This is just an extreme hack.  My apologies.
-configurations { javadocDeps }
-dependencies {
-    javadocDeps files("${buildDir}/generated/source/buildConfig/debug")
-    javadocDeps files("${buildDir}/generated/source/buildConfig/release")
-    //noinspection GradleDependency
-    javadocDeps 'androidx.annotation:annotation:1.2.0'
-    javadocDeps "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
-    //noinspection GradleDependency
-    javadocDeps "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
-}
+// ----------------------------------------------------------------
+// Documentations
+// ----------------------------------------------------------------
 
 task javadoc(type: Javadoc) {
     failOnError false
 
     source android.sourceSets.main.java.srcDirs
+    exclude "com/couchbase/lite/internal/**"
 
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-    classpath += configurations.javadocDeps
+    classpath += project.files(android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
+    afterEvaluate {
+        classpath += files(
+            android.libraryVariants.collect { variant ->
+                if (variant.name.equals("release")) { variant.javaCompileProvider.get().classpath.files }
+            })
+    }
 
     options {
         title = "${CBL_LICENSE} ${BUILD_VERSION}"
@@ -293,6 +288,9 @@ task javadoc(type: Javadoc) {
         links "https://docs.oracle.com/javase/8/docs/api/"
         linksOffline "https://developer.android.com/reference/", "${project.android.sdkDirectory}/docs/reference"
         addStringOption('Xdoclint:none', '-quiet')
+        if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+            addBooleanOption('-ignore-source-errors', true)
+        }
     }
 }
 
