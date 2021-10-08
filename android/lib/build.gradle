@@ -280,7 +280,7 @@ task javadoc(type: Javadoc) {
 
     options {
         title = "${CBL_LICENSE} ${BUILD_VERSION}"
-        memberLevel = JavadocMemberLevel.PUBLIC
+        memberLevel = JavadocMemberLevel.PROTECTED
         docEncoding = 'UTF-8'
         encoding = 'UTF-8'
         charSet = 'UTF-8'
