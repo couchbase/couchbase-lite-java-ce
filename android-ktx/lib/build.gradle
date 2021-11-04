@@ -175,9 +175,7 @@ android {
 
 repositories {
     if (USE_LOCAL_MAVEN) { mavenLocal() }
-    else { 
-         maven { url "http://proget.build.couchbase.com/maven2/cimaven/" }
-    }
+    maven { url "http://proget.build.couchbase.com/maven2/cimaven/" }
     google()
     mavenCentral()
 }
