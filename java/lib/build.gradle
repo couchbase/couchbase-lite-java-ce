@@ -339,6 +339,7 @@ javadoc {
         links "https://docs.oracle.com/javase/8/docs/api/"
         addStringOption('Xdoclint:none', '-quiet')
         if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+            addStringOption("-release", "8")
             addBooleanOption('-ignore-source-errors', true)
         }
     }
