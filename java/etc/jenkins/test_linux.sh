@@ -31,7 +31,7 @@ export LD_LIBRARY_PATH="${SUPPORT_DIR}/libicu:${LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH="${SUPPORT_DIR}/libz:${LD_LIBRARY_PATH}"
 echo $LD_LIBRARY_PATH
 find "${SUPPORT_DIR}/../../.."
-./gradlew ciTest --info --console=plain || STATUS=5
+./gradlew ciTest --console=plain || STATUS=5
 
 echo "======== Publish reports"
 pushd lib/build

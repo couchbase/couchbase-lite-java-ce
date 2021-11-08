@@ -13,7 +13,7 @@ set reportsDir=%2%
 set status=0
 
 echo ======== TEST Couchbase Lite Java, Community Edition 
-call gradlew.bat ciTest --info --console=plain || set status=5
+call gradlew.bat ciTest --console=plain || set status=5
 
 echo ======== Publish test reports
 pushd lib\build

@@ -24,7 +24,7 @@ fi
 STATUS=0
 
 echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-./gradlew ciTest --info --console=plain || STATUS=5
+./gradlew ciTest --console=plain || STATUS=5
 
 echo "======== Publish reports"
 pushd lib/build > /dev/null
