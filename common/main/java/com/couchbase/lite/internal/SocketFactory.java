@@ -22,8 +22,9 @@ import java.security.cert.Certificate;
 import java.util.List;
 
 import com.couchbase.lite.ReplicatorConfiguration;
-import com.couchbase.lite.internal.core.C4Socket;
 import com.couchbase.lite.internal.replicator.CBLCookieStore;
+import com.couchbase.lite.internal.sockets.CoreSocketDelegate;
+import com.couchbase.lite.internal.sockets.CoreSocketListener;
 import com.couchbase.lite.internal.utils.Fn;
 
 
@@ -38,5 +39,5 @@ public class SocketFactory extends AbstractSocketFactory {
 
     @Nullable
     @Override
-    protected C4Socket createPlatformSocket(long handle) { return null; }
+    protected CoreSocketListener createPlatformSocket(@NonNull CoreSocketDelegate delegate) { return null; }
 }
