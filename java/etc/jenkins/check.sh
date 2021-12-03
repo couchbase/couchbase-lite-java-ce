@@ -4,11 +4,11 @@
 #
 
 function usage() {
-    echo "Usage: $0 <build number> <distro>"
+    echo "Usage: $0 <build number>"
     exit 1
 }
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
     usage
 fi
 
@@ -17,12 +17,7 @@ if [-z "${BUILD_NUMBER}"]; then
     usage
 fi
 
-DISTRO="$2"
-if [ -z "${DISTRO}" ]; then
-    usage
-fi
-
-echo "======== CHECK Couchbase Lite Java, Enterprise Edition v`cat ../../version.txt`-${BUILD_NUMBER} (${DISTRO})"
+echo "======== CHECK Couchbase Lite Java, Enterprise Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 touch local.properties
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
