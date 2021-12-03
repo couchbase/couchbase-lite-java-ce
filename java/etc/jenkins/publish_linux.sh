@@ -3,7 +3,7 @@
 # Publish Couchbase Lite Java, Community Edition
 #
 PRODUCT='couchbase-lite-java'
-MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
+MAVEN_URL="http://proget.build.couchbase.com/maven2"
 STATUS=0
 
 function usage() {
@@ -11,7 +11,7 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -lt 4 -o "$#" -gt 5 ];
     usage
 fi
 
@@ -33,6 +33,13 @@ fi
 WORKSPACE="$4"
 if [ -z "$WORKSPACE" ]; then
     usage
+fi
+
+FEED="$5"
+if [ -z "$FEED" ]; then
+    MAVEN_URL="${MAVEN_URL}/cimaven"
+else
+    MAVEN_URL="${MAVEN_URL}/$FEED"
 fi
 
 DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
