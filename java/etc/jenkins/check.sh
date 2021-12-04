@@ -13,7 +13,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 BUILD_NUMBER="$1"
-if [-z "${BUILD_NUMBER}"]; then
+if [ -z "${BUILD_NUMBER}" ]; then
     usage
 fi
 
