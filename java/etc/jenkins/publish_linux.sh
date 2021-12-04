@@ -11,7 +11,7 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -lt 4 -o "$#" -gt 5 ];
+if [ "$#" -lt 4 -o "$#" -gt 5 ]; then
     usage
 fi
 
