@@ -43,10 +43,6 @@ fi
 
 echo "======== BUILD Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} (${DISTRO})"
 
-echo "======== Static analysis ..."
-touch local.properties
-./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || exit 1
-
 echo "======== Clean up ..." 
 "${TOOLS_DIR}/clean_litecore.sh" -p "${DISTRO}"
 

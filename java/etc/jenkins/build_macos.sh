@@ -33,7 +33,6 @@ echo "======== Build mbedcrypto ..."
 "${TOOLS_DIR}/build_litecore.sh" -l mbedcrypto -e CE
 
 echo "======== Build Java"
-touch local.properties
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
 echo "======== BUILD COMPLETE"

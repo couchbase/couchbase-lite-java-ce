@@ -663,13 +663,13 @@ publishing {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileJava', 'compileTestJava', 'compileTestKotlin', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
+task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
 task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['test']) }
 
 ///////// CI tasks
-task ciCheck(dependsOn: ['compileJava', 'compileTestJava', 'compileTestKotlin', 'checkstyle', 'pmd', 'spotbugsXml'])
+task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
 task ciBuild(dependsOn: ['assemble'])
 task ciTest(dependsOn: ['test'])
 task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
