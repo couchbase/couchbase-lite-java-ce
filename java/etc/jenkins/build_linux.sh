@@ -66,7 +66,7 @@ echo "======== Build mbedcrypto ..."
 echo "======== Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
-echo "======== Publish CI Build (temporary)"
+echo "======== Publish CI Build"
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL}
 
 echo "======== BUILD COMPLETE"
