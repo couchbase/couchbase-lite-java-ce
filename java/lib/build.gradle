@@ -151,6 +151,8 @@ java {
     }
 }
 
+kotlin { kotlinDaemonJvmArgs = ["-Xmx1024m", "-Xms512m"] }
+
 repositories {
     google()
     mavenCentral()

@@ -91,6 +91,8 @@ java {
     }
 }
 
+kotlin { kotlinDaemonJvmArgs = ["-Xmx1024m", "-Xms512m"] }
+
 repositories {
     maven { url "http://proget.build.couchbase.com/maven2/cimaven" }
     google()
