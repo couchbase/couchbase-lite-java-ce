@@ -4,7 +4,7 @@
 //
 // The two apps are mutually exclusive: the test app is built and run only by CI machines
 // during the release process.  All other work in this repo will use only the "lib" module.
-// Separating the two prevents confusing build failures, in the test app, while working
+// Separating the two prevents confusing build failures in the test app, while working
 // with the library.
 // The crazy hack below could be avoided by separating the test app into a separate project.
 // The only arguments for *not* doing this is that separating the two would require
@@ -15,7 +15,9 @@
 if (!hasProperty("automatedTests") || !automatedTests.toBoolean()) {
     // normal source development
     include ':lib'
-} else {
+}
+else {
     // the test application
     include ':test'
 }
+

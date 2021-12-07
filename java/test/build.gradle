@@ -41,11 +41,12 @@ ext {
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
 
     CBL_CORE_DIR = "${ROOT_DIR}/core"
-    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
-    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
+    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
+    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
+    CBL_CE_JAVA_DIR = "${CBL_CE_ROOT_DIR}/java"
 
     CBL_NATIVE_DIR = "${buildDir}/native"
 
@@ -80,6 +81,7 @@ java {
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_JAVA_DIR}/test/java",              // Common Java tests
                 "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
+                "${CBL_CE_JAVA_DIR}lib/src/test/java",                  // CE Common tests
             ]
             resources.srcDirs = [
                 "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
@@ -102,7 +104,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
 
-    testImplementation "com.couchbase.lite:couchbase-lite-android:${BUILD_VERSION}"
+    testImplementation "com.couchbase.lite:couchbase-lite-java:${BUILD_VERSION}"
 }
 
 

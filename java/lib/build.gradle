@@ -92,9 +92,9 @@ ext {
 
 // build platform
 def PLATFORM = "???"
-if (OperatingSystem.current().isLinux()) PLATFORM = ""
-if (OperatingSystem.current().isMacOsX()) PLATFORM = "-macos"
-if (OperatingSystem.current().isWindows()) PLATFORM = "-windows"
+if (OperatingSystem.current().isLinux()) { PLATFORM = "" }
+if (OperatingSystem.current().isMacOsX()) { PLATFORM = "-macos" }
+if (OperatingSystem.current().isWindows()) { PLATFORM = "-windows" }
 
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
@@ -495,10 +495,7 @@ test {
 jacoco { toolVersion = JACOCO_VERSION }
 jacocoTestReport {
     afterEvaluate {
-        classDirectories.setFrom(classDirectories.files.collect {
-            fileTree(dir: it, exclude: FILE_FILTER)
-        })
-
+        classDirectories.setFrom(classDirectories.files.collect { fileTree(dir: it, exclude: FILE_FILTER) })
         if (COVERAGE) { test.finalizedBy jacocoTestReport }
     }
     reports {
@@ -699,7 +696,7 @@ def setupJNILibraryBuildTasks(library, platform) {
 }
 
 def createCopyNativeLibraryTask(library, targetPlatform) {
-    if (CBL_NATIVE_LIBRARIES.contains(library)) return
+    if (CBL_NATIVE_LIBRARIES.contains(library)) { return }
 
     def libPath = getNativeLibraryResourcePath(targetPlatform)
     task copyJni(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
@@ -730,14 +727,10 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
 
 def getNativeLibraryResourcePath(platform) {
     def os = ""
-    if (platform.operatingSystem.isMacOsX())
-        os = "macos"
-    else if (platform.operatingSystem.isWindows())
-        os = "windows"
-    else if (platform.operatingSystem.isLinux())
-        os = "linux"
-    else
-        os = platform.operatingSystem.name
+    if (platform.operatingSystem.isMacOsX()) { os = "macos" }
+    else if (platform.operatingSystem.isWindows()) { os = "windows" }
+    else if (platform.operatingSystem.isLinux()) { os = "linux" }
+    else { os = platform.operatingSystem.name }
     return "${os}/x86_64"
 }
 

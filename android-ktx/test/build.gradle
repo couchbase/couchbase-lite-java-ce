@@ -111,7 +111,6 @@ android {
                 "${CBL_CE_COMMON_DIR}/test/kotlin",
                 "${CBL_CE_ANDROID_DIR}/lib/src/androidTest/java",
                 "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/kotlin",
-                "${projectDir}/src/androidTest/kotlin",
             ]
             assets.srcDirs = [
                 "${CBL_CORE_DIR}/C/tests/data",
