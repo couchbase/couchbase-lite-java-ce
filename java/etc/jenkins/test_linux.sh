@@ -31,10 +31,10 @@ export LD_LIBRARY_PATH="${SUPPORT_DIR}/libicu:${LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH="${SUPPORT_DIR}/libz:${LD_LIBRARY_PATH}"
 echo $LD_LIBRARY_PATH
 find "${SUPPORT_DIR}/../../.."
-./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
+./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
 echo "======== Publish reports"
-pushd lib/build
+pushd test/build
 zip -r "${REPORTS}/test-reports-linux" reports
 popd
 

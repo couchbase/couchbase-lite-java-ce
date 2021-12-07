@@ -24,10 +24,10 @@ fi
 STATUS=0
 
 echo "======== TEST Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-./gradlew ciTest --console=plain || STATUS=5
+./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
 echo "======== Publish reports"
-pushd lib/build > /dev/null
+pushd test/build > /dev/null
 zip -r "${REPORTS}/test-reports-macos" reports
 popd > /dev/null
 
