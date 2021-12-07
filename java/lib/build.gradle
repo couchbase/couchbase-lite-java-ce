@@ -151,7 +151,7 @@ java {
     }
 }
 
-kotlin { kotlinDaemonJvmArgs = ["-Xmx1024m", "-Xms512m"] }
+kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
 repositories {
     google()
