@@ -10,27 +10,27 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 4]; then
+if [ "$#" -ne 4 ]; then
     usage
 fi
 
 LATEST_BUILDS="$1"
-if [ -z "${LATEST_BUILD}" ]; then
+if [ -z "${LATEST_BUILDS}" ]; then
     usage
 fi
 
 SOURCE="$2"
-if [-z "${SOURCE}"]; then
+if [ -z "${SOURCE}" ]; then
     usage
 fi
 
 VERSION="$3"
-if [-z "${SOURCE}"]; then
+if [ -z "${VERSION}" ]; then
     usage
 fi
 
 BUILD_NUMBER="$4"
-if [-z "${SOURCE}"]; then
+if [ -z "${BUILD_NUMBER}" ]; then
     usage
 fi
 
