@@ -5,27 +5,27 @@ rem Download and extract source for Windows
 
 :: make sure that there are exactly 4 non-empty arguments 
 
-if "%1" == "" (
+if "%1%" == "" (
+	echo Usage: fetch_source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
+	exit /B 1
+)
+
+if "%2%" == "" (
 	echo Usage: source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
 	exit /B 1
-	)
+)
 
-if "%2" == "" (
+if "%3%" == "" (
 	echo Usage: source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
 	exit /B 1
-	)
+)
 
-if "%3" == "" (
+if "%4%" == "" (
 	echo Usage: source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
 	exit /B 1
-	)
+)
 
-if "%4" == "" (
-	echo Usage: source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
-	exit /B 1
-	)
-
-if NOT "%5" == "" (
+if NOT "%5%" == "" (
 	echo Usage: source_windows.bat ^<LATESTBUILDS^> ^<VERSION^> ^<BUILD_BUMBER^> ^<SOURCE^>
 	exit /B 1
 )
