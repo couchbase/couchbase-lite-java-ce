@@ -10,6 +10,10 @@ function usage() {
     exit 1
 }
 
+if [ "$#" -ne 4]; then
+    usage
+fi
+
 LATEST_BUILDS="$1"
 if [ -z "${LATEST_BUILD}" ]; then
     usage
