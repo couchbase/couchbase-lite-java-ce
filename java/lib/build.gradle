@@ -31,8 +31,8 @@ import java.util.regex.Pattern
 
 plugins {
     id 'java-library'
-    id 'cpp'
     id 'kotlin'
+    id 'cpp'
     id 'java-library-distribution'
     id 'checkstyle'
     id 'pmd'
@@ -71,11 +71,11 @@ ext {
 
     CBL_LICENSE_DIR = "${ROOT_DIR}/legal/mobile/couchbase-lite/license"
     CBL_CORE_DIR = "${ROOT_DIR}/core"
-    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
-    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
+    CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
+    CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
 
     GENERATED_DIR = "${buildDir}/generated/sources"
     REPORTS_DIR = "${buildDir}/reports"
@@ -119,6 +119,7 @@ properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
 group = CBL_GROUP
 version = BUILD_VERSION
 
+compileJava.options.encoding = "UTF-8"
 java {
     targetCompatibility JavaVersion.VERSION_1_8
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -150,8 +151,6 @@ java {
         }
     }
 }
-
-kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
 repositories {
     google()
@@ -189,23 +188,11 @@ compileJava.dependsOn generateCBLVersion
 
 
 // ----------------------------------------------------------------
-// Build Kotlin (automated tests)
-// ----------------------------------------------------------------
-
-compileKotlin.kotlinOptions.jvmTarget = "1.8"
-compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
-
-
-// ----------------------------------------------------------------
 // Build Native
 // ----------------------------------------------------------------
 
 // For generating JNI headers:
 compileJava.options.compilerArgs += ["-h", CBL_JNI_INCLUDE_DIR]
-
-// UTF-8
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
 
 // Native Components:
 model {
@@ -271,9 +258,9 @@ model {
 
     components {
         LiteCoreJNI(NativeLibrarySpec) {
-            if (OperatingSystem.current().isMacOsX()) targetPlatform "osx"
-            if (OperatingSystem.current().isLinux()) targetPlatform "linux"
-            if (OperatingSystem.current().isWindows()) targetPlatform "windows"
+            if (OperatingSystem.current().isMacOsX()) { targetPlatform "osx" }
+            if (OperatingSystem.current().isLinux()) { targetPlatform "linux" }
+            if (OperatingSystem.current().isWindows()) { targetPlatform "windows" }
             sources {
                 cpp {
                     source {
@@ -324,7 +311,11 @@ model {
     }
 }
 
-/////// JavaDoc
+
+// ----------------------------------------------------------------
+// Javadoc
+// ----------------------------------------------------------------
+
 javadoc {
     failOnError false
 
@@ -363,7 +354,7 @@ checkstyle {
         checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
     }
 
-    configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
+    configFile = file("${ETC_DIR}/checkstyle/checkstyle.xml")
     configProperties = ['configDir': file("${ETC_DIR}/checkstyle")]
 
     showViolations true
@@ -458,17 +449,22 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 // Testing
 // ----------------------------------------------------------------
 
+compileTestJava.options.encoding = "UTF-8"
+
+compileKotlin.kotlinOptions.jvmTarget = "1.8"
+compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+
+kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
+
 test {
-    if (System.env.LD_LIBRARY_PATH != null) {
-        jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
-    }
+    jacoco { enabled = COVERAGE }
+
+    if (System.env.LD_LIBRARY_PATH != null) { jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}" }
 
     workingDir = new File(workingDir, ".test-" + new Date().format('yyMMddHHmm'))
     if (!workingDir.exists()) { workingDir.mkdirs() }
 
     if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
-
-    jacoco { enabled = COVERAGE }
 
     testLogging {
         outputs.upToDateWhen { false }

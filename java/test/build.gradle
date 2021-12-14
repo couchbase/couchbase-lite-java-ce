@@ -37,7 +37,7 @@ ext {
     CBL_GROUP = 'com.couchbase.lite'
 
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
-    BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : 9 //"SNAPSHOT"
+    BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
 
     CBL_CORE_DIR = "${ROOT_DIR}/core"
@@ -48,15 +48,14 @@ ext {
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_CE_JAVA_DIR = "${CBL_CE_ROOT_DIR}/java"
 
-    CBL_NATIVE_DIR = "${buildDir}/native"
-
     REPORTS_DIR = "${buildDir}/reports"
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
+
+    CBL_NATIVE_DIR = "${buildDir}/native"
 }
 
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
-
 
 // ----------------------------------------------------------------
 // Build
@@ -65,6 +64,7 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 group = CBL_GROUP
 version = BUILD_VERSION
 
+compileJava.options.encoding = "UTF-8"
 java {
     targetCompatibility JavaVersion.VERSION_1_8
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -81,7 +81,7 @@ java {
                 "${CBL_COMMON_DIR}/test/java",                   // Common tests
                 "${CBL_COMMON_JAVA_DIR}/test/java",              // Common Java tests
                 "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
-                "${CBL_CE_JAVA_DIR}lib/src/test/java",                  // CE Common tests
+                "${CBL_CE_JAVA_DIR}lib/src/test/java",           // CE Common tests
             ]
             resources.srcDirs = [
                 "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
@@ -90,8 +90,6 @@ java {
         }
     }
 }
-
-kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
 repositories {
     maven { url "http://proget.build.couchbase.com/maven2/cimaven" }
@@ -102,11 +100,10 @@ repositories {
 dependencies {
     testCompileOnly 'androidx.annotation:annotation:1.2.0'
 
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-
-    testImplementation 'junit:junit:4.13.2'
-
     testImplementation "com.couchbase.lite:couchbase-lite-java:${BUILD_VERSION}"
+
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
+    testImplementation 'junit:junit:4.13.2'
 }
 
 
@@ -114,11 +111,14 @@ dependencies {
 // Testing
 // ----------------------------------------------------------------
 
-test {
-    if (System.env.LD_LIBRARY_PATH != null) {
-        jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}"
-    }
+compileTestJava.options.encoding = "UTF-8"
 
+compileKotlin.kotlinOptions.jvmTarget = "1.8"
+compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+
+kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
+
+test {
     workingDir = new File(workingDir, ".test-" + new Date().format('yyMMddHHmm'))
     if (!workingDir.exists()) { workingDir.mkdirs() }
 
