@@ -471,7 +471,7 @@ test {
 
         events = ["failed", "skipped"]
 
-        // showStandardStreams = true
+        showStandardStreams = true
 
         showCauses = true
         showExceptions = true
