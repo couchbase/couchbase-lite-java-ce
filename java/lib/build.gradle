@@ -239,7 +239,7 @@ model {
                 }
             }
             mbedCrypto {
-                headers.srcDir "${CBL_CORE_DIR}/vendor/mbedtls/crypto/include"
+                headers.srcDir "${CBL_CORE_DIR}/vendor/mbedtls/include"
                 binaries.withType(StaticLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
@@ -324,7 +324,7 @@ javadoc {
 
     options {
         title = "${CBL_LICENSE} ${BUILD_VERSION}"
-        memberLevel = JavadocMemberLevel.PROTECTED
+        memberLevel = JavadocMemberLevel.PUBLIC
         docEncoding = 'UTF-8'
         encoding = 'UTF-8'
         charSet = 'UTF-8'
