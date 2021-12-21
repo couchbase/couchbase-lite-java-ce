@@ -1,7 +1,7 @@
 
 echo on
 
-rem Publish Couchbase Lite Java, Community Edition for Windows
+rem Publish Couchbase Lite Java for Windows, Community Edition
 
 set product=couchbase-lite-java
 set mavenUrl="http://proget.build.couchbase.com/maven2/cimaven"
@@ -16,7 +16,7 @@ set buildNumber=%2%
 set artifactsDir=%3%
 set status=0
 
-echo ======== PUBLISH Couchbase Lite Java, Community Edition
+echo ======== PUBLISH Couchbase Lite Java for Windows, Community Edition
 call gradlew.bat ciPublish -PbuildNumber=%buildNumber% -PmavenUrl=%mavenUrl% || set status=5
 
 echo "======== Copy artifacts to staging directory"

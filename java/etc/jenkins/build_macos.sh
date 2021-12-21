@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Build Couchbase Lite Java, Community Edition for MacOS
+# Build Couchbase Lite Java for MacOS, Community Edition
 #
 NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 
@@ -21,7 +21,7 @@ if [ -z "$BUILD_NUMBER" ]; then
     usage
 fi
 
-echo "======== BUILD Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+echo "======== BUILD Couchbase Lite Java for MacOS, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Clean up ..." 
 "${TOOLS_DIR}/clean_litecore.sh"

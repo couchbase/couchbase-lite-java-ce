@@ -1,7 +1,7 @@
 
 echo on
 
-rem Build Couchbase Lite Java, Community Edition for Windows
+rem Build Couchbase Lite Java for Windows, Community Edition
 
 if "%2%" == "" (
     echo Usage: test_windows.bat ^<BUILD_NUMBER^> ^<REPORTS^>
@@ -12,8 +12,9 @@ set buildNumber=%1%
 set reportsDir=%2%
 set status=0
 
-echo ======== TEST Couchbase Lite Java, Community Edition 
-call gradlew.bat ciTest --console=plain -PautomatedTests=true -PbuildNumber=%buildNumber% || set status=5
+echo ======== TEST Couchbase Lite Java for Windows, Community Edition 
+call gradlew.bat ciTest --console=plain -PautomatedTests=true -PbuildNumber=%buildNumber%  > test.log 2>&1 || set status=5
+7z a -tzip -r "%reportsDir%\test-log-windows.zip" test.log
 
 echo ======== Publish test reports
 pushd test\build
