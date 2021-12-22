@@ -74,6 +74,7 @@ ext {
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '3.14.7'
+    SPOTBUGS_VERSION = '4.4.2'
 }
 
 // defining this property in the file ~/.gradle/gradle.properties
@@ -242,7 +243,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'androidx.annotation:annotation:1.2.0'
+    compileOnly 'androidx.annotation:annotation:1.3.0'
     compileOnly "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
 
     //noinspection GradleDependency
@@ -375,7 +376,9 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        afterEvaluate { dependsOn tasks.find { t -> t.name.endsWith 'compileDebugSources' } }
+        afterEvaluate {
+            dependsOn tasks.find { t -> t.name.endsWith 'compileDebugSources' }
+        }
 
         effort = "max"
         reportLevel = "medium"
@@ -383,9 +386,17 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
         sourceDirs = project.files(android.sourceSets.main.java.srcDirs)
 
-        classDirs = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: FILE_FILTER)
+        classDirs = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes")
+
+        android.getBootClasspath().each { dir -> auxClassPaths += project.files(dir) }
+        afterEvaluate {
+            android.libraryVariants.collect { variant ->
+                auxClassPaths += project.files(variant.javaCompileProvider.get().classpath.files)
+            }
+        }
 
         excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
+        onlyAnalyze = ['com.couchbase.lite.-']
 
         reports {
             xml {
