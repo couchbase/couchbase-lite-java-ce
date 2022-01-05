@@ -46,11 +46,6 @@ ${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
 ${SDK_MGR} "cmake;${CMAKE_VERSION}"
 ${SDK_MGR} "ndk;${NDK_VERSION}"
 
-# The Jenkins script has already put passwords into local.properties
-cat <<EOF >> local.properties
-sdk.dir=${SDK_HOME}
-EOF
-
 echo "======== Check"
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 

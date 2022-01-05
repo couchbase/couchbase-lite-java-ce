@@ -40,8 +40,6 @@ echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
 ${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
 
-echo "sdk.dir=${SDK_HOME}" > local.properties
-
 echo "======== Test"
 ./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
