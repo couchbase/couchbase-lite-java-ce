@@ -40,12 +40,10 @@ echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
 ${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
 
-cat <<EOF >> local.properties
-sdk.dir=${SDK_HOME}
-EOF
+echo "sdk.dir=${SDK_HOME}" > local.properties
 
 echo "======== Test"
-./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
+./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
 
 echo "======== Archive reports"
 pushd test/build/reports/androidTests
