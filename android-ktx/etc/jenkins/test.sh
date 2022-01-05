@@ -31,14 +31,14 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1 --install"
+SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager --channel=1"
 STATUS=0
 
 echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
 
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
-${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
+${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
 
 echo "======== Test"
 ./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=5

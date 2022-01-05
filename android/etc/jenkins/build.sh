@@ -35,16 +35,16 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1 --install"
+SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager --channel=1"
 STATUS=0
 
 echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Install Toolchain"
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
-${SDK_MGR} "build-tools;${BUILD_TOOLS_VERSION}"
-${SDK_MGR} "cmake;${CMAKE_VERSION}"
-${SDK_MGR} "ndk;${NDK_VERSION}"
+${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
+${SDK_MGR} --install "cmake;${CMAKE_VERSION}"
+${SDK_MGR} --install "ndk;${NDK_VERSION}"
 
 echo "======== Check"
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
