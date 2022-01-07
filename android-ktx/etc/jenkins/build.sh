@@ -33,7 +33,7 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/tools/bin/sdkmanager --channel=1"
+SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1"
 STATUS=0
 
 echo "======== BUILD Couchbase Lite Android Kotlin Extensions, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
