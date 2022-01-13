@@ -7,6 +7,7 @@ EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
 
+COMMON_ETC="`pwd`/../../common/etc"
 
 function usage() {
     echo "Usage: $0 <release version> <build number> <artifacts path> <workspace path>"
@@ -69,7 +70,7 @@ pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
 diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies -Dmaven.repo.remote="${MAVEN_URL}"
+mvn install dependency:copy-dependencies -gs "${COMMON_ETC}/mvn/settings.xml" -PCblInternalMaven
 popd
 
 echo "======== Create zip"
