@@ -26,9 +26,6 @@ call %toolsDir%\clean_litecore.bat
 echo ======== Download Lite Core
 powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE
 
-echo ======== Build mbedcrypto
-call %toolsDir%\build_litecore.bat %vsGen% CE mbedcrypto
-
 echo ======== Build Java
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
 

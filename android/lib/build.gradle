@@ -209,6 +209,7 @@ android {
             res.srcDirs = [
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
             ]
+            jniLibs.srcDirs = [ "${CBL_COMMON_ROOT_DIR}/lite-core/android" ]
         }
         debug {
             manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/debug/AndroidManifest.xml"
@@ -275,7 +276,7 @@ task javadoc(type: Javadoc) {
     afterEvaluate {
         classpath += files(
             android.libraryVariants.collect { variant ->
-                if (variant.name.equals("release")) { variant.javaCompileProvider.get().classpath.files }
+                if (variant.name == "release") { variant.javaCompileProvider.get().classpath.files }
             })
     }
 
@@ -289,7 +290,7 @@ task javadoc(type: Javadoc) {
         links "https://docs.oracle.com/javase/8/docs/api/"
         linksOffline "https://developer.android.com/reference/", "${project.android.sdkDirectory}/docs/reference"
         addStringOption('Xdoclint:none', '-quiet')
-        if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+        if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
             addBooleanOption('-ignore-source-errors', true)
         }
     }
@@ -604,7 +605,7 @@ project.afterEvaluate {
 }
 
 // Clean
-// delete .externalNativeBuild and .cxx directories to force rerun of cmake.
+// delete .cxx directory to force rerun of cmake.
 // This is necessary because 'clean' deletes the file 'zconf.h' which is in
 // .../build/intermediates, causing subsequent builds to fail.
 clean.doLast { project.delete "${projectDir}/.cxx" }

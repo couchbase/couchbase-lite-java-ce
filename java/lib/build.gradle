@@ -239,21 +239,6 @@ model {
                     }
                 }
             }
-            mbedCrypto {
-                headers.srcDir "${CBL_CORE_DIR}/vendor/mbedtls/include"
-                binaries.withType(StaticLibraryBinary) {
-                    def os = targetPlatform.operatingSystem
-                    if (os.macOsX) {
-                        staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/libmbedcrypto.a")
-                    }
-                    else if (os.linux) {
-                        staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/libmbedcrypto.a")
-                    }
-                    else if (os.windows) {
-                        staticLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/mbedcrypto.lib")
-                    }
-                }
-            }
         }
     }
 
@@ -269,7 +254,6 @@ model {
                         include "**/*.cc"
                     }
                     lib library: 'liteCore', linkage: 'shared'
-                    lib library: 'mbedCrypto', linkage: 'static'
                 }
             }
 
