@@ -21,7 +21,7 @@ set toolsDir=%scriptDir%\..\..\..\..\common\tools
 echo ======== BUILD Couchbase Lite Java for Windows, Community Edition
 
 echo ======== Clean up
-call %toolsDir%\clean_litecore.bat
+powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\clean_litecore.ps1"
 
 echo ======== Download Lite Core
 powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE

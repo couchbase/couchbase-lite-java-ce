@@ -77,10 +77,6 @@ ext {
     SPOTBUGS_VERSION = '4.4.2'
 }
 
-// defining this property in the file ~/.gradle/gradle.properties
-// can dramatically reduce your build time.
-def TARGET_ABIS = (!hasProperty("targetAbis")) ? null : targetAbis.split(', *')
-
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
@@ -135,11 +131,6 @@ android {
         versionCode 30100
         versionName BUILD_VERSION
         project.archivesBaseName = "${CBL_ARTIFACT_ID}-${versionName}"
-
-        // if no specific ABIs specified, build all supported.
-        if (TARGET_ABIS != null) {
-            ndk { abiFilters TARGET_ABIS }
-        }
 
         externalNativeBuild {
             cmake { targets 'LiteCoreJNI' }
@@ -209,7 +200,6 @@ android {
             res.srcDirs = [
                 "${CBL_COMMON_ANDROID_DIR}/main/res",            // Common resources
             ]
-            jniLibs.srcDirs = [ "${CBL_COMMON_ROOT_DIR}/lite-core/android" ]
         }
         debug {
             manifest.srcFile "${CBL_COMMON_ANDROID_DIR}/debug/AndroidManifest.xml"
@@ -254,6 +244,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
+
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:rules:1.4.0'

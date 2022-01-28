@@ -42,7 +42,7 @@ fi
 echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} (${DISTRO})"
 
 echo "======== Clean up ..." 
-"${TOOLS_DIR}/clean_litecore.sh" -p "${DISTRO}"
+"${TOOLS_DIR}/clean_litecore.sh"
 
 echo "======== Download platform artifacts ..."
 for PLATFORM in macos windows; do

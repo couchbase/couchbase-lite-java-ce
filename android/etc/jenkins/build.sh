@@ -50,8 +50,11 @@ ${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
 ${SDK_MGR} --install "cmake;${CMAKE_VERSION}"
 ${SDK_MGR} --install "ndk;${NDK_VERSION}"
 
+echo "======== Clean up ..."
+"${TOOLS_DIR}/clean_litecore.sh"
+
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_android_litecore.sh" -n "${NEXUS_URL}"
+"${TOOLS_DIR}/fetch_android_litecore.sh" -e CE -n "${NEXUS_URL}"
 
 echo "======== Check"
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5

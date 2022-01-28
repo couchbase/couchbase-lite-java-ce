@@ -28,13 +28,11 @@ fi
 
 echo "======== CHECK Couchbase Lite Java, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} (${DISTRO})"
 
-"${TOOLS_DIR}/clean_litecore.sh" -p "${DISTRO}"
+echo "======== Clean up ..."
+"${TOOLS_DIR}/clean_litecore.sh"
 
 echo "======== Download Lite Core ..."
 "${TOOLS_DIR}/fetch_litecore.sh" -p "${DISTRO}" -e EE -n "${NEXUS_URL}"
-
-echo "======== Build mbedcrypto ..."
-"${TOOLS_DIR}/build_litecore.sh" -l mbedcrypto -e EE
 
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
