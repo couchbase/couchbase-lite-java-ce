@@ -36,9 +36,14 @@ find "${SUPPORT_DIR}/../../.."
 zip -r "${REPORTS}/test-log-linux" test.log
 
 echo "======== Publish reports"
-pushd test/build
-zip -r "${REPORTS}/test-reports-linux" reports
-popd
+pushd test/build > /dev/null
+rm -rf test-results/test/binary
+cp -a test-results/test reports/tests/test/raw
+cd reports/tests
+# ??? DEBUG
+find .
+zip -r "${REPORTS}/test-reports-linux" test
+popd > /dev/null
 
 echo "======== TEST COMPLETE: ${STATUS}"
 find "${REPORTS}"

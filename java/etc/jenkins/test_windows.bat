@@ -18,7 +18,10 @@ call gradlew.bat ciTest --console=plain -PautomatedTests=true -PbuildNumber=%bui
 
 echo ======== Publish test reports
 pushd test\build
-7z a -tzip -r "%reportsDir%\test-reports-windows.zip" reports
+rmdir /s /q test-results\test\binary
+xcopy /e /i /y test-results\test reports\tests\test\raw
+cd reports\tests
+7z a -tzip -r "%reportsDir%\test-reports-windows.zip" test
 popd
 
 echo ======== TEST COMPLETE %status%
