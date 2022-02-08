@@ -185,7 +185,11 @@ task generateCBLVersion(type: Copy) {
     }
     into "${GENERATED_DIR}/java/com/couchbase/lite/internal/core"
 }
-compileJava.dependsOn generateCBLVersion
+project.afterEvaluate {
+    sourcesJar.dependsOn generateCBLVersion
+    compileJava.dependsOn generateCBLVersion
+    compileKotlin.dependsOn generateCBLVersion
+}
 
 
 // ----------------------------------------------------------------
@@ -347,6 +351,7 @@ checkstyle {
 task checkstyle(type: Checkstyle) {
     description 'Checkstyle'
     group 'verification'
+    afterEvaluate { dependsOn generateCBLVersion }
 
     source sourceSets.main.java.srcDirs
     include '**/*.java'
@@ -374,6 +379,7 @@ pmd {
 task pmd(type: Pmd) {
     description 'PMD'
     group 'verification'
+    afterEvaluate { dependsOn generateCBLVersion }
 
     ruleSetFiles = files("${ETC_DIR}/pmd/pmd.xml")
 
@@ -404,7 +410,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        dependsOn 'compileJava'
+        dependsOn compileJava, processResources
 
         effort = "max"
         reportLevel = "medium"
@@ -561,6 +567,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
+distZip.dependsOn javadocJar
+distTar.dependsOn javadocJar
 
 // Generate source.jar
 task sourcesJar(type: Jar) {
@@ -638,6 +646,7 @@ publishing {
                 username mavenRepoUser
                 password mavenRepoPass
             }
+            allowInsecureProtocol = true
         }
     }
 }

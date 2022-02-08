@@ -17,9 +17,6 @@
 // Please try to keep this build file as similar to the other family build files
 // as is possible.
 //
-import com.android.build.gradle.tasks.LintGlobalTask
-import com.github.spotbugs.snom.SpotBugsTask
-
 import java.time.Instant
 import java.util.regex.Pattern
 
@@ -123,7 +120,7 @@ android {
     kotlinOptions { jvmTarget = '1.8' }
 
     // mumbo-jumbo to prevent "More than one file was found" message
-    packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
+    packagingOptions { exclude 'META-INF/*' }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
@@ -141,9 +138,7 @@ android {
         buildConfigField "String", "BUILD_COMMIT", "\"${BUILD_COMMIT}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        if (TEST_FILTER != null) {
-            testInstrumentationRunnerArguments notAnnotation: TEST_FILTER
-        }
+        if (TEST_FILTER != null) { testInstrumentationRunnerArguments notAnnotation: TEST_FILTER }
     }
 
     buildTypes {
@@ -259,11 +254,14 @@ dependencies {
 task javadoc(type: Javadoc) {
     failOnError false
 
+    afterEvaluate { dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin }
+
     source android.sourceSets.main.java.srcDirs
     exclude "com/couchbase/lite/internal/**"
 
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += project.files(android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
+    classpath += project.files("${buildDir}/generated/source/buildConfig/release")
     afterEvaluate {
         classpath += files(
             android.libraryVariants.collect { variant ->
@@ -278,12 +276,9 @@ task javadoc(type: Javadoc) {
         encoding = 'UTF-8'
         charSet = 'UTF-8'
         locale = 'en_US'
-        links "https://docs.oracle.com/javase/8/docs/api/"
-        linksOffline "https://developer.android.com/reference/", "${project.android.sdkDirectory}/docs/reference"
+        links "https://docs.oracle.com/en/java/javase/11/docs/api"
         addStringOption('Xdoclint:none', '-quiet')
-        if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
-            addBooleanOption('-ignore-source-errors', true)
-        }
+        if (JavaVersion.current() > JavaVersion.VERSION_1_8) { addBooleanOption('-ignore-source-errors', true) }
     }
 }
 
@@ -364,13 +359,11 @@ task pmd(type: Pmd) {
 // is to disable the check.
 spotbugs { toolVersion = SPOTBUGS_VERSION }
 ['Html', 'Xml'].each { reportType ->
-    task("spotbugs${reportType}", type: SpotBugsTask) {
+    task("spotbugs${reportType}", type: com.github.spotbugs.snom.SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        afterEvaluate {
-            dependsOn tasks.find { t -> t.name.endsWith 'compileDebugSources' }
-        }
+        afterEvaluate { dependsOn generateDebugRFile, generateReleaseRFile, compileDebugKotlin, compileReleaseKotlin, compileDebugJavaWithJavac }
 
         effort = "max"
         reportLevel = "medium"
@@ -500,6 +493,7 @@ publishing {
                 username mavenRepoUser
                 password mavenRepoPass
             }
+            allowInsecureProtocol = true
         }
     }
 }
@@ -589,9 +583,8 @@ project.afterEvaluate {
     tasks.withType(Javadoc) { shouldRunAfter connectedDebugAndroidTest }
     connectedDebugAndroidTest.shouldRunAfter smokeTest
     testDebugUnitTest.shouldRunAfter smokeTest
-    tasks.withType(SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
-    tasks.withType(Pmd) { shouldRunAfter tasks.withType(LintGlobalTask) }
-    tasks.withType(LintGlobalTask) { shouldRunAfter tasks.withType(Checkstyle) }
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
+    tasks.withType(Pmd) { shouldRunAfter tasks.withType(Checkstyle) }
     tasks.withType(Checkstyle) { shouldRunAfter compileDebugSources }
 }
 

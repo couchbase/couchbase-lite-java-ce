@@ -16,7 +16,7 @@
 //
 buildscript {
     ext {
-        KOTLIN_VERSION = '1.5.31'
+        KOTLIN_VERSION = '1.6.10'
         JACOCO_VERSION = '0.8.6'
 
         ROOT_DIR = "${projectDir}/../.."

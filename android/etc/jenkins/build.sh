@@ -6,7 +6,7 @@
 # These versions must match the versions in lib/build.gradle
 NDK_VERSION='22.0.7026061'
 CMAKE_VERSION='3.18.1'
-BUILD_TOOLS_VERSION='30.0.3'
+BUILD_TOOLS_VERSION='32.0.0'
 
 NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"

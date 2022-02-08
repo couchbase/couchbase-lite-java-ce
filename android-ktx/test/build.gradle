@@ -55,9 +55,6 @@ ext {
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
-// Set true to use mavenLocal instead of Proget
-def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
-
 
 // ----------------------------------------------------------------
 // Build
@@ -80,9 +77,7 @@ android {
         versionName BUILD_VERSION
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        if (TEST_FILTER != null) {
-            testInstrumentationRunnerArguments notAnnotation: TEST_FILTER
-        }
+        if (TEST_FILTER != null) { testInstrumentationRunnerArguments notAnnotation: TEST_FILTER }
     }
 
     sourceSets {
@@ -124,24 +119,27 @@ android {
 }
 
 repositories {
-    if (USE_LOCAL_MAVEN) { mavenLocal() }
-    maven { url "http://proget.build.couchbase.com/maven2/cimaven" }
+    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
+    maven {
+        url "http://proget.build.couchbase.com/maven2/cimaven"
+        allowInsecureProtocol = true
+    }
     google()
     mavenCentral()
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 
     implementation("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
     testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:rules:1.4.0'
@@ -156,3 +154,4 @@ dependencies {
 // This target requires setting the property "automatedTests" true.
 // See settings.gradle for explanation.
 task ciTest(dependsOn: ['connectedDebugAndroidTest'])
+

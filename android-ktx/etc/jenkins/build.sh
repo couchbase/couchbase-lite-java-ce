@@ -4,7 +4,7 @@
 #
 
 # These versions must match the versions in lib/build.gradle
-BUILD_TOOLS_VERSION='30.0.3'
+BUILD_TOOLS_VERSION='32.0.0'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
