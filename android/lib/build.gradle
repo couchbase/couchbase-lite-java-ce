@@ -276,6 +276,7 @@ task javadoc(type: Javadoc) {
         links "https://docs.oracle.com/javase/8/docs/api/"
         linksOffline "https://developer.android.com/reference/", "${project.android.sdkDirectory}/docs/reference"
         addStringOption('Xdoclint:none', '-quiet')
+        if (JavaVersion.current() > JavaVersion.VERSION_1_8) { addBooleanOption('-ignore-source-errors', true) }
     }
 }
 
