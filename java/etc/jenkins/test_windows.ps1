@@ -3,7 +3,7 @@ Set-PSDebug -Trace 1
 #Build Couchbase Lite Java for Windows, Community Edition
 if ($args[2] -eq "")
 {
-    Write-Host "Usage: test_windows.bat <BUILD_NUMBER> <REPORTS>"
+    Write-Host "Usage: test_windows.ps1 <BUILD_NUMBER> <REPORTS>"
     exit 1
 }
 param(
@@ -25,7 +25,7 @@ Push-Location test\build
 Remove-Item -Recurse -Force test-results\test\binary
 Xcopy /e /i /y test-results\test reports\tests\tests\raw
 cd reports\tests
-& 7z a -tzip -r "%reportsDir%\test-reports-windows.zip" test
+& 7z a -tzip -r "$reportsDir\test-reports-windows.zip" test
 Pop-Location
 
 

@@ -6,7 +6,7 @@ $mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
 
 if ($args[3] -eq "")
 {
-    Write-Host "Usage: publish_windows.bat <VERSION> <BUILD_NUMBER> <ARTIFACT>"
+    Write-Host "Usage: publish_windows.ps1 <VERSION> <BUILD_NUMBER> <ARTIFACT>"
     exit 1
 }
 
