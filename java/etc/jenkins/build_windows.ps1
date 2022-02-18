@@ -29,7 +29,7 @@ Write-Host "======== Download Lite Core"
 & $toolsDir/fetch_litecore.ps1 $LiteCoreRepoUrl -Edition "CE"
 
 Write-Host "======== Build Java"
-$process = Start-Process -FilePath "gradlew.bat" -ArgumentList "ciBuild -PbuildNumber=$buildNumber" -PassThru -Wait
+$process = Start-Process -FilePath "$scriptDir\..\..\gradlew.bat" -ArgumentList "ciBuild -PbuildNumber=$buildNumber" -PassThru -Wait
 if($process.ExitCode -ne 0){
     Write-Host "Failed with error $process.ExitCode"
     exit $process.ExitCode
