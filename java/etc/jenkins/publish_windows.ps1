@@ -4,15 +4,11 @@ Set-PSDebug -Trace 1
 $product="couchbase-lite-java"
 $mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
 
-if ($args[3] -eq "")
-{
-    Write-Host "Usage: publish_windows.ps1 <VERSION> <BUILD_NUMBER> <ARTIFACT>"
-    exit 1
-}
-
 param (
 	[string]$version,
 	[string]$buildNumber,
+
+    [Parameter(Mandatory=$true)]
     [string]$artifactsDir
 )
 

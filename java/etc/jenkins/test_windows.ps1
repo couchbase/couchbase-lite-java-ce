@@ -1,14 +1,11 @@
 Set-PSDebug -Trace 1
 
 #Build Couchbase Lite Java for Windows, Community Edition
-if ($args[2] -eq "")
-{
-    Write-Host "Usage: test_windows.ps1 <BUILD_NUMBER> <REPORTS>"
-    exit 1
-}
 param(
-[string]$buildNumber,
-[string]$reportsDir
+    [string]$buildNumber,
+
+    [Parameter(Mandatory=$true)]
+    [string]$reportsDir
 )
 
 $status = 0
