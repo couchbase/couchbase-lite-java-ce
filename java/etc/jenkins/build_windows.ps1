@@ -1,14 +1,15 @@
-Set-PSDebug -Trace 1
-
-# Build Couchbase Lite Java for Windows, Community Edition
-$liteCoreRepoUrl = "http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
-
 param (
+    [Parameter(Mandatory=$true)]
 	[string]$vsGen,
 
     [Parameter(Mandatory=$true)]
 	[string]$buildNumber
 )
+
+Set-PSDebug -Trace 1
+
+# Build Couchbase Lite Java for Windows, Community Edition
+$liteCoreRepoUrl = "http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 
 $toolsDir = "$PSScriptRoot\..\..\..\..\common\tools"
 
