@@ -17,7 +17,7 @@ $mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
 $status = 0
 
 Write-Host "======== PUBLISH Couchbase Lite Java for Windows, Community Edition"
-$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "ciPublish -PbuildNumber=$buildNumber" -PassThru -Wait
+$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciPublish -PbuildNumber=$buildNumber" -PassThru -Wait
 if($process.ExitCode -ne 0){
     $status = 5
 }

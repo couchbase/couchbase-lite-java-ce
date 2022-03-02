@@ -12,7 +12,7 @@ Set-PSDebug -Trace 1
 $status = 0
 
 Write-Host "======== TEST Couchbase Lite Java for Windows, Community Edition"
-$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "ciTest --console=plain -PautomatedTests=true -PbuildNumber=$buildNumber  > test.log 2>&1" -PassThru -Wait
+$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciTest --console=plain -PautomatedTests=true -PbuildNumber=$buildNumber" -PassThru -Wait
 if($process.ExitCode -ne 0){
     $status = 5
 }
