@@ -11,11 +11,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
 
 function usage() {
-   echo "Usage: $0 <release version> <build number> <workspace path> <distro>"
+   echo "Usage: $0 <release version> <build number> <workspace path>"
    exit 1
 }
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 3 ]; then
    usage
 fi
 
@@ -34,12 +34,7 @@ if [ -z "${WORKSPACE}" ]; then
    usage
 fi
 
-DISTRO="$4"
-if [ -z "${DISTRO}" ]; then
-   usage
-fi
-
-echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} (${DISTRO})"
+echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Clean up ..." 
 "${TOOLS_DIR}/clean_litecore.sh"
@@ -52,7 +47,7 @@ for PLATFORM in macos windows; do
 done
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_litecore.sh" -p "${DISTRO}" -e CE -n "${NEXUS_URL}"
+"${TOOLS_DIR}/fetch_litecore.sh" -p "linux" -e CE -n "${NEXUS_URL}"
 
 echo "======== Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
