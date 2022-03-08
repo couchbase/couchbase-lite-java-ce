@@ -47,7 +47,7 @@ for PLATFORM in macos windows; do
 done
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_litecore.sh" -p "linux" -e CE -n "${NEXUS_URL}"
+"${TOOLS_DIR}/get_java_core.sh" -p "linux" -e CE -n "${NEXUS_URL}"
 
 echo "======== Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1

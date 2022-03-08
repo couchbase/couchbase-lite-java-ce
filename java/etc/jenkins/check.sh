@@ -27,7 +27,7 @@ echo "======== Clean up ..."
 "${TOOLS_DIR}/clean_litecore.sh"
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_litecore.sh" -p "linux" -e EE -n "${NEXUS_URL}"
+"${TOOLS_DIR}/get_java_core.sh" -p "linux" -e EE -n "${NEXUS_URL}"
 
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || exit 1
 
