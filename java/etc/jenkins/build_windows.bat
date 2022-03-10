@@ -24,7 +24,7 @@ echo ======== Clean up
 powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\clean_litecore.ps1"
 
 echo ======== Download Lite Core
-powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_litecore.ps1" %liteCoreRepoUrl% CE
+powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_java_litecore.ps1" %liteCoreRepoUrl% CE
 
 echo ======== Build Java
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
