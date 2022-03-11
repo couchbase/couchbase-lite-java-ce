@@ -45,7 +45,7 @@ ${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
 echo "======== Build"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || STATUS=6
 
-if  [ $STATUS -eq 0 ]; then
+if [ $STATUS -eq 0 ]; then
     echo "======== Publish artifacts"
     ./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
 fi
