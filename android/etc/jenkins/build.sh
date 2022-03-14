@@ -8,7 +8,6 @@ NDK_VERSION='22.0.7026061'
 CMAKE_VERSION='3.18.1'
 BUILD_TOOLS_VERSION='32.0.0'
 
-NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -54,7 +53,7 @@ echo "======== Clean up ..."
 "${TOOLS_DIR}/clean_litecore.sh"
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_android_litecore.sh" -e CE -n "${NEXUS_URL}"
+"${TOOLS_DIR}/fetch_android_litecore.sh" -e CE
 
 echo "======== Check"
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5

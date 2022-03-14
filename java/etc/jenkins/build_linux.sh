@@ -4,8 +4,7 @@
 # This script assumes the the OSX and Windows builds are available on latestbuilds
 #
 PRODUCT="couchbase-lite-java"
-LATESTBUILDS_URL="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
-NEXUS_URL="http://nexus.build.couchbase.com:8081/nexus/content/repositories/releases/com/couchbase/litecore"
+LATESTBUILDS="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
@@ -42,12 +41,12 @@ echo "======== Clean up ..."
 echo "======== Download platform artifacts ..."
 for PLATFORM in macos windows; do
    ARTIFACT="${PRODUCT}-${VERSION}-${BUILD_NUMBER}-${PLATFORM}.zip"
-   ARTIFACT_URL="${LATESTBUILDS_URL}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
+   ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
    "${TOOLS_DIR}/extract_libs.sh" "${ARTIFACT_URL}" "${ARTIFACT}" "${WORKSPACE}/zip-tmp" || exit 1
 done
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_java_litecore.sh" -p "linux" -e CE -n "${NEXUS_URL}"
+"${TOOLS_DIR}/fetch_java_litecore.sh" -p "linux" -e CE
 
 echo "======== Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
