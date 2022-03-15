@@ -21,10 +21,10 @@ set toolsDir=%scriptDir%\..\..\..\..\common\tools
 echo ======== BUILD Couchbase Lite Java for Windows, Community Edition
 
 echo ======== Clean up
-powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\clean_litecore.ps1"
+powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\clean_litecore.ps1" || goto error
 
 echo ======== Download Lite Core
-powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_java_litecore.ps1" "CE"
+powershell.exe -ExecutionPolicy Bypass -Command "%toolsDir%\fetch_java_litecore.ps1" CE || goto error
 
 echo ======== Build Java
 call gradlew.bat ciBuild -PbuildNumber=%buildNumber% || goto error
