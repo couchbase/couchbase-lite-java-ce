@@ -19,7 +19,7 @@ Write-Host "======== Download Lite Core"
 & $toolsDir/fetch_java_litecore.ps1 -Edition "CE"
 
 Write-Host "======== Build Java"
-$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciBuild -PbuildNumber=$buildNumber  --info >error.log 2>&1 " -PassThru -Wait
+$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciBuild -PbuildNumber=$buildNumber" -PassThru -Wait
 if($process.ExitCode -ne 0){
     Write-Host "Failed with error" $process.ExitCode 
     exit $process.ExitCode
