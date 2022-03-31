@@ -232,14 +232,14 @@ model {
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/libLiteCore.dylib")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
                     }
                     else if (os.linux) {
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/libLiteCore.so")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
                     }
                     else if (os.windows) {
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/LiteCore.dll")
-                        sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/LiteCore.lib")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
+                        sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
                     }
                 }
             }
