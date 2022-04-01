@@ -706,9 +706,13 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
             include "macos/**"
             include "linux/**"
             include "windows/**"
+            exclude "**/include"
+            exclude "**/pkgconfig"
+            exclude "**/icu"
             exclude "**/*.a"
             exclude "**/*.lib"
             exclude "**/*.pdb"
+            exclude "**/*.inc"
         }
         into "${CBL_NATIVE_DIR}/libs"
     }
@@ -728,7 +732,7 @@ def getNativeLibraryResourcePath(platform) {
     else if (platform.operatingSystem.isWindows()) { os = "windows" }
     else if (platform.operatingSystem.isLinux()) { os = "linux" }
     else { os = platform.operatingSystem.name }
-    return "${os}/x86_64"
+    return "${os}/x86_64/lib"
 }
 
 def getLicenseVersion() { return getCommit("product-texts", "master") }
