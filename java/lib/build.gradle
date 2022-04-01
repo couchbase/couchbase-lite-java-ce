@@ -709,10 +709,8 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
             exclude "**/include"
             exclude "**/pkgconfig"
             exclude "**/icu"
-            exclude "**/*.a"
             exclude "**/*.lib"
             exclude "**/*.pdb"
-            exclude "**/*.inc"
         }
         into "${CBL_NATIVE_DIR}/libs"
     }
