@@ -46,9 +46,10 @@ echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../versi
 
 echo "======== Install Toolchain"
 cbdep install -d "${BIN_DIR}" ninja ${NINJA_VERSION}
+PATH="${BIN_DIR}"/ninja-*/"bin:${PATH}" 
 
 cbdep install -d "${BIN_DIR}" cmake ${CMAKE_VERSION}
-echo "cmake.prefixPath=`which cmake`" >> local.properties
+PATH="${BIN_DIR}"/cmake-*/"bin:${PATH}" 
 
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
 ${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
