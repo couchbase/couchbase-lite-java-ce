@@ -2,17 +2,11 @@
 #
 # Build Couchbase Lite Android, Community Edition
 #
-
-# These versions must match the versions in lib/build.gradle
-NINJA_VERSION="1.10.2"
-CMAKE_VERSION='3.23.0'
-BUILD_TOOLS_VERSION='32.0.0'
-NDK_VERSION='23.1.7779620'
-
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
+COMMON_TOOLS="${SCRIPT_DIR}/../../../../common/tools"
+ANDROID_TOOLS="${SCRIPT_DIR}/../../../../common/android/etc"
 
 
 function usage() {
@@ -44,22 +38,13 @@ STATUS=0
 
 echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
-echo "======== Install Toolchain"
-cbdep install -d "${BIN_DIR}" ninja ${NINJA_VERSION}
-PATH="${BIN_DIR}"/ninja-*/"bin:${PATH}" 
-
-cbdep install -d "${BIN_DIR}" cmake ${CMAKE_VERSION}
-PATH="${BIN_DIR}"/cmake-*/"bin:${PATH}" 
-
-yes | ${SDK_MGR} --licenses > /dev/null 2>&1
-${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
-${SDK_MGR} --install "ndk;${NDK_VERSION}"
+source "${ANDROID_TOOLS}/install_toolchain.sh"
 
 echo "======== Clean up ..."
-"${TOOLS_DIR}/clean_litecore.sh"
+"${COMMON_TOOLS}/clean_litecore.sh"
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_android_litecore.sh" -e CE
+"${COMMON_TOOLS}/fetch_android_litecore.sh" -e CE
 
 echo "======== Check"
 ./gradlew ciCheck -PbuildNumber="${BUILD_NUMBER}" || STATUS=5
