@@ -5,8 +5,9 @@
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-COMMON_TOOLS="${SCRIPT_DIR}/../../../../common/tools"
-ANDROID_TOOLS="${SCRIPT_DIR}/../../../../common/android/etc"
+ROOT_DIR="${SCRIPT_DIR}/../../../.."
+COMMON_TOOLS="${ROOT_DIR}/common/tools"
+ANDROID_TOOLS="${ROOT_DIR}/common/etc/android"
 
 
 function usage() {
