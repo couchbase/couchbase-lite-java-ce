@@ -4,9 +4,10 @@
 #
 
 # These versions must match the versions in lib/build.gradle
-NDK_VERSION='22.0.7026061'
-CMAKE_VERSION='3.18.1'
+NINJA_VERSION="1.10.2"
+CMAKE_VERSION='3.23.0'
 BUILD_TOOLS_VERSION='32.0.0'
+NDK_VERSION='23.1.7779620'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
@@ -44,9 +45,13 @@ STATUS=0
 echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Install Toolchain"
+cbdep install -d "${TOOLS_DIR}" ninja ${NINJA_VERSION}
+
+cbdep install -d "${TOOLS_DIR}" cmake ${CMAKE_VERSION}
+echo "cmake.prefixPath=`which cmake`" >> local.properties
+
 yes | ${SDK_MGR} --licenses > /dev/null 2>&1
 ${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
-${SDK_MGR} --install "cmake;${CMAKE_VERSION}"
 ${SDK_MGR} --install "ndk;${NDK_VERSION}"
 
 echo "======== Clean up ..."
