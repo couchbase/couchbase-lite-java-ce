@@ -7,8 +7,6 @@ MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT_DIR="${SCRIPT_DIR}/../../../.."
 COMMON_TOOLS="${ROOT_DIR}/common/tools"
-ANDROID_TOOLS="${ROOT_DIR}/common/etc/android"
-
 
 function usage() {
     echo "Usage: $0 <sdk path> <build number> <reports dir>"
@@ -19,6 +17,7 @@ if [ "$#" -ne 3 ]; then
     usage
 fi
 
+# ignored
 SDK_HOME="$1"
 if [ -z "$SDK_HOME" ]; then
     usage
@@ -34,12 +33,9 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1"
 STATUS=0
 
 echo "======== BUILD Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-
-source "${ANDROID_TOOLS}/install_toolchain.sh"
 
 echo "======== Clean up ..."
 "${COMMON_TOOLS}/clean_litecore.sh"

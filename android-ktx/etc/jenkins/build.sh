@@ -2,10 +2,6 @@
 #
 # Build Couchbase Lite Android Kotlin Extensions, Community Edition
 #
-
-# These versions must match the versions in lib/build.gradle
-BUILD_TOOLS_VERSION='32.0.0'
-
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 
 
@@ -18,6 +14,7 @@ if [ "$#" -ne 3 ]; then
     usage
 fi
 
+# ignored
 SDK_HOME="$1"
 if [ -z "$SDK_HOME" ]; then
     usage
@@ -33,14 +30,9 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
-SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1"
 STATUS=0
 
 echo "======== BUILD Couchbase Lite Android Kotlin Extensions, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-
-echo "======== Install Toolchain"
-yes | ${SDK_MGR} --licenses > /dev/null 2>&1
-${SDK_MGR} --install "build-tools;${BUILD_TOOLS_VERSION}"
 
 echo "======== Build"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || STATUS=6
