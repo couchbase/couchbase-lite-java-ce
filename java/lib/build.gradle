@@ -70,7 +70,6 @@ ext {
     BUILD_COMMIT = getBuildId()
 
     CBL_LICENSE_DIR = "${ROOT_DIR}/legal/mobile/couchbase-lite/license"
-    CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
@@ -146,7 +145,6 @@ java {
                 "${CBL_CE_COMMON_DIR}/test/java",                // CE Common tests
             ]
             resources.srcDirs = [
-                "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
                 "${CBL_COMMON_DIR}/test/assets",                 // Common test assets
             ]
         }
@@ -225,20 +223,19 @@ model {
     repositories {
         libs(PrebuiltLibraries) {
             liteCore {
-                headers.srcDir "${CBL_CORE_DIR}/C/"                             // include c4Private.h for debugging
-                headers.srcDir "${CBL_CORE_DIR}/C/include"
-                headers.srcDir "${CBL_CORE_DIR}/vendor/fleece/API"
-                headers.srcDir "${CBL_CORE_DIR}/vendor/fleece/Fleece/Support"
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
                     }
                     else if (os.linux) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
                     }
                     else if (os.windows) {
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/bin/LiteCore.dll")
                         sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
                     }
                 }
@@ -514,7 +511,16 @@ distributions {
     main {
         distributionBaseName = "${CBL_ARTIFACT_ID}"
         contents {
-            into("support") { from "${CBL_CORE_NATIVE_DIR}/support" }
+            into("support/libc++") {
+                from("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib")
+                include 'libgcc*'
+                include 'libstdc*'
+            }
+            into("support/libicu") {
+                from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
+                include 'libicu*'
+                exclude 'libicutest*'
+            }
 
             def license = fileTree(CBL_LICENSE_DIR)
             license.include CBL_LICENSE_FILE

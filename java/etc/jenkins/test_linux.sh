@@ -11,19 +11,13 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 2 ]; then
-    usage
-fi
+if [ "$#" -ne 2 ]; then usage; fi
 
 BUILD_NUMBER="$1"
-if [ -z "${BUILD_NUMBER}" ]; then
-    usage
-fi
+if [ -z "${BUILD_NUMBER}" ]; then usage; fi
 
 REPORTS="$2"
-if [ -z "${REPORTS}" ]; then
-    usage
-fi
+if [ -z "${REPORTS}" ]; then usage; fi
 
 echo "======== TEST Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 export LD_LIBRARY_PATH="${SUPPORT_DIR}/libc++:${LD_LIBRARY_PATH}"
@@ -31,7 +25,7 @@ export LD_LIBRARY_PATH="${SUPPORT_DIR}/libicu:${LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH="${SUPPORT_DIR}/libz:${LD_LIBRARY_PATH}"
 echo $LD_LIBRARY_PATH
 
-./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" > test.log 2>&1 || STATUS=5
+./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" > test.log 2>&1 || STATUS=8
 zip -r "${REPORTS}/test-log-linux" test.log
 
 echo "======== Publish reports"
@@ -43,6 +37,5 @@ zip -r "${REPORTS}/test-reports-linux" test
 popd > /dev/null
 
 echo "======== TEST COMPLETE: ${STATUS}"
-find "${REPORTS}"
 exit $STATUS
 

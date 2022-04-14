@@ -6,15 +6,12 @@ param(
     [string]$reportsDir
 )
 
-Set-PSDebug -Trace 1
-
-#Build Couchbase Lite Java for Windows, Community Edition
 $status = 0
 
 Write-Host "======== TEST Couchbase Lite Java for Windows, Community Edition"
 $process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciTest --console=plain -PautomatedTests=true -PbuildNumber=$buildNumber > test.log 2>&1" -PassThru -Wait
 if($process.ExitCode -ne 0){
-    $status = 5
+    $status = 8
 }
 & 7z a -tzip -r "$reportsDir\test-log-windows.zip" test.log
 

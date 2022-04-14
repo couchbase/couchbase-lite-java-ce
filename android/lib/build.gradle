@@ -59,7 +59,6 @@ ext {
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
     BUILD_COMMIT = getBuildId()
 
-    CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
@@ -208,7 +207,6 @@ android {
                 "${projectDir}/src/androidTest/java",            // CE Android tests
             ]
             assets.srcDirs = [
-                "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
                 "${CBL_COMMON_DIR}/test/assets",                 // Common assets
             ]
             res.srcDirs = [

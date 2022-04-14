@@ -7,49 +7,57 @@ PRODUCT="couchbase-lite-java"
 LATESTBUILDS="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-TOOLS_DIR="${SCRIPT_DIR}/../../../../common/tools"
+ROOT_DIR="${SCRIPT_DIR}/../../../.."
+TOOLS_DIR="${ROOT_DIR}/etc/jenkins"
+CORE_DIR="${ROOT_DIR}/common/lite-core"
 
 function usage() {
    echo "Usage: $0 <release version> <build number> <workspace path>"
    exit 1
 }
 
-if [ "$#" -ne 3 ]; then
-   usage
-fi
+if [ "$#" -ne 3 ]; then usage; fi
 
 VERSION="$1"
-if [ -z "${VERSION}" ]; then
-   usage
-fi
+if [ -z "${VERSION}" ]; then usage; fi
 
 BUILD_NUMBER="$2"
-if [ -z "${BUILD_NUMBER}" ]; then
-   usage
-fi
+if [ -z "${BUILD_NUMBER}" ]; then usage; fi
 
 WORKSPACE="$3"
-if [ -z "${WORKSPACE}" ]; then
-   usage
-fi
+if [ -z "${WORKSPACE}" ]; then usage; fi
 
 echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
-echo "======== Clean up ..." 
-"${TOOLS_DIR}/clean_litecore.sh"
+echo "======== Download Platform Artifacts" 
+ARTIFACTS_DIR="${WORKSPACE}/zip_tmp"
+rm -rf "${ARTIFACTS_DIR}" > /dev/null 2>&1
+mkdir -p "${ARTIFACTS_DIR}"
+pushd "${ARTIFACTS_DIR}" > /dev/null
 
-echo "======== Download platform artifacts ..."
 for PLATFORM in macos windows; do
-   ARTIFACT="${PRODUCT}-${VERSION}-${BUILD_NUMBER}-${PLATFORM}.zip"
+   ARTIFACT="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
+   ARTIFACT_FILE="${ARTIFACT}-${PLATFORM}.zip"
    ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
-   "${TOOLS_DIR}/extract_libs.sh" "${ARTIFACT_URL}" "${ARTIFACT}" "${WORKSPACE}/zip-tmp" || exit 1
+
+    rm -rf "${ARTIFACT}"
+    curl -f -L "${ARTIFACT_URL}/${ARTIFACT_FILE}" -o "${ARTIFACT_FILE}" || exit 4
+
+    unzip "${ARTIFACT_FILE}"
+    rm -rf "${ARTIFACT_FILE}"
+
+    jar -xf "${ARTIFACT}/lib/${ARTIFACT}.jar" libs
 done
+cp -R libs/* "${CORE_DIR}"
+
+popd > /dev/null
+rm -rf "${ARTIFACTS_DIR}"
 
 echo "======== Download Lite Core ..."
-"${TOOLS_DIR}/fetch_java_litecore.sh" -p "linux" -e CE
+"${TOOLS_DIR}/fetch_core.sh" -p linux -e CE
 
 echo "======== Build Java"
-./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 1
+./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 6
 
 echo "======== BUILD COMPLETE"
-find lib/build/distributions
+

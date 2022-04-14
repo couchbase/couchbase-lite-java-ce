@@ -10,25 +10,17 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 3 ]; then
-    usage
-fi
+if [ "$#" -ne 3 ]; then usage; fi
 
 # ignored
 SDK_HOME="$1"
-if [ -z "$SDK_HOME" ]; then
-    usage
-fi
+if [ -z "$SDK_HOME" ]; then usage; fi
 
 BUILD_NUMBER="$2"
-if [ -z "$BUILD_NUMBER" ]; then
-    usage
-fi
+if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 REPORTS="$3"
-if [ -z "REPORTS" ]; then
-    usage
-fi
+if [ -z "REPORTS" ]; then usage; fi
 
 STATUS=0
 

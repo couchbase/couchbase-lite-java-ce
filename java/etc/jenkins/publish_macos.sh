@@ -11,39 +11,28 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 4 ]; then
-    usage
-fi
+if [ "$#" -ne 4 ]; then usage; fi
 
 VERSION="$1"
-if [ -z "$VERSION" ]; then
-    usage
-fi
+if [ -z "$VERSION" ]; then usage; fi
 
 BUILD_NUMBER="$2"
-if [ -z "$BUILD_NUMBER" ]; then
-    usage
-fi
+if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 ARTIFACTS="$3"
-if [ -z "$ARTIFACTS" ]; then
-    usage
-fi
+if [ -z "$ARTIFACTS" ]; then usage; fi
 
 WORKSPACE="$4"
-if [ -z "$WORKSPACE" ]; then
-    usage
-fi
+if [ -z "$WORKSPACE" ]; then usage; fi
 
 DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
 
 echo "======== PUBLISH Couchbase Lite Java for MacOS, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
-./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=5
+./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=7
 
 echo "======== Copy artifacts to staging directory"
 cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/${DIST_NAME}-macos.zip"
 
 echo "======== PUBLICATION COMPLETE: ${STATUS}"
-find "${ARTIFACTS}"
 exit $STATUS
 

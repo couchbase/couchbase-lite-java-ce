@@ -85,7 +85,6 @@ cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODU
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
-find "${ARTIFACTS}"
 echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
 exit $STATUS
 

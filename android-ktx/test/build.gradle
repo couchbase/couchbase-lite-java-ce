@@ -40,7 +40,6 @@ ext {
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
 
-    CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
@@ -108,7 +107,6 @@ android {
                 "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/kotlin",
             ]
             assets.srcDirs = [
-                "${CBL_CORE_DIR}/C/tests/data",
                 "${CBL_COMMON_DIR}/test/assets",
             ]
             res.srcDirs = [

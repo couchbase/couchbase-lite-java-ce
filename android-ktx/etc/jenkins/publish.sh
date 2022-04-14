@@ -15,29 +15,19 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 4 ]; then
-    usage
-fi
+if [ "$#" -ne 4 ]; then usage; fi
 
 VERSION="$1"
-if [ -z "$VERSION" ]; then
-    usage
-fi
+if [ -z "$VERSION" ]; then usage; fi
 
 BUILD_NUMBER="$2"
-if [ -z "$BUILD_NUMBER" ]; then
-    usage
-fi
+if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 ARTIFACTS="$3"
-if [ -z "$ARTIFACTS" ]; then
-    usage
-fi
+if [ -z "$ARTIFACTS" ]; then usage; fi
 
 WORKSPACE="$4"
-if [ -z "$WORKSPACE" ]; then
-    usage
-fi
+if [ -z "$WORKSPACE" ]; then usage; fi
 
 if ! hash mvn 2>/dev/null; then
     echo "Cannot find the 'mvn' command.  Please be sure it is on the PATH"
@@ -93,7 +83,6 @@ cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODU
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
 
-find "${ARTIFACTS}"
 echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android Kotlin Extensions, Community Edition"
 exit $STATUS
 

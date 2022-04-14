@@ -40,7 +40,6 @@ ext {
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
 
-    CBL_CORE_DIR = "${ROOT_DIR}/core"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
@@ -88,7 +87,6 @@ java {
                 "${CBL_CE_JAVA_DIR}lib/src/test/java",           // CE Common tests
             ]
             resources.srcDirs = [
-                "${CBL_CORE_DIR}/C/tests/data",                  // lite-core test assets
                 "${CBL_COMMON_DIR}/test/assets",                 // Common test assets
             ]
         }
