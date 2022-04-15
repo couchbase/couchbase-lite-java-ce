@@ -11,7 +11,7 @@ $toolsDir = "$PSScriptRoot\..\..\..\..\etc\jenkins"
 Write-Host "======== BUILD Couchbase Lite Java for Windows, Community Edition"
 
 Write-Host "======== Download Lite Core"
-& $toolsDir/fetch_core.ps1 -Edition "CE"
+& $toolsDir\fetch_core.ps1 -Edition "CE"
 
 Write-Host "======== Build Java"
 $process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciBuild -PbuildNumber=$buildNumber" -PassThru -Wait
