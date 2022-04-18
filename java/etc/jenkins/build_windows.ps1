@@ -16,7 +16,7 @@ Write-Host "======== Download Lite Core"
 Write-Host "======== Build Java"
 $process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciBuild -PbuildNumber=$buildNumber" -PassThru -Wait
 if($process.ExitCode -ne 0){
-    Write-Host "Failed with error $process.ExitCode" 
+    Write-Host "Failed with error $($process.ExitCode)"
     exit 6
 }
 
