@@ -75,7 +75,8 @@ cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}
 # ok libraries
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
 # cbl library
-cp "${DEPS_DIR}/target/dependency/${PRODUCT}-${VERSION}"*.aar lib/${PRODUCT}-${VERSION}.aar 
+cp "${DEPS_DIR}/target/dependency/couchbase-lite-android-${VERSION}"*.aar "lib/couchbase-lite-android-${VERSION}.aar"
+
 # cbl javadoc
 cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${PRODUCT}-${VERSION}-javadoc.jar"
 # ktx lib
