@@ -3,7 +3,6 @@
 # Publish Couchbase Lite Android Kotlin Extensions, Community Edition
 #
 PRODUCT='couchbase-lite-android-ktx'
-CBL='couchbase-lite-android'
 EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
@@ -76,7 +75,7 @@ cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}
 # ok libraries
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
 # cbl library
-cp "${DEPS_DIR}/target/dependency/${CBL}-${VERSION}"*.aar lib/${CBL}-${VERSION}.aar
+cp "${DEPS_DIR}/target/dependency/couchbase-lite-android-${VERSION}"*.aar "lib/couchbase-lite-android-${VERSION}.aar"
 
 # cbl javadoc
 cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${PRODUCT}-${VERSION}-javadoc.jar"
