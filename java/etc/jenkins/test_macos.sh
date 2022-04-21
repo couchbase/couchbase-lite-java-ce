@@ -27,8 +27,6 @@ rm -rf test-results/test/binary
 cp -a test-results/test reports/tests/test/raw
 
 cd reports/tests
-# ??? DEBUG
-find .
 zip -r "${REPORTS}/test-reports-macos" test
 popd > /dev/null
 

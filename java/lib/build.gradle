@@ -103,7 +103,7 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // Set true to enable coverage
-// The incantation for generating a coverage report is: 
+// The incantation for generating a coverage report is:
 //     ./gradlew -Pcoverage=true coverage
 def COVERAGE = project.hasProperty("coverage")
 
@@ -235,7 +235,7 @@ model {
                     }
                     else if (os.windows) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/bin/LiteCore.dll")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
                         sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
                     }
                 }

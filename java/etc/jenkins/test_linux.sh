@@ -3,7 +3,7 @@
 # Test Couchbase Lite Java for Java, Community Edition
 #
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-SUPPORT_DIR="${SCRIPT_DIR}/../../../../common/lite-core/support/linux/x86_64"
+SUPPORT_DIR="${SCRIPT_DIR}/../../../../common/lite-core/linux/x86_64/lib"
 STATUS=0
 
 function usage() {
@@ -20,10 +20,7 @@ REPORTS="$2"
 if [ -z "${REPORTS}" ]; then usage; fi
 
 echo "======== TEST Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
-export LD_LIBRARY_PATH="${SUPPORT_DIR}/libc++:${LD_LIBRARY_PATH}"
-export LD_LIBRARY_PATH="${SUPPORT_DIR}/libicu:${LD_LIBRARY_PATH}"
-export LD_LIBRARY_PATH="${SUPPORT_DIR}/libz:${LD_LIBRARY_PATH}"
-echo $LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${SUPPORT_DIR}:${LD_LIBRARY_PATH}"
 
 ./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" > test.log 2>&1 || STATUS=8
 zip -r "${REPORTS}/test-log-linux" test.log

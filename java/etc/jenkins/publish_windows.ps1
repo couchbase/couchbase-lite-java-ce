@@ -14,9 +14,10 @@ $mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
 $status = 0
 
 Write-Host "======== PUBLISH Couchbase Lite Java for Windows, Community Edition"
-$process = Start-Process -FilePath "$PSScriptRoot\..\..\gradlew.bat" -ArgumentList "--no-daemon ciPublish -PbuildNumber=$buildNumber -PmavenUrl=$mavenUrl" -PassThru -Wait
-if($process.ExitCode -ne 0){
+& "$PSScriptRoot\..\..\gradlew.bat" --no-daemon ciPublish -PbuildNumber="$buildNumber" -PmavenUrl="$mavenUrl"
+if ($LASTEXITCODE -ne 0) {
     $status = 7
+    Write-Host "Publish failing with error $LASTEXITCODE"
 }
 
 Write-Host "======== Copy artifacts to staging directory"
