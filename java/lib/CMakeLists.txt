@@ -103,8 +103,7 @@ include_directories(
     ${LITE_CORE_ROOT}/vendor/BLIP-Cpp/include/blip_cpp
     ${LITE_CORE_ROOT}/vendor/BLIP-Cpp/src/util
     ${LITE_CORE_ROOT}/vendor/civetweb/include
-    ${LITE_CORE_ROOT}/vendor/mbedtls/include
-    ${LITE_CORE_ROOT}/vendor/mbedtls/crypto/include)
+    ${LITE_CORE_ROOT}/vendor/mbedtls/include)
 
 if(BUILD_ENTERPRISE)
     add_definitions(-DCOUCHBASE_ENTERPRISE      # Tells LiteCore it's an EE build

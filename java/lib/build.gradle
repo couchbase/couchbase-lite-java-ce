@@ -242,7 +242,7 @@ model {
                 }
             }
             mbedCrypto {
-                headers.srcDir "${CBL_CORE_DIR}/vendor/mbedtls/crypto/include"
+                headers.srcDir "${CBL_CORE_DIR}/vendor/mbedtls/include"
                 binaries.withType(StaticLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
