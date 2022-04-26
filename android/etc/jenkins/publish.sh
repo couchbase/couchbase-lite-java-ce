@@ -75,9 +75,10 @@ ZIP_STAGING="${WORKSPACE}/staging"
 rm -rf "${ZIP_STAGING}" || true
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
-mkdir license lib
+mkdir license lib docs
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
+cp "${ARTIFACTS}/"*-javadoc.jar "docs/${PRODUCT}-${VERSION}-javadoc.jar"
 cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODUCT}-${VERSION}.aar"
 zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
 popd
