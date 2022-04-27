@@ -33,6 +33,8 @@ if [ -z "REPORTS" ]; then
     usage
 fi
 
+STATUS=0
+
 SDK_MGR="${SDK_HOME}/cmdline-tools/latest/bin/sdkmanager --channel=1 --install"
 
 echo "======== TEST Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER} on device: ${ANDROID_SERIAL}"
@@ -50,7 +52,7 @@ cmake.dir=${SDK_HOME}/cmake/${CMAKE_VERSION}
 EOF
 
 echo "======== Test"
-./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}"
+./gradlew ciTest --info --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" || STATUS=8
 
 echo "======== Publish reports"
 pushd test/build/reports/androidTests
@@ -58,4 +60,5 @@ zip -r "${REPORTS}/test-reports-android" connected
 popd
 
 echo "======== TEST COMPLETE"
+exit $STATUS
 
