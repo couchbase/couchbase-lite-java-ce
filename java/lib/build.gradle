@@ -524,6 +524,7 @@ distributions {
             def license = fileTree(CBL_LICENSE_DIR)
             license.include CBL_LICENSE_FILE
             into("license") { from license }
+            rename '.*LICENSE_.+\\.txt', "LICENSE.txt"
 
             def javadoc = fileTree("${buildDir}/libs")
             javadoc.include "*-javadoc.jar"
