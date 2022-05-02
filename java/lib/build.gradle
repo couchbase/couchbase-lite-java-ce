@@ -564,8 +564,8 @@ distributions {
 // Publication
 // ----------------------------------------------------------------
 
-def mavenRepoUser = properties.getProperty('maven.repo.user')
-def mavenRepoPass = properties.getProperty('maven.repo.pass')
+def mavenRepoUser = System.getenv('MAVEN_REPO_USR')
+def mavenRepoPass = System.getenv('MAVEN_REPO_PSW')
 
 // Generate javadoc.jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
