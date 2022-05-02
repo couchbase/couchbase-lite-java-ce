@@ -107,9 +107,6 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 //     ./gradlew -Pcoverage=true coverage
 def COVERAGE = project.hasProperty("coverage")
 
-// local.properties
-Properties properties = new Properties()
-properties.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
 
 
 // ----------------------------------------------------------------
@@ -283,14 +280,10 @@ model {
                     linker.args '-stdlib=libc++'
                 }
                 else if (targetPlatform.operatingSystem.linux) {
-                    def libCxxIncDir = properties.getProperty('LINUX_LIBCXX_INCDIR')
-                    if (libCxxIncDir != null) { cppCompiler.args '-isystem', libCxxIncDir }
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
                     cppCompiler.args '-std=c++17'
-                    def libCxxLibDir = properties.getProperty('LINUX_LIBCXX_LIBDIR')
-                    if (libCxxLibDir != null) { linker.args '-L', libCxxLibDir }
                 }
             }
         }
