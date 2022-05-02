@@ -20,7 +20,6 @@ buildscript {
         JACOCO_VERSION = '0.8.6'
 
         ROOT_DIR = "${projectDir}/../.."
-        PROPS_FILE = "${projectDir}/local.properties"
     }
 
     repositories {
