@@ -84,10 +84,6 @@ def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.v
 //     ./gradlew -Pcoverage=true coverage
 def COVERAGE = project.hasProperty("coverage")
 
-// local.properties
-Properties PROPERTIES = new Properties()
-PROPERTIES.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
-
 
 // ----------------------------------------------------------------
 // Build
@@ -430,8 +426,8 @@ task jacocoTestReport(type: JacocoReport) {
 /////// Maven Publishing
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 
-def mavenRepoUser = PROPERTIES.getProperty('maven.repo.user')
-def mavenRepoPass = PROPERTIES.getProperty('maven.repo.pass')
+def mavenRepoUser = System.getenv(MAVEN_REPO_USR)
+def mavenRepoPass = System.getenv(MAVEN_REPO_PASS)
 
 // Annoying workaround for Android POM generation
 def pomConfig = {
