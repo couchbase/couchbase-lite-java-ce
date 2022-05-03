@@ -79,10 +79,6 @@ def COVERAGE = project.hasProperty("coverage")
 // Set true to use mavenLocal instead of Proget
 def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
 
-// local.properties
-Properties PROPERTIES = new Properties()
-PROPERTIES.load(project.rootProject.file("${PROPS_FILE}").newDataInputStream())
-
 
 // ----------------------------------------------------------------
 // Build
@@ -232,8 +228,8 @@ task jacocoTestReport(type: JacocoReport) {
 /////// Maven Publishing
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 
-def mavenRepoUser = PROPERTIES.getProperty('maven.repo.user')
-def mavenRepoPass = PROPERTIES.getProperty('maven.repo.pass')
+def mavenRepoUser = System.getenv("MAVEN_REPO_USR")
+def mavenRepoPass = System.getenv("MAVEN_REPO_PASS")
 
 // Annoying workaround for Android POM generation
 def pomConfig = {
