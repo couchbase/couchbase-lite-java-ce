@@ -426,8 +426,8 @@ task jacocoTestReport(type: JacocoReport) {
 /////// Maven Publishing
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 
-def mavenRepoUser = System.getenv(MAVEN_REPO_USR)
-def mavenRepoPass = System.getenv(MAVEN_REPO_PASS)
+def mavenRepoUser = System.getenv("MAVEN_REPO_USR")
+def mavenRepoPass = System.getenv("MAVEN_REPO_PASS")
 
 // Annoying workaround for Android POM generation
 def pomConfig = {
