@@ -573,6 +573,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
+distZip.dependsOn javadocJar
+distTar.dependsOn javadocJar
 
 // Generate source.jar
 task sourcesJar(type: Jar) {
