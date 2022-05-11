@@ -30,6 +30,7 @@ import com.couchbase.lite.internal.utils.Preconditions;
 public final class Database extends AbstractDatabase {
     /**
      * Make a copy of a database in a new location.
+     * It is recommended that this method not be used on an open database.
      *
      * @param path   path to the existing db file
      * @param name   the name of the new DB
