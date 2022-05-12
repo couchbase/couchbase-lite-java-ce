@@ -562,8 +562,14 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
-task devTest(dependsOn: ['connectedDebugAndroidTest'])
+task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'checkstyle', 'lint', 'pmd', 'spotbugsHtml'])
+// if there is a ce_android-ktx project, its dev tests will run
+gradle.projectsEvaluated {
+    if (!(rootProject.subprojects.any { it.name == 'ce_android-ktx' })) {
+        task devTest(dependsOn: ['connectedDebugAndroidTest'])
+    }
+}
+task devPublish(dependsOn: ['publishLibDebugPublicationToMavenLocal'])
 task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 

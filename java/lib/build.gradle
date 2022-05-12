@@ -656,7 +656,7 @@ publishing {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
+task smokeTest(dependsOn: ['clean', 'compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
 task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['test']) }

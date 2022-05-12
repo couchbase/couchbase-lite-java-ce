@@ -169,9 +169,11 @@ android {
 
 repositories {
     if (USE_LOCAL_MAVEN) { mavenLocal() }
-    maven {
-        url "http://proget.build.couchbase.com/maven2/cimaven"
-        allowInsecureProtocol = true
+    else {
+        maven {
+            url "http://proget.build.couchbase.com/maven2/cimaven"
+            allowInsecureProtocol = true
+        }
     }
     google()
     mavenCentral()
@@ -358,7 +360,18 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-task smokeTest(dependsOn: ['compileDebugSources', 'lint'])
+// If there is a ce_android project around, depend on its devPublish task
+def preBuildTask = tasks.findByName('preBuild')
+gradle.projectsEvaluated {
+    rootProject.subprojects.each { p ->
+        if (p.name == 'ce_android') {
+            def d = p.tasks.findByName('devPublish')
+            preBuildTask.dependsOn d
+            preBuildTask.mustRunAfter d
+        }
+    }
+}
+task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
 task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
