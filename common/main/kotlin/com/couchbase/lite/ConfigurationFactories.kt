@@ -29,8 +29,9 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * Create a FullTextIndexConfiguration, overriding the receiver's
  * values with the passed parameters:
  *
- * @param database (required) the local database.
+ * @param database the local database: ignored unless no collections are specified
  * @param target (required) The max size of the log file in bytes.
+ * @param collections the local database.
  * @param type replicator type: push, pull, or push and pull: default is push and pull.
  * @param continuous continuous flag: true for continuous, false by default.
  * @param authenticator connection authenticator.
@@ -48,9 +49,11 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  */
+// ??? Should the database parameter be deprecated?
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
     target: Endpoint? = null,
+    collections: Map<Collection, CollectionConfiguration>? = null,
     type: ReplicatorType? = null,
     continuous: Boolean? = null,
     authenticator: Authenticator? = null,
@@ -65,24 +68,32 @@ fun ReplicatorConfiguration?.create(
     maxAttemptWaitTime: Int? = null,
     heartbeat: Int? = null,
     enableAutoPurge: Boolean? = null
-) = ReplicatorConfiguration(
-    database ?: this?.database ?: error("Must specify a database"),
-    type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
-    continuous ?: this?.isContinuous ?: false,
-    authenticator ?: this?.authenticator,
-    headers ?: this?.headers,
-    pinnedServerCertificate ?: this?.pinnedServerX509Certificate,
-    channels ?: this?.channels,
-    documentIDs ?: this?.documentIDs,
-    pushFilter ?: this?.pushFilter,
-    pullFilter ?: this?.pullFilter,
-    conflictResolver ?: this?.conflictResolver,
-    maxAttempts ?: this?.maxAttempts ?: 0,
-    maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
-    heartbeat ?: this?.heartbeat ?: 0,
-    enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
-    target ?: this?.target ?: error("Must specify a target")
-)
+): ReplicatorConfiguration {
+    val config = ReplicatorConfiguration(
+        collections ?: this?.collections,
+        type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
+        continuous ?: this?.isContinuous ?: false,
+        authenticator ?: this?.authenticator,
+        headers ?: this?.headers,
+        pinnedServerCertificate ?: this?.pinnedServerX509Certificate,
+        channels ?: this?.channels,
+        documentIDs ?: this?.documentIDs,
+        pushFilter ?: this?.pushFilter,
+        pullFilter ?: this?.pullFilter,
+        conflictResolver ?: this?.conflictResolver,
+        maxAttempts ?: this?.maxAttempts ?: 0,
+        maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
+        heartbeat ?: this?.heartbeat ?: 0,
+        enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
+        target ?: this?.target ?: error("Must specify a target")
+    )
+
+    if ((collections == null) && (database != null)) {
+        config.addCollections(database.collections as MutableCollection<Collection>, CollectionConfiguration())
+    }
+
+    return config
+}
 
 val DatabaseConfigurationFactory: DatabaseConfiguration? = null
 fun DatabaseConfiguration?.create(databasePath: String? = null) = DatabaseConfiguration(databasePath ?: this?.directory)

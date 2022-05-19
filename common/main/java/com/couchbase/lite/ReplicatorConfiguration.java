@@ -42,7 +42,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     // for Kotlin
     @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.UnnecessaryFullyQualifiedName"})
     ReplicatorConfiguration(
-        @NonNull Database database,
+        @Nullable Map<Collection, CollectionConfiguration> collections,
         @NonNull com.couchbase.lite.ReplicatorType type,
         boolean continuous,
         @Nullable Authenticator authenticator,
@@ -59,7 +59,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
         boolean enableAutoPurge,
         @NonNull Endpoint target) {
         super(
-            Preconditions.assertNotNull(database, "database"),
+            collections,
             Preconditions.assertNotNull(type, "type"),
             continuous,
             authenticator,

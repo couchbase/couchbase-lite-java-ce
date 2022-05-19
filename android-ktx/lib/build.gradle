@@ -184,7 +184,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
 
-    implementation "com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}"
+    implementation ("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
 
     testImplementation 'junit:junit:4.13.2'
 
