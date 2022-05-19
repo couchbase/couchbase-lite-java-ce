@@ -88,6 +88,7 @@ fun ReplicatorConfiguration?.create(
         target ?: this?.target ?: error("Must specify a target")
     )
 
+    // !!! This needs to be fixed as described in the spec modification of 5/17
     if ((collections == null) && (database != null)) {
         config.addCollections(database.collections as MutableCollection<Collection>, CollectionConfiguration())
     }
