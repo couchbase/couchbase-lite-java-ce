@@ -23,7 +23,7 @@ echo "======== TEST Couchbase Lite Java for Linux, Community Edition v`cat ../..
 export LD_LIBRARY_PATH="${SUPPORT_DIR}:${LD_LIBRARY_PATH}"
 
 ./gradlew ciTest --console=plain -PautomatedTests=true -PbuildNumber="${BUILD_NUMBER}" > test.log 2>&1 || STATUS=8
-zip -r "${REPORTS}/test-log-linux" test.log
+zip -r "${REPORTS}/test-log-linux" test.log test/.test*/hs_err_pid*.log
 
 echo "======== Publish reports"
 pushd test/build > /dev/null

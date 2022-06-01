@@ -14,7 +14,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Tests failing with error $LASTEXITCODE"
     $status = 8
 }
-7z a -tzip -r "$reportsDir\test-log-windows.zip" test.log
+7z a -tzip -r "$reportsDir\test-log-windows.zip" test.log test\.test*\hs_err_pid*.log
 
 Write-Host "======== Publish test reports"
 Push-Location test\build
