@@ -15,6 +15,7 @@
 //
 package com.couchbase.lite
 
+import com.couchbase.lite.internal.getCollectionConfigs
 import java.security.cert.X509Certificate
 
 
@@ -69,8 +70,17 @@ fun ReplicatorConfiguration?.create(
     heartbeat: Int? = null,
     enableAutoPurge: Boolean? = null
 ): ReplicatorConfiguration {
-    val config = ReplicatorConfiguration(
-        collections ?: this?.collections,
+    val db = database ?: this?.database
+    val collectionConfigs = (collections ?: getCollectionConfigs(this) ?: mapOf()).toMutableMap()
+    if ((db != null) && (collectionConfigs.keys.firstOrNull({coll -> coll.name == Collection.DEFAULT_NAME}) == null)) {
+        val defaultCollection = database?.defaultCollection;
+        if (defaultCollection != null) {
+            collectionConfigs[defaultCollection] = CollectionConfiguration()
+        }
+    }
+
+    return ReplicatorConfiguration(
+        collectionConfigs,
         type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
         continuous ?: this?.isContinuous ?: false,
         authenticator ?: this?.authenticator,
@@ -87,13 +97,6 @@ fun ReplicatorConfiguration?.create(
         enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
         target ?: this?.target ?: error("Must specify a target")
     )
-
-    // !!! This needs to be fixed as described in the spec modification of 5/17
-    if ((collections == null) && (database != null)) {
-        config.addCollections(database.collections as MutableCollection<Collection>, CollectionConfiguration())
-    }
-
-    return config
 }
 
 val DatabaseConfigurationFactory: DatabaseConfiguration? = null
