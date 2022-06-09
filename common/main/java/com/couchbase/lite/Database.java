@@ -78,6 +78,13 @@ public final class Database extends AbstractDatabase {
         super(name, config);
     }
 
+    //---------------------------------------------
+    // Protected
+    //---------------------------------------------
+
+    @NonNull
+    @Override
+    protected Database getDatabase() { return this; }
 
     //---------------------------------------------
     // Package visible
