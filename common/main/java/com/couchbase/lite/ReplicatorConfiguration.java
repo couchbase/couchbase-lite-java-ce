@@ -31,10 +31,31 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     //---------------------------------------------
     // Constructors
     //---------------------------------------------
+
+    /**
+     * Create a Replicator Configuration
+     *
+     * @param database the database to be synchronized
+     * @param target   the endpoint with which to synchronize it
+     * @deprecated Use ReplicatorConfiguration.addCollection()
+     */
+    @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
         super(Preconditions.assertNotNull(database, "database"), Preconditions.assertNotNull(target, "target"));
     }
 
+    /**
+     * Create a Replicator Configuration
+     *
+     * @param target the target endpoint
+     */
+    public ReplicatorConfiguration(@NonNull Endpoint target) { super(target); }
+
+    /**
+     * Create a Replicator Configuration
+     *
+     * @param config the config to copy
+     */
     public ReplicatorConfiguration(@NonNull ReplicatorConfiguration config) { super(config); }
 
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
