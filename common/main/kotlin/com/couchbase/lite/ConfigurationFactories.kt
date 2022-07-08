@@ -70,33 +70,47 @@ fun ReplicatorConfiguration?.create(
     heartbeat: Int? = null,
     enableAutoPurge: Boolean? = null
 ): ReplicatorConfiguration {
-    val db = database ?: this?.database
-    val collectionConfigs = (collections ?: getCollectionConfigs(this) ?: mapOf()).toMutableMap()
-    if ((db != null) && (collectionConfigs.keys.firstOrNull({coll -> coll.name == Collection.DEFAULT_NAME}) == null)) {
-        val defaultCollection = database?.defaultCollection;
-        if (defaultCollection != null) {
-            collectionConfigs[defaultCollection] = CollectionConfiguration()
+    var colls = collections ?: getCollectionConfigs(this)
+
+    var db = database ?: this?.database
+    if (db == null) {
+        // no database specified: Just verify that all the collections belong to the same db.
+        db = AbstractDatabase.getDbForCollection(collections?.keys)
+    } else {
+        // database and collections specified: verify that the collections belong to the db
+        if (!colls.isNullOrEmpty()) {
+            db.verifyCollections(collections?.keys)
+        } else {
+            // database specified but no collections: configure the default collection
+            val defaultCollection =
+                db.defaultCollection ?: error("Specified no collections and database with no default collection")
+            colls = mapOf(defaultCollection to CollectionConfiguration())
         }
     }
 
-    return ReplicatorConfiguration(
-        collectionConfigs,
+    val replConfig = ReplicatorConfiguration(
+        colls?.toMutableMap(),
+        target ?: this?.target ?: error("Must specify a target"),
         type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
         continuous ?: this?.isContinuous ?: false,
         authenticator ?: this?.authenticator,
         headers ?: this?.headers,
         pinnedServerCertificate ?: this?.pinnedServerX509Certificate,
-        channels ?: this?.channels,
-        documentIDs ?: this?.documentIDs,
-        pushFilter ?: this?.pushFilter,
-        pullFilter ?: this?.pullFilter,
-        conflictResolver ?: this?.conflictResolver,
         maxAttempts ?: this?.maxAttempts ?: 0,
         maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
         heartbeat ?: this?.heartbeat ?: 0,
         enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
-        target ?: this?.target ?: error("Must specify a target")
+        db
     )
+
+    // if there are legacy specifications, try to use them
+    channels ?: this?.channels?.let { replConfig.channels = it }
+    documentIDs ?: this?.documentIDs?.let { replConfig.documentIDs = it }
+    pushFilter ?: this?.pushFilter?.let { replConfig.pushFilter = it }
+    pullFilter ?: this?.pullFilter?.let { replConfig.pullFilter = it }
+    conflictResolver ?: this?.conflictResolver?.let { replConfig.conflictResolver = it }
+
+    return replConfig
 }
 
 val DatabaseConfigurationFactory: DatabaseConfiguration? = null

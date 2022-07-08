@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Map;
 
 import com.couchbase.lite.internal.ImmutableReplicatorConfiguration;
@@ -41,7 +40,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
-        super(Preconditions.assertNotNull(database, "database"), Preconditions.assertNotNull(target, "target"));
+        super(getDefaultCollection(Preconditions.assertNotNull(database, "database")), target);
     }
 
     /**
@@ -49,7 +48,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *
      * @param target the target endpoint
      */
-    public ReplicatorConfiguration(@NonNull Endpoint target) { super(target); }
+    public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, target); }
 
     /**
      * Create a Replicator Configuration
@@ -60,42 +59,34 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
 
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
 
-    // for Kotlin
+    //    // for Kotlin
     @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.UnnecessaryFullyQualifiedName"})
     ReplicatorConfiguration(
         @Nullable Map<Collection, CollectionConfiguration> collections,
+        @NonNull Endpoint target,
         @NonNull com.couchbase.lite.ReplicatorType type,
         boolean continuous,
         @Nullable Authenticator authenticator,
         @Nullable Map<String, String> headers,
         @Nullable X509Certificate pinnedServerCertificate,
-        @Nullable List<String> channels,
-        @Nullable List<String> documentIDs,
-        @Nullable ReplicationFilter pushFilter,
-        @Nullable ReplicationFilter pullFilter,
-        @Nullable ConflictResolver conflictResolver,
         int maxAttempts,
         int maxAttemptWaitTime,
         int heartbeat,
         boolean enableAutoPurge,
-        @NonNull Endpoint target) {
+        @Nullable Database database) {
         super(
             collections,
+            Preconditions.assertNotNull(target, "target"),
             Preconditions.assertNotNull(type, "type"),
             continuous,
             authenticator,
             headers,
             pinnedServerCertificate,
-            channels,
-            documentIDs,
-            pushFilter,
-            pullFilter,
-            conflictResolver,
             maxAttempts,
             maxAttemptWaitTime,
             verifyHeartbeat(heartbeat),
             enableAutoPurge,
-            Preconditions.assertNotNull(target, "target"));
+            database);
     }
 
     @NonNull
