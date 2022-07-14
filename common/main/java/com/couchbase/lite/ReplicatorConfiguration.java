@@ -40,7 +40,10 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
-        super(getDefaultCollection(Preconditions.assertNotNull(database, "database")), target);
+        super(
+            Preconditions.assertNotNull(database, "database"),
+            configureDefaultCollection(database),
+            target);
     }
 
     /**
@@ -48,7 +51,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *
      * @param target the target endpoint
      */
-    public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, target); }
+    public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, null, target); }
 
     /**
      * Create a Replicator Configuration

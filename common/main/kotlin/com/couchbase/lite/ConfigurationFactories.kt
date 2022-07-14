@@ -99,7 +99,7 @@ fun ReplicatorConfiguration?.create(
         maxAttempts ?: this?.maxAttempts ?: 0,
         maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
         heartbeat ?: this?.heartbeat ?: 0,
-        enableAutoPurge ?: this?.isAutoPurgeEnabled ?: false,
+        enableAutoPurge ?: this?.isAutoPurgeEnabled ?: true,
         db
     )
 
