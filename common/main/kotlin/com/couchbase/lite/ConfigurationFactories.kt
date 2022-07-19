@@ -19,6 +19,25 @@ import com.couchbase.lite.internal.getCollectionConfigs
 import java.security.cert.X509Certificate
 
 
+
+/**
+ * Configuration factory for new DatabaseConfigurations
+ *
+ * Usage:
+ *      val dbConfig = DatabaseConfigurationFactory.create(...)
+ */
+val DatabaseConfigurationFactory: DatabaseConfiguration? = null
+
+/**
+ * Create a DatabaseConfiguration, overriding the receiver's
+ * values with the passed parameters:
+ *
+ * @param databasePath The directory in which the database is stored.
+ *
+ * @see com.couchbase.lite.DatabaseConfiguration
+ */
+fun DatabaseConfiguration?.create(databasePath: String? = null) = DatabaseConfiguration(databasePath ?: this?.directory)
+
 /**
  * Configuration factory for new ReplicatorConfigurations
  * Usage:
@@ -83,7 +102,8 @@ fun ReplicatorConfiguration?.create(
         } else {
             // database specified but no collections: configure the default collection
             val defaultCollection =
-                db.defaultCollection ?: error("Specified no collections and database with no default collection")
+                db.defaultCollection ?: throw IllegalArgumentException(
+                    "Specified no collections and database with no default collection")
             colls = mapOf(defaultCollection to CollectionConfiguration())
         }
     }
@@ -112,7 +132,3 @@ fun ReplicatorConfiguration?.create(
 
     return replConfig
 }
-
-val DatabaseConfigurationFactory: DatabaseConfiguration? = null
-fun DatabaseConfiguration?.create(databasePath: String? = null) = DatabaseConfiguration(databasePath ?: this?.directory)
-
