@@ -19,7 +19,6 @@ import com.couchbase.lite.internal.getCollectionConfigs
 import java.security.cert.X509Certificate
 
 
-
 /**
  * Configuration factory for new DatabaseConfigurations
  *
@@ -49,9 +48,9 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * Create a FullTextIndexConfiguration, overriding the receiver's
  * values with the passed parameters:
  *
- * @param database the local database: ignored unless no collections are specified
+ * @param database legacy parameter: use collections instead.
  * @param target (required) The max size of the log file in bytes.
- * @param collections the local database.
+ * @param collections a map of collections to their configurations
  * @param type replicator type: push, pull, or push and pull: default is push and pull.
  * @param continuous continuous flag: true for continuous, false by default.
  * @param authenticator connection authenticator.
@@ -65,11 +64,10 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param maxAttempts max retry attempts after connection failure.
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
- * @param enableAutoPurge auto-purge enabled.
+ * @param enableAutoPurge auto-purge enabled: defaults true..
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  */
-// ??? Should the database parameter be deprecated?
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
     target: Endpoint? = null,
@@ -94,16 +92,16 @@ fun ReplicatorConfiguration?.create(
     var db = database ?: this?.database
     if (db == null) {
         // no database specified: Just verify that all the collections belong to the same db.
-        db = AbstractDatabase.getDbForCollection(collections?.keys)
+        db = AbstractDatabase.getDbForCollections(colls?.keys)
     } else {
         // database and collections specified: verify that the collections belong to the db
         if (!colls.isNullOrEmpty()) {
-            db.verifyCollections(collections?.keys)
+            db.verifyCollections(colls.keys)
         } else {
             // database specified but no collections: configure the default collection
             val defaultCollection =
                 db.defaultCollection ?: throw IllegalArgumentException(
-                    "Specified no collections and database with no default collection")
+                    "No collections provided and database has no default collection")
             colls = mapOf(defaultCollection to CollectionConfiguration())
         }
     }
