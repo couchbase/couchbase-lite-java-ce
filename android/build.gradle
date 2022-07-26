@@ -17,8 +17,8 @@
 buildscript {
     ext {
         COMPILE_SDK_VERSION = 32
-        BUILD_TOOLS_VERSION = '32.0.0'
-        KOTLIN_VERSION = '1.6.21'
+        BUILD_TOOLS_VERSION = '33.0.0'
+        KOTLIN_VERSION = '1.7.10'
 
         ANDROID_MIN_SDK = 22
         ANDROID_TARGET_SDK = 30
@@ -34,7 +34,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
-        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath 'com.android.tools.build:gradle:7.2.0'
         classpath 'gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5'
     }
 }

@@ -96,8 +96,8 @@ android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
-    // if you change this, be sure to update /etc/jenkins/build.sh
-    ndkVersion "23.1.7779620"
+    // if you change this, be sure to update $ROOT/etc/jenkins/install_android_toolchain.sh
+    ndkVersion '25.0.8775105'
 
     externalNativeBuild {
         cmake {
