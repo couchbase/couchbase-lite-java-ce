@@ -104,7 +104,7 @@ repositories {
 }
 
 dependencies {
-    testCompileOnly 'androidx.annotation:annotation:1.3.0'
+    testCompileOnly 'androidx.annotation:annotation:1.4.0'
 
     testImplementation "com.couchbase.lite:${CBL_JAVA_LIB}:${BUILD_VERSION}"
 
