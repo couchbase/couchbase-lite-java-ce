@@ -3,6 +3,7 @@
 # Publish Couchbase Lite Android Kotlin Extensions, Community Edition
 #
 PRODUCT='couchbase-lite-android-ktx'
+LIB_NAME="${PRODUCT}"
 EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
@@ -70,18 +71,17 @@ rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
 mkdir license lib docs
-# license
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
-# ok libraries
+# dependencies
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
 # cbl library
-cp "${DEPS_DIR}/target/dependency/couchbase-lite-android-${VERSION}"*.aar "lib/couchbase-lite-android-${VERSION}.aar"
-
-# cbl javadoc
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${PRODUCT}-${VERSION}-javadoc.jar"
+cp "${DEPS_DIR}/target/dependency/couchbase-lite-android"*.aar "lib/couchbase-lite-android-${VERSION}.aar"
 # ktx lib
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODUCT}-${VERSION}.aar"
-zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
+cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
+# cbl javadoc
+cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
+# license
+cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
+zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${VERSION}-${BUILD_NUMBER}.zip" *
 popd
 
 echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android Kotlin Extensions, Community Edition"

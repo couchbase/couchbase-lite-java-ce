@@ -32,13 +32,11 @@ else
     MAVEN_URL="${MAVEN_URL}/$FEED"
 fi
 
-DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
-
 echo "======== PUBLISH Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=7
 
 echo "======== Copy artifacts to staging directory"
-cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/"
+cp "lib/build/distributions/${PRODUCT}/${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/${PRODUCT}-community/${VERSION}-${BUILD_NUMBER}.zip"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xml"
 

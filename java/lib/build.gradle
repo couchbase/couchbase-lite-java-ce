@@ -537,14 +537,20 @@ distributions {
             }
 
             // Move the main jar file into lib folder
+            // and remove the build numbers
             eachFile {
-                 def name = it.name
-                 def path = it.path
-                 if (name.startsWith("${CBL_ARTIFACT_ID}") &&
-                     name.endsWith(".jar") &&
-                     (!name.contains("javadoc")) &&
-                     (!path.contains("/lib/"))) {
-                     it.path = path.replace("/${CBL_ARTIFACT_ID}", "/lib/${CBL_ARTIFACT_ID}")
+                def name = it.name
+                def path = it.path
+
+                if (name.endsWith("javadoc.jar")) {
+                    it.name = "${CBL_ARTIFACT_ID}-${BUILD_RELEASE}-javadoc.jar"
+                }
+
+                else if (name.startsWith("${CBL_ARTIFACT_ID}") &&
+                    name.endsWith(".jar") &&
+                    (!path.contains("/lib/"))) {
+                    it.path = path.replace("/${CBL_ARTIFACT_ID}", "/lib/${CBL_ARTIFACT_ID}")
+                    it.name = "${CBL_ARTIFACT_ID}-${BUILD_RELEASE}.jar"
                 }
             }
         }

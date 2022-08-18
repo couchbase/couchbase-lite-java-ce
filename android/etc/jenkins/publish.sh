@@ -3,6 +3,7 @@
 # Publish Couchbase Lite Android, Community Edition
 #
 PRODUCT='couchbase-lite-android'
+LIB_NAME="${PRODUCT}"
 EDITION='community'
 
 MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
@@ -13,29 +14,19 @@ function usage() {
     exit 1
 }
 
-if [ "$#" -ne 4 ]; then
-    usage
-fi
+if [ "$#" -ne 4 ]; then usage; fi
 
 VERSION="$1"
-if [ -z "$VERSION" ]; then
-    usage
-fi
+if [ -z "$VERSION" ]; then usage; fi
 
 BUILD_NUMBER="$2"
-if [ -z "$BUILD_NUMBER" ]; then
-    usage
-fi
+if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 ARTIFACTS="$3"
-if [ -z "$ARTIFACTS" ]; then
-    usage
-fi
+if [ -z "$ARTIFACTS" ]; then usage; fi
 
 WORKSPACE="$4"
-if [ -z "$WORKSPACE" ]; then
-    usage
-fi
+if [ -z "$WORKSPACE" ]; then usage; fi
 
 if ! hash mvn 2>/dev/null; then
     echo "Cannot find the 'mvn' command.  Please be sure it is on the PATH"
@@ -78,11 +69,11 @@ rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
 mkdir license lib docs
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
 cp "${DEPS_DIR}/target/dependency/"*.jar lib
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${PRODUCT}-${VERSION}-javadoc.jar"
-cp "${ARTIFACTS}/${PRODUCT}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${PRODUCT}-${VERSION}.aar"
-zip -r "${ARTIFACTS}/${PRODUCT}-${VERSION}-android_${EDITION}.zip" *
+cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
+cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
+cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
+zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${VERSION}-${BUILD_NUMBER}.zip" *
 popd
 
 echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
