@@ -17,11 +17,11 @@ if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 echo "======== BUILD Couchbase Lite Java for MacOS, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
-echo "======== Download Lite Core ..."
+echo "======== OSX: Download Lite Core ..."
 "${TOOLS_DIR}/fetch_core.sh" -p macosx -e CE
 
-echo "======== Build Java"
+echo "======== OSX: Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 6
 
-echo "======== BUILD COMPLETE"
+echo "======== OSX: BUILD COMPLETE"
 

@@ -29,7 +29,7 @@ if [ -z "${WORKSPACE}" ]; then usage; fi
 
 echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
-echo "======== Download Platform Artifacts" 
+echo "======== Linux: Download Platform Artifacts" 
 # Linux LiteCore should already be in place,
 # because it was pulled during the check phase
 
@@ -56,11 +56,11 @@ cp -R libs/* "${CORE_DIR}"
 popd > /dev/null
 rm -rf "${ARTIFACTS_DIR}"
 
-echo "======== Download Lite Core ..."
+echo "======== Linux: Download Lite Core ..."
 "${TOOLS_DIR}/fetch_core.sh" -p linux -e CE
 
-echo "======== Build Java"
+echo "======== Linux: Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 6
 
-echo "======== BUILD COMPLETE"
+echo "======== Linux: BUILD COMPLETE"
 

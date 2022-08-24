@@ -30,9 +30,9 @@ DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
 echo "======== PUBLISH Couchbase Lite Java for MacOS, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=7
 
-echo "======== Copy artifacts to staging directory"
+echo "======== OSX: Copy artifacts to staging directory"
 cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/${DIST_NAME}-macos.zip"
 
-echo "======== PUBLICATION COMPLETE: ${STATUS}"
+echo "======== OSX: PUBLICATION COMPLETE: ${STATUS}"
 exit $STATUS
 

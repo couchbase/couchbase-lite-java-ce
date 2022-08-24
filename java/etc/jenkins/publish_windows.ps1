@@ -20,9 +20,9 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Publish failing with error $LASTEXITCODE"
 }
 
-Write-Host "======== Copy artifacts to staging directory"
+Write-Host "======== Windows: Copy artifacts to staging directory"
 Copy-Item "lib\build\distributions\$product-$version-$buildNumber.zip" -Destination "$artifactsDir\$product-$version-$buildNumber-windows.zip"
 
-Write-Host "======== PUBLICATION COMPLETE $status"
+Write-Host "======== Windows: PUBLICATION COMPLETE $status"
 exit $status
 

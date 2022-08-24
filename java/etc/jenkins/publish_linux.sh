@@ -35,11 +35,11 @@ fi
 echo "======== PUBLISH Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=7
 
-echo "======== Copy artifacts to staging directory"
+echo "======== Linux: Copy artifacts to staging directory"
 cp "lib/build/distributions/${PRODUCT}/${VERSION}-${BUILD_NUMBER}.zip" "${ARTIFACTS}/${PRODUCT}-community/${VERSION}-${BUILD_NUMBER}.zip"
 cp lib/build/libs/*.jar "${ARTIFACTS}/"
 cp lib/build/publications/couchbaseLiteJava/pom-default.xml "${ARTIFACTS}/pom.xml"
 
-echo "======== PUBLICATION COMPLETE: ${STATUS}"
+echo "======== Linux: PUBLICATION COMPLETE: ${STATUS}"
 exit $STATUS
 

@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 7z a -tzip -r "$reportsDir\test-log-windows.zip" test.log test\.test*\hs_err_pid*.log
 
-Write-Host "======== Publish test reports"
+Write-Host "======== Windows: Publish test reports"
 Push-Location test\build
 Remove-Item -Recurse -Force test-results\test\binary
 Xcopy /e /i /y test-results\test reports\tests\test\raw
@@ -25,5 +25,5 @@ cd reports\tests
 Pop-Location
 
 
-Write-Host "======== TEST COMPLETE $status"
+Write-Host "======== Windows: TEST COMPLETE $status"
 exit $status
