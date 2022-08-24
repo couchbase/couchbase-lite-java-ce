@@ -30,6 +30,9 @@ if [ -z "${WORKSPACE}" ]; then usage; fi
 echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
 echo "======== Download Platform Artifacts" 
+# Linux LiteCore should already be in place,
+# because it was pulled during the check phase
+
 ARTIFACTS_DIR="${WORKSPACE}/zip_tmp"
 rm -rf "${ARTIFACTS_DIR}" > /dev/null 2>&1
 mkdir -p "${ARTIFACTS_DIR}"

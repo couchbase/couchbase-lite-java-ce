@@ -40,7 +40,7 @@ plugins {
     id 'jacoco'
 
     // handy plugin for discovering task dependencies
-    //id 'com.dorongold.task-tree' version "1.5"
+    // id "com.dorongold.task-tree" version "2.1.0"
 }
 
 
@@ -82,7 +82,6 @@ ext {
     CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
     CBL_NATIVE_DIR = "${buildDir}/native"
     CBL_JNI_INCLUDE_DIR = "${GENERATED_DIR}/include"
-    CBL_NATIVE_LIBRARIES = []
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '3.14.7'
@@ -697,44 +696,58 @@ def setupJNILibraryBuildTasks(library, platform) {
 }
 
 def createCopyNativeLibraryTask(library, targetPlatform) {
-    if (CBL_NATIVE_LIBRARIES.contains(library)) { return }
-
     def libPath = getNativeLibraryResourcePath(targetPlatform)
+
+    // Copy LiteCore libraries for any other platforms, if available
+    task copyLiteCore(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
+        from(CBL_CORE_NATIVE_DIR) {
+            exclude "**/include"
+            exclude "**/pkgconfig"
+            exclude "**/icu"
+
+            include "macos/x86_64/lib/libLiteCore.dylib"
+            include "macos/x86_64/lib/libLiteCore.dylib.MD5"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
+
+            include "linux/x86_64/lib/libLiteCore.so"
+            include "linux/x86_64/lib/libLiteCore.so.MD5"
+            include "linux/x86_64/lib/libLiteCoreJNI.so"
+            include "linux/x86_64/lib/libLiteCoreJNI.so.MD5"
+
+            include "windows/x86_64/lib/LiteCore.dll"
+            include "windows/x86_64/lib/LiteCore.dll.MD5"
+            include "windows/x86_64/lib/LiteCoreJNI.dll"
+            include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
+        }
+        into "${CBL_NATIVE_DIR}/libs"
+    }
+
+    // Copy the JNI native library generated for this platform
     task copyJni(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
         from library
         into "${CBL_NATIVE_DIR}/libs/${libPath}"
     }
 
-    task copyLiteCore(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
-        from("${CBL_CORE_NATIVE_DIR}") {
-            include "macos/**"
-            include "linux/**"
-            include "windows/**"
-            exclude "**/include"
-            exclude "**/pkgconfig"
-            exclude "**/icu"
-            exclude "**/*.lib"
-            exclude "**/*.pdb"
-        }
-        into "${CBL_NATIVE_DIR}/libs"
-    }
-
-    task generateNativeLibraryMD5(dependsOn: ["copyJni", "copyLiteCore"]) {
+    // Add MD5 signatures to both the JNI lib and to LiteCore lib
+    // (copied by copyLiteCore) for this platform.
+    task signNativeLibs(dependsOn: ["copyLiteCore", "copyJni"]) {
         doFirst {
-            fileTree(dir: "${CBL_NATIVE_DIR}/libs", exclude: "**/*.MD5").each { File file -> ant.checksum(file: file) }
+            fileTree(dir: "${CBL_NATIVE_DIR}/libs/${libPath}").each {
+                File file -> ant.checksum(file: file)
+            }
         }
     }
 
-    processResources.dependsOn(["generateNativeLibraryMD5"])
+    processResources.dependsOn(["copyLiteCore", "copyJni", "signNativeLibs"])
 }
 
 def getNativeLibraryResourcePath(platform) {
-    def os = ""
-    if (platform.operatingSystem.isMacOsX()) { os = "macos" }
-    else if (platform.operatingSystem.isWindows()) { os = "windows" }
-    else if (platform.operatingSystem.isLinux()) { os = "linux" }
-    else { os = platform.operatingSystem.name }
-    return "${os}/x86_64/lib"
+    final path = "/x86_64/lib"
+    if (platform.operatingSystem.isMacOsX()) { return "macos${path}" }
+    if (platform.operatingSystem.isWindows()) { return "windows${path}" }
+    if (platform.operatingSystem.isLinux()) { return "linux${path}" }
+    return "${platform.operatingSystem.name}${path}"
 }
 
 def getLicenseVersion() { return getCommit("product-texts", "master") }
