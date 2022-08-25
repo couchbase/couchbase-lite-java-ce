@@ -39,8 +39,8 @@ mkdir -p "${ARTIFACTS_DIR}"
 pushd "${ARTIFACTS_DIR}" > /dev/null
 
 for PLATFORM in macos windows; do
-   ARTIFACT="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
-   ARTIFACT_FILE="${ARTIFACT}-${PLATFORM}.zip"
+   ARTIFACT="${PRODUCT}-${VERSION}"
+   ARTIFACT_FILE="${ARTIFACT}-${BUILD_NUMBER}-${PLATFORM}.zip"
    ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
 
     rm -rf "${ARTIFACT}"
@@ -49,15 +49,12 @@ for PLATFORM in macos windows; do
     unzip "${ARTIFACT_FILE}"
     rm -rf "${ARTIFACT_FILE}"
 
-    jar -xf "${ARTIFACT}/lib/${ARTIFACT}.jar" libs
+    jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" libs
 done
 cp -R libs/* "${CORE_DIR}"
 
 popd > /dev/null
 rm -rf "${ARTIFACTS_DIR}"
-
-echo "======== Linux: Download Lite Core ..."
-"${TOOLS_DIR}/fetch_core.sh" -p linux -e CE
 
 echo "======== Linux: Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 6

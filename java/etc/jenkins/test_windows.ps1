@@ -20,10 +20,10 @@ Write-Host "======== Windows: Publish test reports"
 Push-Location test\build
 Remove-Item -Recurse -Force test-results\test\binary
 Xcopy /e /i /y test-results\test reports\tests\test\raw
+
 cd reports\tests
 7z a -tzip -r "$reportsDir\test-reports-windows.zip" test
 Pop-Location
-
 
 Write-Host "======== Windows: TEST COMPLETE $status"
 exit $status

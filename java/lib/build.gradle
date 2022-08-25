@@ -502,15 +502,14 @@ distributions {
     main {
         distributionBaseName = "${CBL_ARTIFACT_ID}"
         contents {
-            into("support/libc++") {
-                from("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib")
-                include 'libgcc*'
-                include 'libstdc*'
-            }
-            into("support/libicu") {
+            into("support") {
                 from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
-                include 'libicu*'
-                exclude 'libicutest*'
+                include 'libicudata.so.54'
+                include 'libicui18n.so.54'
+                include 'libicuuc.so.54'
+                include 'libstdc++.so.6'
+                exclude '**/pkgconfig'
+                exclude '**/icu'
             }
 
             def license = fileTree(CBL_LICENSE_DIR)
@@ -583,6 +582,11 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives javadocJar
     archives sourcesJar
+}
+
+project.afterEvaluate {
+    tasks.withType(Tar) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+    tasks.withType(Zip) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 }
 
 publishing {
@@ -697,6 +701,9 @@ def setupJNILibraryBuildTasks(library, platform) {
 
 def createCopyNativeLibraryTask(library, targetPlatform) {
     def libPath = getNativeLibraryResourcePath(targetPlatform)
+
+    // Clear the native library directory
+    task initNativeLibs(type: Delete) { delete "${CBL_NATIVE_DIR}/libs" }
 
     // Copy LiteCore libraries for any other platforms, if available
     task copyLiteCore(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {

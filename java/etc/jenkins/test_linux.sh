@@ -29,6 +29,7 @@ echo "======== Linux: Publish reports"
 pushd test/build > /dev/null
 rm -rf test-results/test/binary
 cp -a test-results/test reports/tests/test/raw
+
 cd reports/tests
 zip -r "${REPORTS}/test-reports-linux" test
 popd > /dev/null
