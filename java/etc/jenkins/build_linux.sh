@@ -8,7 +8,6 @@ LATESTBUILDS="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT_DIR="${SCRIPT_DIR}/../../../.."
-TOOLS_DIR="${ROOT_DIR}/etc/jenkins"
 CORE_DIR="${ROOT_DIR}/common/lite-core"
 
 function usage() {
@@ -35,7 +34,7 @@ echo "======== Linux: Download Platform Artifacts"
 
 NATIVE_LIBS_DIR="${WORKSPACE}/native_libs"
 rm -rf "${NATIVE_LIBS_DIR}" > /dev/null 2>&1
-mkdir -p "${NATIVE_LIBS_DIR}"
+mkdir -p "${NATIVE_LIBS_DIR}/libs"
 pushd "${NATIVE_LIBS_DIR}" > /dev/null
 
 NATIVE_LIB="${PRODUCT}-${VERSION}"
@@ -49,7 +48,8 @@ for PLATFORM in macos windows; do
 
    unzip "${PLATFORM}.zip"
 
-   jar -xf "${NATIVE_BUILD}/lib/${NATIVE_LIB}.jar" "${NATIVE_LIBS_DIR}/libs"
+   jar -xf "${NATIVE_BUILD}/lib/${NATIVE_LIB}.jar" libs
+   cp -R libs/* ../libs
 
    popd > /dev/null
 done
