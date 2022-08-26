@@ -38,18 +38,20 @@ rm -rf "${ARTIFACTS_DIR}" > /dev/null 2>&1
 mkdir -p "${ARTIFACTS_DIR}"
 pushd "${ARTIFACTS_DIR}" > /dev/null
 
+ARTIFACT="${PRODUCT}-${VERSION}"
+ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
 for PLATFORM in macos windows; do
-   ARTIFACT="${PRODUCT}-${VERSION}"
-   ARTIFACT_FILE="${ARTIFACT}-${BUILD_NUMBER}-${PLATFORM}.zip"
-   ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
+   rm -rf "${PLATFORM}" > /dev/null 2>&1
+   mkdir  "${PLATFORM}"
+   pushd "${PLATFORM}" > /dev/null 2>&1
 
-    rm -rf "${ARTIFACT}"
-    curl -f -L "${ARTIFACT_URL}/${ARTIFACT_FILE}" -o "${ARTIFACT_FILE}" || exit 4
+   curl -f -L "${ARTIFACT_URL}/${ARTIFACT}-${BUILD_NUMBER}-${PLATFORM}.zip" -o "${PLATFORM}.zip" || exit 4
 
-    unzip "${ARTIFACT_FILE}"
-    rm -rf "${ARTIFACT_FILE}"
+   unzip "${PLATFORM}.zip"
 
-    jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" libs
+   jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" ../libs
+
+   popd > /dev/null
 done
 cp -R libs/* "${CORE_DIR}"
 
