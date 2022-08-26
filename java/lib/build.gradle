@@ -724,7 +724,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
             }
 
             include "windows/x86_64/lib/LiteCore.dll"
-            if (targetPlatform.operatingSystem.isWindows()) {
+            if (!targetPlatform.operatingSystem.isWindows()) {
                 include "windows/x86_64/lib/LiteCore.dll.MD5"
                 include "windows/x86_64/lib/LiteCoreJNI.dll"
                 include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
