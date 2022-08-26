@@ -49,14 +49,13 @@ for PLATFORM in macos windows; do
 
    unzip "${PLATFORM}.zip"
 
-   jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" ../libs
+   jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" "${ARTIFACTS_DIR}/libs"
 
    popd > /dev/null
 done
 cp -R libs/* "${CORE_DIR}"
 
 popd > /dev/null
-rm -rf "${ARTIFACTS_DIR}"
 
 echo "======== Linux: Build Java"
 ./gradlew ciBuild -PbuildNumber="${BUILD_NUMBER}" || exit 6
