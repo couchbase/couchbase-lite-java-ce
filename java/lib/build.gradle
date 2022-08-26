@@ -195,13 +195,13 @@ compileJava.options.compilerArgs += ["-h", CBL_JNI_INCLUDE_DIR]
 // Native Components:
 model {
     platforms {
-        osx {
-            architecture "x86_64"
-            operatingSystem "osx"
-        }
         linux {
             architecture "x86_64"
             operatingSystem "linux"
+        }
+        osx {
+            architecture "x86_64"
+            operatingSystem "osx"
         }
         windows {
             architecture "x86_64"
@@ -220,13 +220,13 @@ model {
             liteCore {
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
-                    if (os.macOsX) {
-                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/include")
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
-                    }
-                    else if (os.linux) {
+                    if (os.linux) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
+                    }
+                    else if (os.macOsX) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
                     }
                     else if (os.windows) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
@@ -240,8 +240,8 @@ model {
 
     components {
         LiteCoreJNI(NativeLibrarySpec) {
-            if (OperatingSystem.current().isMacOsX()) { targetPlatform "osx" }
             if (OperatingSystem.current().isLinux()) { targetPlatform "linux" }
+            if (OperatingSystem.current().isMacOsX()) { targetPlatform "osx" }
             if (OperatingSystem.current().isWindows()) { targetPlatform "windows" }
             sources {
                 cpp {
@@ -260,14 +260,11 @@ model {
             }
 
             binaries.all {
-                if (targetPlatform.operatingSystem.windows) {
-                    cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
-                    cppCompiler.args "-I${JAVA_INCLUDE}"
-                    cppCompiler.args "-I${JAVA_INCLUDE}/win32"
-                    cppCompiler.args '/MD'
-                    cppCompiler.args '/EHsc'
-                    cppCompiler.args '/wd4068'
-                    cppCompiler.args '/std:c++17'
+                if (targetPlatform.operatingSystem.linux) {
+                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
+                    cppCompiler.args '-I', JAVA_INCLUDE
+                    cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
+                    cppCompiler.args '-std=c++17'
                 }
                 else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
@@ -277,11 +274,14 @@ model {
                     cppCompiler.args '-stdlib=libc++'
                     linker.args '-stdlib=libc++'
                 }
-                else if (targetPlatform.operatingSystem.linux) {
-                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
-                    cppCompiler.args '-I', JAVA_INCLUDE
-                    cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
-                    cppCompiler.args '-std=c++17'
+                else if (targetPlatform.operatingSystem.windows) {
+                    cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}/win32"
+                    cppCompiler.args '/MD'
+                    cppCompiler.args '/EHsc'
+                    cppCompiler.args '/wd4068'
+                    cppCompiler.args '/std:c++17'
                 }
             }
         }
@@ -408,7 +408,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
         classDirs = fileTree(dir: "${buildDir}/classes/java/main")
 
-        def classpaths= []
+        def classpaths = []
         tasks.withType(JavaCompile).each { task -> classpaths = task.classpath }
         classpaths.each { dir -> auxClassPaths += project.files(dir) }
 
@@ -700,60 +700,64 @@ def setupJNILibraryBuildTasks(library, platform) {
 }
 
 def createCopyNativeLibraryTask(library, targetPlatform) {
-    def libPath = getNativeLibraryResourcePath(targetPlatform)
-
-    // Clear the native library directory
-    task initNativeLibs(type: Delete) { delete "${CBL_NATIVE_DIR}/libs" }
+    def libPath = "${CBL_NATIVE_DIR}/libs/${getNativeLibraryResourcePath(targetPlatform)}"
 
     // Copy LiteCore libraries for any other platforms, if available
-    task copyLiteCore(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
+    task copyLiteCore(type: Copy, dependsOn: "LiteCoreJNISharedLibrary") { thisTask ->
         from(CBL_CORE_NATIVE_DIR) {
             exclude "**/include"
             exclude "**/pkgconfig"
             exclude "**/icu"
 
-            include "macos/x86_64/lib/libLiteCore.dylib"
-            include "macos/x86_64/lib/libLiteCore.dylib.MD5"
-            include "macos/x86_64/lib/libLiteCoreJNI.dylib"
-            include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
-
             include "linux/x86_64/lib/libLiteCore.so"
-            include "linux/x86_64/lib/libLiteCore.so.MD5"
-            include "linux/x86_64/lib/libLiteCoreJNI.so"
-            include "linux/x86_64/lib/libLiteCoreJNI.so.MD5"
+            if (!targetPlatform.operatingSystem.isLinux()) {
+                include "linux/x86_64/lib/libLiteCore.so.MD5"
+                include "linux/x86_64/lib/libLiteCoreJNI.so"
+                include "linux/x86_64/lib/libLiteCoreJNI.so.MD5"
+            }
+
+            include "macos/x86_64/lib/libLiteCore.dylib"
+            if (!targetPlatform.operatingSystem.isMacOsX()) {
+                include "macos/x86_64/lib/libLiteCore.dylib.MD5"
+                include "macos/x86_64/lib/libLiteCoreJNI.dylib"
+                include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
+            }
 
             include "windows/x86_64/lib/LiteCore.dll"
-            include "windows/x86_64/lib/LiteCore.dll.MD5"
-            include "windows/x86_64/lib/LiteCoreJNI.dll"
-            include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
+            if (targetPlatform.operatingSystem.isWindows()) {
+                include "windows/x86_64/lib/LiteCore.dll.MD5"
+                include "windows/x86_64/lib/LiteCoreJNI.dll"
+                include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
+            }
         }
         into "${CBL_NATIVE_DIR}/libs"
     }
 
     // Copy the JNI native library generated for this platform
-    task copyJni(type: Copy, dependsOn: LiteCoreJNISharedLibrary) {
+    task copyJni(type: Copy, dependsOn: "LiteCoreJNISharedLibrary") {
         from library
-        into "${CBL_NATIVE_DIR}/libs/${libPath}"
+        into libPath
     }
 
-    // Add MD5 signatures to both the JNI lib and to LiteCore lib
-    // (copied by copyLiteCore) for this platform.
-    task signNativeLibs(dependsOn: ["copyLiteCore", "copyJni"]) {
-        doFirst {
-            fileTree(dir: "${CBL_NATIVE_DIR}/libs/${libPath}").each {
-                File file -> ant.checksum(file: file)
+    // Add MD5 signatures to both the JNI lib (copied by copyJni) and to
+    // LiteCore lib (copied by copyLiteCore) for this platform.
+    task signNativeLibs(dependsOn: ["copyJni", "copyLiteCore"]) { thisTask ->
+        doLast {
+            fileTree(dir: libPath).each { lib ->
+                def fPath= "${lib.getPath()}"
+                if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
             }
         }
     }
 
-    processResources.dependsOn(["copyLiteCore", "copyJni", "signNativeLibs"])
+    processResources.dependsOn(["signNativeLibs"])
 }
 
 def getNativeLibraryResourcePath(platform) {
     final path = "/x86_64/lib"
+    if (platform.operatingSystem.isLinux()) { return "linux${path}" }
     if (platform.operatingSystem.isMacOsX()) { return "macos${path}" }
     if (platform.operatingSystem.isWindows()) { return "windows${path}" }
-    if (platform.operatingSystem.isLinux()) { return "linux${path}" }
     return "${platform.operatingSystem.name}${path}"
 }
 
@@ -762,9 +766,9 @@ def getLicenseVersion() { return getCommit("product-texts", "master") }
 def getBuildId() {
     def hostname = "rogue"
     try { hostname = "hostname".execute().text.trim() }
-    catch (Exception ignore) { }
+    catch (Exception ignore) {}
 
-    return "${getCommit("couchbase-lite-java-ce-root", "unofficial").substring(0, 10)}@${hostname}"
+    return "${getCommit("couchbase-lite-java-ee-root", "unofficial").substring(0, 10)}@${hostname}"
 }
 
 def getCommit(project, dflt) {
@@ -772,7 +776,7 @@ def getCommit(project, dflt) {
     try {
         manifest = new FileReader("${ROOT_DIR}/../manifest.xml")
 
-        def revEx = Pattern.compile("<project.* name=\"couchbase-lite-java-ee-root\".* revision=\"([\\dabcdef]{40})\"")
+        def revEx = Pattern.compile("<project.* name=\"${project}\".* revision=\"([\\dabcdef]{40})\"")
 
         def l
         while ((l = manifest.readLine()) != null) {
@@ -780,11 +784,11 @@ def getCommit(project, dflt) {
             if (m.find()) { return m.group(1) }
         }
     }
-    catch (Exception ignore) { }
+    catch (Exception ignore) {}
     finally {
         if (manifest != null) {
             try { manifest.close() }
-            catch (Exception ignore) { }
+            catch (Exception ignore) {}
         }
     }
 

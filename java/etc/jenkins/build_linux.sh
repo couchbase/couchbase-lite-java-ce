@@ -29,30 +29,31 @@ if [ -z "${WORKSPACE}" ]; then usage; fi
 
 echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
 
-echo "======== Linux: Download Platform Artifacts" 
+echo "======== Linux: Download Platform Artifacts"
 # Linux LiteCore should already be in place,
 # because it was pulled during the check phase
 
-ARTIFACTS_DIR="${WORKSPACE}/zip_tmp"
-rm -rf "${ARTIFACTS_DIR}" > /dev/null 2>&1
-mkdir -p "${ARTIFACTS_DIR}"
-pushd "${ARTIFACTS_DIR}" > /dev/null
+NATIVE_LIBS_DIR="${WORKSPACE}/native_libs"
+rm -rf "${NATIVE_LIBS_DIR}" > /dev/null 2>&1
+mkdir -p "${NATIVE_LIBS_DIR}"
+pushd "${NATIVE_LIBS_DIR}" > /dev/null
 
-ARTIFACT="${PRODUCT}-${VERSION}"
-ARTIFACT_URL="${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}"
+NATIVE_LIB="${PRODUCT}-${VERSION}"
+NATIVE_BUILD="${NATIVE_LIB}-${BUILD_NUMBER}"
 for PLATFORM in macos windows; do
    rm -rf "${PLATFORM}" > /dev/null 2>&1
    mkdir  "${PLATFORM}"
    pushd "${PLATFORM}" > /dev/null 2>&1
 
-   curl -f -L "${ARTIFACT_URL}/${ARTIFACT}-${BUILD_NUMBER}-${PLATFORM}.zip" -o "${PLATFORM}.zip" || exit 4
+   curl -f -L "${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}/${NATIVE_BUILD}-${PLATFORM}.zip" -o "${PLATFORM}.zip" || exit 4
 
    unzip "${PLATFORM}.zip"
 
-   jar -xf "${ARTIFACT}-${BUILD_NUMBER}/lib/${ARTIFACT}.jar" "${ARTIFACTS_DIR}/libs"
+   jar -xf "${NATIVE_BUILD}/lib/${NATIVE_LIB}.jar" "${NATIVE_LIBS_DIR}/libs"
 
    popd > /dev/null
 done
+find .
 cp -R libs/* "${CORE_DIR}"
 
 popd > /dev/null
