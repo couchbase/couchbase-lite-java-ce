@@ -90,9 +90,9 @@ ext {
 
 // build platform
 def PLATFORM = "???"
-if (OperatingSystem.current().isLinux()) { PLATFORM = "" }
 if (OperatingSystem.current().isMacOsX()) { PLATFORM = "-macos" }
-if (OperatingSystem.current().isWindows()) { PLATFORM = "-windows" }
+else if (OperatingSystem.current().isWindows()) { PLATFORM = "-windows" }
+else if (OperatingSystem.current().isLinux()) { PLATFORM = "" }
 
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
@@ -195,10 +195,6 @@ compileJava.options.compilerArgs += ["-h", CBL_JNI_INCLUDE_DIR]
 // Native Components:
 model {
     platforms {
-        linux {
-            architecture "x86_64"
-            operatingSystem "linux"
-        }
         osx {
             architecture "x86_64"
             operatingSystem "osx"
@@ -206,6 +202,10 @@ model {
         windows {
             architecture "x86_64"
             operatingSystem "windows"
+        }
+        linux {
+            architecture "x86_64"
+            operatingSystem "linux"
         }
     }
 
@@ -220,11 +220,7 @@ model {
             liteCore {
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
-                    if (os.linux) {
-                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
-                    }
-                    else if (os.macOsX) {
+                    if (os.macOsX) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
                     }
@@ -233,6 +229,10 @@ model {
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
                         sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
                     }
+                    else if (os.linux) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
+                    }
                 }
             }
         }
@@ -240,9 +240,9 @@ model {
 
     components {
         LiteCoreJNI(NativeLibrarySpec) {
-            if (OperatingSystem.current().isLinux()) { targetPlatform "linux" }
             if (OperatingSystem.current().isMacOsX()) { targetPlatform "osx" }
-            if (OperatingSystem.current().isWindows()) { targetPlatform "windows" }
+            else if (OperatingSystem.current().isWindows()) { targetPlatform "windows" }
+            else if (OperatingSystem.current().isLinux()) { targetPlatform "linux" }
             sources {
                 cpp {
                     source {
@@ -260,13 +260,7 @@ model {
             }
 
             binaries.all {
-                if (targetPlatform.operatingSystem.linux) {
-                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
-                    cppCompiler.args '-I', JAVA_INCLUDE
-                    cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
-                    cppCompiler.args '-std=c++17'
-                }
-                else if (targetPlatform.operatingSystem.macOsX) {
+                if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
@@ -282,6 +276,12 @@ model {
                     cppCompiler.args '/EHsc'
                     cppCompiler.args '/wd4068'
                     cppCompiler.args '/std:c++17'
+                }
+                else if (targetPlatform.operatingSystem.linux) {
+                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
+                    cppCompiler.args '-I', JAVA_INCLUDE
+                    cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
+                    cppCompiler.args '-std=c++17'
                 }
             }
         }
@@ -709,27 +709,30 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
             exclude "**/pkgconfig"
             exclude "**/icu"
 
-            include "linux/x86_64/lib/libLiteCore.so"
-            if (!targetPlatform.operatingSystem.isLinux()) {
-                include "linux/x86_64/lib/libLiteCore.so.MD5"
-                include "linux/x86_64/lib/libLiteCoreJNI.so"
-                include "linux/x86_64/lib/libLiteCoreJNI.so.MD5"
+            if (targetPlatform.operatingSystem.isMacOsX()) {
+                include "macos/x86_64/lib/libLiteCore.dylib"
             }
 
-            include "macos/x86_64/lib/libLiteCore.dylib"
-            if (!targetPlatform.operatingSystem.isMacOsX()) {
+            else if (!targetPlatform.operatingSystem.isWindows()) {
+                include "windows/x86_64/lib/LiteCore.dll"
+            }
+
+            // When building Linux, include everything
+            else if (targetPlatform.operatingSystem.isLinux()) {
+                include "linux/x86_64/lib/libLiteCore.so"
+
+                include "windows/x86_64/lib/LiteCore.dll"
                 include "macos/x86_64/lib/libLiteCore.dylib.MD5"
                 include "macos/x86_64/lib/libLiteCoreJNI.dylib"
                 include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
-            }
 
-            include "windows/x86_64/lib/LiteCore.dll"
-            if (!targetPlatform.operatingSystem.isWindows()) {
+                include "windows/x86_64/lib/LiteCore.dll"
                 include "windows/x86_64/lib/LiteCore.dll.MD5"
                 include "windows/x86_64/lib/LiteCoreJNI.dll"
                 include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
             }
         }
+
         into "${CBL_NATIVE_DIR}/libs"
     }
 
@@ -755,10 +758,10 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
 
 def getNativeLibraryResourcePath(platform) {
     final path = "/x86_64/lib"
-    if (platform.operatingSystem.isLinux()) { return "linux${path}" }
     if (platform.operatingSystem.isMacOsX()) { return "macos${path}" }
-    if (platform.operatingSystem.isWindows()) { return "windows${path}" }
-    return "${platform.operatingSystem.name}${path}"
+    else if (platform.operatingSystem.isWindows()) { return "windows${path}" }
+    else if (platform.operatingSystem.isLinux()) { return "linux${path}" }
+    else { return "${platform.operatingSystem.name}${path}" }
 }
 
 def getLicenseVersion() { return getCommit("product-texts", "master") }
