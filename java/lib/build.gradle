@@ -713,7 +713,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
                 include "macos/x86_64/lib/libLiteCore.dylib"
             }
 
-            else if (!targetPlatform.operatingSystem.isWindows()) {
+            else if (targetPlatform.operatingSystem.isWindows()) {
                 include "windows/x86_64/lib/LiteCore.dll"
             }
 
