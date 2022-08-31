@@ -88,21 +88,24 @@ ext {
     SPOTBUGS_VERSION = '4.4.2'
 }
 
-// build platform
+// Build platform
 def PLATFORM = "???"
 if (OperatingSystem.current().isMacOsX()) { PLATFORM = "-macos" }
 else if (OperatingSystem.current().isWindows()) { PLATFORM = "-windows" }
 else if (OperatingSystem.current().isLinux()) { PLATFORM = "" }
 
-// comma separated list of annotations for tests that should not be run.
+// Comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
+// Set -Pverbose to get full console logs for tests
+def VERBOSE = project.hasProperty("verbose")
+
 // Set true to enable coverage
 // The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
+//     ./gradlew -Pcoverage coverage
 def COVERAGE = project.hasProperty("coverage")
 
 
@@ -455,7 +458,7 @@ test {
 
         events = ["failed", "skipped"]
 
-        // showStandardStreams = true
+        showStandardStreams = VERBOSE
 
         showCauses = true
         showExceptions = true
