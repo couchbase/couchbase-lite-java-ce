@@ -59,6 +59,9 @@ ext {
 // comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
 
+// Set -Pverbose to get full console logs for tests
+def VERBOSE = project.hasProperty("verbose")
+
 
 // ----------------------------------------------------------------
 // Build
@@ -135,7 +138,7 @@ test {
 
         events = ["failed", "skipped"]
 
-        // showStandardStreams = true
+        showStandardStreams = VERBOSE
 
         showCauses = true
         showExceptions = true
