@@ -520,7 +520,7 @@ distributions {
             license.include CBL_LICENSE_FILE
             into("license") { from license }
 
-            def blackduck = fileTree(projectDir)
+            def blackduck = fileTree("${projectDir}/..")
             blackduck.include CBL_NOTICES_FILE
             into(".") { from blackduck }
 
