@@ -81,6 +81,8 @@ cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${LIB_
 cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
 # license
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
+# Black duck bs
+curl -Lfs https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-android/blackduck/${VERSION}/notices.txt -o notices.txt || true
 zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${VERSION}-${BUILD_NUMBER}.zip" *
 popd
 
