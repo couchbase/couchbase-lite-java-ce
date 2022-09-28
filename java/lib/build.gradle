@@ -508,10 +508,10 @@ distributions {
         contents {
             into("support") {
                 from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
-                include 'libicudata.so.*'
-                include 'libicui18n.so.*'
-                include 'libicuuc.so.*'
-                include 'libstdc++.so.*'
+                include 'libicudata.so.\\d+'
+                include 'libicui18n.so.\\d+'
+                include 'libicuuc.so.\\d+'
+                include 'libstdc++.so.\\d+'
                 exclude '**/pkgconfig'
                 exclude '**/icu'
             }

@@ -114,8 +114,11 @@ android {
 
     kotlinOptions { jvmTarget = '1.8' }
 
-    // mumbo-jumbo to prevent "More than one file was found" message
-    packagingOptions { exclude 'META-INF/*' }
+    packagingOptions {
+        // mumbo-jumbo to prevent "More than one file was found" message
+        exclude 'META-INF/*'
+        doNotStrip '**.so'
+    }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
