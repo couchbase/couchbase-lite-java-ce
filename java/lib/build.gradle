@@ -1,4 +1,3 @@
-// build.gradle
 //
 // Copyright (c) 2017, 2018, 2019 Couchbase, Inc. All rights reserved.
 //
@@ -91,9 +90,9 @@ ext {
 
 // Build platform
 def PLATFORM = "???"
-if (OperatingSystem.current().isMacOsX()) { PLATFORM = "-macos" }
-else if (OperatingSystem.current().isWindows()) { PLATFORM = "-windows" }
-else if (OperatingSystem.current().isLinux()) { PLATFORM = "" }
+if (OperatingSystem.current().isMacOsX()) { PLATFORM = "macos" }
+else if (OperatingSystem.current().isWindows()) { PLATFORM = "windows" }
+else if (OperatingSystem.current().isLinux()) { PLATFORM = "linux" }
 
 // Comma separated list of annotations for tests that should not be run.
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
@@ -108,7 +107,6 @@ def VERBOSE = project.hasProperty("verbose")
 // The incantation for generating a coverage report is:
 //     ./gradlew -Pcoverage coverage
 def COVERAGE = project.hasProperty("coverage")
-
 
 
 // ----------------------------------------------------------------
@@ -244,9 +242,9 @@ model {
 
     components {
         LiteCoreJNI(NativeLibrarySpec) {
-            if (OperatingSystem.current().isMacOsX()) { targetPlatform "osx" }
-            else if (OperatingSystem.current().isWindows()) { targetPlatform "windows" }
-            else if (OperatingSystem.current().isLinux()) { targetPlatform "linux" }
+            if (PLATFORM == "macos") { targetPlatform "osx" }
+            else { targetPlatform PLATFORM }
+
             sources {
                 cpp {
                     source {
@@ -506,14 +504,18 @@ distributions {
     main {
         distributionBaseName = "${CBL_ARTIFACT_ID}"
         contents {
-            into("support") {
-                from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
-                include 'libicudata.so.\\d+'
-                include 'libicui18n.so.\\d+'
-                include 'libicuuc.so.\\d+'
-                include 'libstdc++.so.\\d+'
-                exclude '**/pkgconfig'
-                exclude '**/icu'
+            if (PLATFORM == "linux") {
+                into("support") {
+                    from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
+                    // this depends on the copy following (not copying) symbolic links
+                    include 'libgcc_s.so'
+                    include 'libicudata.so.??'
+                    include 'libicui18n.so.??'
+                    include 'libicuuc.so.??'
+                    include 'libstdc++.so.?'
+                    exclude '**/pkgconfig'
+                    exclude '**/icu'
+                }
             }
 
             def license = fileTree(CBL_LICENSE_DIR)
@@ -601,8 +603,10 @@ project.afterEvaluate {
 publishing {
     publications {
         couchbaseLiteJava(MavenPublication) {
+            def suffix = (PLATFORM == "linux") ? "" : "-${PLATFORM}"
+
             groupId CBL_GROUP
-            artifactId "${CBL_ARTIFACT_ID}${PLATFORM}"
+            artifactId "${CBL_ARTIFACT_ID}${suffix}"
             version BUILD_VERSION
 
             artifact jar
