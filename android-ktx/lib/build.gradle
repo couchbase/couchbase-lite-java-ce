@@ -88,6 +88,8 @@ group = CBL_GROUP
 version = BUILD_VERSION
 
 android {
+    namespace 'com.couchbase.lite.kotlin'
+
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
@@ -146,7 +148,7 @@ android {
             manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/debug/AndroidManifest.xml"
         }
         androidTest {
-            manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/androidTest/AndroidManifest.xml"
+            manifest.srcFile "${CBL_COMMON_ANDROID_KTX_DIR}/debug/AndroidManifest.xml"
             java.srcDirs = [
                 "${CBL_COMMON_DIR}/test/java",
                 "${CBL_COMMON_ANDROID_DIR}/androidTest/java",
