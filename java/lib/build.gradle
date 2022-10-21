@@ -95,7 +95,8 @@ else if (OperatingSystem.current().isWindows()) { PLATFORM = "windows" }
 else if (OperatingSystem.current().isLinux()) { PLATFORM = "linux" }
 
 // Comma separated list of annotations for tests that should not be run.
-def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
+// e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
+def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
@@ -450,7 +451,7 @@ test {
     workingDir = new File(workingDir, ".test-" + new Date().format('yyMMddHHmm'))
     if (!workingDir.exists()) { workingDir.mkdirs() }
 
-    if (TEST_FILTER != null) { exclude "${TEST_FILTER}" }
+    if (TEST_FILTER != null) { exclude TEST_FILTER }
 
     testLogging {
         outputs.upToDateWhen { false }

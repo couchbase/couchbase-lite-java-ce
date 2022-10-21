@@ -52,7 +52,8 @@ ext {
 }
 
 // comma separated list of annotations for tests that should not be run.
-def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter
+// e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
+def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
 
 // ----------------------------------------------------------------
@@ -78,7 +79,7 @@ android {
         versionName BUILD_VERSION
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        if (TEST_FILTER != null) { testInstrumentationRunnerArguments notAnnotation: TEST_FILTER }
+        if (TEST_FILTER != null) { testInstrumentationRunnerArguments.notAnnotation = TEST_FILTER }
     }
 
     sourceSets {
