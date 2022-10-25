@@ -52,7 +52,8 @@ ext {
     JAVA_INCLUDE = "${JAVA_HOME}/include"
 
     CBL_GROUP = 'com.couchbase.lite'
-    CBL_ARTIFACT_ID = 'couchbase-lite-java'
+    JAR_ARTIFACT = 'couchbase-lite-java'
+    ZIP_ARTIFACT = 'couchbase-lite-java-community'
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
     CBL_NOTICES_FILE = "notices.txt"
@@ -494,7 +495,7 @@ jacocoTestReport {
 // Jar
 // ----------------------------------------------------------------
 
-jar { archivesBaseName = "${CBL_ARTIFACT_ID}" }
+jar { archivesBaseName = "${JAR_ARTIFACT}" }
 
 
 // ----------------------------------------------------------------
@@ -503,7 +504,7 @@ jar { archivesBaseName = "${CBL_ARTIFACT_ID}" }
 
 distributions {
     main {
-        distributionBaseName = "${CBL_ARTIFACT_ID}"
+        distributionBaseName = "${ZIP_ARTIFACT}"
         contents {
             if (PLATFORM == "linux") {
                 into("support") {
@@ -540,7 +541,7 @@ distributions {
                 // it is an explicit dependency
                 return it.isDirectory() ||
                     (!name.equals(it.getPath())) ||
-                    name.startsWith(CBL_ARTIFACT_ID) ||
+                    name.startsWith(JAR_ARTIFACT) ||
                     name.startsWith(CBL_LICENSE_FILE) ||
                     name.startsWith(CBL_NOTICES_FILE) ||
                     DEPENDENCIES.contains(name.split("-")[0])
@@ -553,14 +554,14 @@ distributions {
                 def path = it.path
 
                 if (name.endsWith("javadoc.jar")) {
-                    it.name = "${CBL_ARTIFACT_ID}-${BUILD_RELEASE}-javadoc.jar"
+                    it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}-javadoc.jar"
                 }
 
-                else if (name.startsWith("${CBL_ARTIFACT_ID}") &&
+                else if (name.startsWith("${JAR_ARTIFACT}") &&
                     name.endsWith(".jar") &&
                     (!path.contains("/lib/"))) {
-                    it.path = path.replace("/${CBL_ARTIFACT_ID}", "/lib/${CBL_ARTIFACT_ID}")
-                    it.name = "${CBL_ARTIFACT_ID}-${BUILD_RELEASE}.jar"
+                    it.path = path.replace("/${ZIP_ARTIFACT}", "/lib/${ZIP_ARTIFACT}")
+                    it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}.jar"
                 }
             }
         }
@@ -577,7 +578,7 @@ def mavenRepoPass = System.getenv('MAVEN_REPO_PSW')
 
 // Generate javadoc.jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveBaseName = "${CBL_ARTIFACT_ID}"
+    archiveBaseName = "${JAR_ARTIFACT}"
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -586,7 +587,7 @@ distTar.dependsOn javadocJar
 
 // Generate source.jar
 task sourcesJar(type: Jar) {
-    archiveBaseName = "${CBL_ARTIFACT_ID}"
+    archiveBaseName = "${JAR_ARTIFACT}"
     archiveClassifier = 'sources'
     from sourceSets.main.java.srcDirs
 }
@@ -607,7 +608,7 @@ publishing {
             def suffix = (PLATFORM == "linux") ? "" : "-${PLATFORM}"
 
             groupId CBL_GROUP
-            artifactId "${CBL_ARTIFACT_ID}${suffix}"
+            artifactId "${JAR_ARTIFACT}${suffix}"
             version BUILD_VERSION
 
             artifact jar
@@ -615,7 +616,7 @@ publishing {
             artifact javadocJar
 
             pom {
-                name = "${CBL_GROUP}:${CBL_ARTIFACT_ID}"
+                name = "${CBL_GROUP}:${JAR_ARTIFACT}"
                 description = CBL_DESCRIPTION
                 url = CBL_SITE_URL
                 licenses {
