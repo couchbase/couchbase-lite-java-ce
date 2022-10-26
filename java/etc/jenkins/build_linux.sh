@@ -3,7 +3,6 @@
 # Build Couchbase Lite Java for Linux, MacOS, Windows, Community Edition
 # This script assumes the the OSX and Windows builds are available on latestbuilds
 #
-PRODUCT="couchbase-lite-java"
 LATESTBUILDS="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -37,7 +36,7 @@ rm -rf "${NATIVE_LIBS_DIR}" > /dev/null 2>&1
 mkdir -p "${NATIVE_LIBS_DIR}/libs"
 pushd "${NATIVE_LIBS_DIR}" > /dev/null
 
-NATIVE_LIB="${PRODUCT}-${VERSION}"
+NATIVE_LIB="couchbase-lite-java-community-${VERSION}"
 NATIVE_BUILD="${NATIVE_LIB}-${BUILD_NUMBER}"
 for PLATFORM in macos windows; do
    rm -rf "${PLATFORM}" > /dev/null 2>&1

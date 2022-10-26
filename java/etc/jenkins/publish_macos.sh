@@ -2,7 +2,6 @@
 #
 # Publish Couchbase Lite Java for MacOS, Community Edition
 #
-PRODUCT='couchbase-lite-java'
 MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
 STATUS=0
 
@@ -25,13 +24,11 @@ if [ -z "$ARTIFACTS" ]; then usage; fi
 WORKSPACE="$4"
 if [ -z "$WORKSPACE" ]; then usage; fi
 
-DIST_NAME="${PRODUCT}-${VERSION}-${BUILD_NUMBER}"
-
 echo "======== PUBLISH Couchbase Lite Java for MacOS, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
 ./gradlew ciPublish -PbuildNumber=${BUILD_NUMBER} -PmavenUrl=${MAVEN_URL} || STATUS=7
 
 echo "======== OSX: Copy artifacts to staging directory"
-cp "lib/build/distributions/${DIST_NAME}.zip" "${ARTIFACTS}/${DIST_NAME}-macos.zip"
+cp "lib/build/distributions/couchbase-lite-java*.zip" "${ARTIFACTS}/couchbase-lite-java-community-${VERSION}-${BUILD_NUMBER}-macos.zip"
 
 echo "======== OSX: PUBLICATION COMPLETE: ${STATUS}"
 exit $STATUS

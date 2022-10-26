@@ -9,7 +9,6 @@ param (
     [string]$artifactsDir
 )
 
-$product="couchbase-lite-java"
 $mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
 $status = 0
 
@@ -21,7 +20,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "======== Windows: Copy artifacts to staging directory"
-Copy-Item "lib\build\distributions\$product-$version-$buildNumber.zip" -Destination "$artifactsDir\$product-$version-$buildNumber-windows.zip"
+Copy-Item "lib\build\distributions\couchbase-lite-java*.zip" -Destination "$artifactsDir\couchbase-lite-java-community-$version-$buildNumber-windows.zip"
 
 Write-Host "======== Windows: PUBLICATION COMPLETE $status"
 exit $status
