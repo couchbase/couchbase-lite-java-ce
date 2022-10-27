@@ -134,7 +134,7 @@ java {
             ]
             resources.srcDirs = [
                 "${CBL_COMMON_JAVA_DIR}/main/resources",         // Resource files
-                "${CBL_NATIVE_DIR}",                             // Native Libraries
+                CBL_NATIVE_DIR,                                  // Native Libraries
             ]
         }
         test {
@@ -495,7 +495,7 @@ jacocoTestReport {
 // Jar
 // ----------------------------------------------------------------
 
-jar { archivesBaseName = "${JAR_ARTIFACT}" }
+jar { archivesBaseName = JAR_ARTIFACT }
 
 
 // ----------------------------------------------------------------
@@ -504,7 +504,7 @@ jar { archivesBaseName = "${JAR_ARTIFACT}" }
 
 distributions {
     main {
-        distributionBaseName = "${ZIP_ARTIFACT}"
+        distributionBaseName = ZIP_ARTIFACT
         contents {
             if (PLATFORM == "linux") {
                 into("support") {
@@ -557,10 +557,10 @@ distributions {
                     it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}-javadoc.jar"
                 }
 
-                else if (name.startsWith("${JAR_ARTIFACT}") &&
+                else if (name.startsWith(JAR_ARTIFACT) &&
                     name.endsWith(".jar") &&
                     (!path.contains("/lib/"))) {
-                    it.path = path.replace("/${ZIP_ARTIFACT}", "/lib/${ZIP_ARTIFACT}")
+                    it.path = path.replace("${ZIP_ARTIFACT}-${BUILD_RELEASE}-${BUILD_NUMBER}", "${ZIP_ARTIFACT}-${BUILD_RELEASE}-${BUILD_NUMBER}/lib")
                     it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}.jar"
                 }
             }
@@ -578,7 +578,7 @@ def mavenRepoPass = System.getenv('MAVEN_REPO_PSW')
 
 // Generate javadoc.jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveBaseName = "${JAR_ARTIFACT}"
+    archiveBaseName = JAR_ARTIFACT
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -587,7 +587,7 @@ distTar.dependsOn javadocJar
 
 // Generate source.jar
 task sourcesJar(type: Jar) {
-    archiveBaseName = "${JAR_ARTIFACT}"
+    archiveBaseName = JAR_ARTIFACT
     archiveClassifier = 'sources'
     from sourceSets.main.java.srcDirs
 }
@@ -762,7 +762,7 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
     task signNativeLibs(dependsOn: ["copyJni", "copyLiteCore"]) { thisTask ->
         doLast {
             fileTree(dir: libPath).each { lib ->
-                def fPath= "${lib.getPath()}"
+                def fPath= lib.getPath()
                 if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
             }
         }

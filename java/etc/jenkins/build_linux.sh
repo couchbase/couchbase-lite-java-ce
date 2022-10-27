@@ -47,7 +47,7 @@ for PLATFORM in macos windows; do
 
    unzip "${PLATFORM}.zip"
 
-   jar -xf "${NATIVE_BUILD}/lib/${NATIVE_LIB}.jar" libs
+   jar -xf "${NATIVE_BUILD}/lib/couchbase-lite-java-${VERSION}.jar" libs
    cp -R libs/* ../libs
 
    popd > /dev/null
