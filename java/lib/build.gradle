@@ -560,8 +560,8 @@ distributions {
                 else if (name.startsWith(JAR_ARTIFACT) &&
                     name.endsWith(".jar") &&
                     (!path.contains("/lib/"))) {
-                    it.path = path.replace("${ZIP_ARTIFACT}-${BUILD_RELEASE}-${BUILD_NUMBER}", "${ZIP_ARTIFACT}-${BUILD_RELEASE}-${BUILD_NUMBER}/lib")
                     it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}.jar"
+                    it.path = path.replaceFirst("(${ZIP_ARTIFACT}[^/]+).+") { _, p -> "${p}/lib/${it.name}" }
                 }
             }
         }
