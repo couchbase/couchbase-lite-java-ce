@@ -6,17 +6,13 @@ param(
     [string]$reportsDir
 )
 
-Set-PSDebug -Trace 2
-
-$local:ErrorActionPreference = 'Continue'
-
 $status = 0
 
 Write-Host "======== TEST Couchbase Lite Java for Windows, Community Edition"
-& "$PSScriptRoot\..\..\gradlew.bat" --no-daemon ciTest --console=plain -PautomatedTests=true -PbuildNumber="$buildNumber" 2>&1 > test.log
+$env:DEBUG = "debug"
+& "$PSScriptRoot\..\..\gradlew.bat" --no-daemon ciTest --console=plain -PautomatedTests=true -PbuildNumber="$buildNumber" > test.log 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Tests failed with error $LASTEXITCODE"
-    Get-Content test.log
     $status = 8
 }
 7z a -tzip -r "$reportsDir\test-log-windows.zip" test.log test\.test*\hs_err_pid*.log
