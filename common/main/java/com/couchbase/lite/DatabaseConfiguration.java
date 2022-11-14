@@ -30,14 +30,16 @@ public final class DatabaseConfiguration extends AbstractDatabaseConfiguration {
     // Constructors
     //---------------------------------------------
 
-    public DatabaseConfiguration() { this((DatabaseConfiguration) null); }
+    public DatabaseConfiguration() { }
 
+    /**
+     * Copy constructor
+     *
+     * @param config the configuration to duplicate.
+     */
     public DatabaseConfiguration(@Nullable DatabaseConfiguration config) { super(config); }
 
     DatabaseConfiguration(@Nullable ImmutableDatabaseConfiguration config) { super(config); }
-
-    // for Kotlin
-    DatabaseConfiguration(@Nullable String dbDirectory) { super(dbDirectory); }
 
     //---------------------------------------------
     // protected methods

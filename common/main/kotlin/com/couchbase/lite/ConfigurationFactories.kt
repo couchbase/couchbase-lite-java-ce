@@ -35,24 +35,99 @@ val DatabaseConfigurationFactory: DatabaseConfiguration? = null
  *
  * @see com.couchbase.lite.DatabaseConfiguration
  */
-fun DatabaseConfiguration?.create(databasePath: String? = null) = DatabaseConfiguration(databasePath ?: this?.directory)
+fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConfiguration {
+    val config = DatabaseConfiguration()
+
+    (databasePath ?: this?.directory)?.let { config.directory = it }
+
+    return config
+}
+
+/**
+ * Create a ReplicatorConfiguration, overriding the receiver's
+ * values with the passed parameters:
+ *
+ * @param target (required) The replication endpoint.
+ * @param collections a map of collections to be replicated, to their configurations.
+ * @param type replicator type: push, pull, or push and pull: default is push and pull.
+ * @param continuous continuous flag: true for continuous, false by default.
+ * @param authenticator connection authenticator.
+ * @param headers extra HTTP headers to send in all requests to the remote target.
+ * @param pinnedServerCertificate target server's SSL certificate.
+ * @param maxAttempts max retry attempts after connection failure.
+ * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
+ * @param heartbeat heartbeat interval, in seconds.
+ * @param enableAutoPurge auto-purge enabled.
+ *
+ * @see com.couchbase.lite.ReplicatorConfiguration
+ */
+fun ReplicatorConfiguration?.newConfig(
+    target: Endpoint? = null,
+    collections: Map<Collection, CollectionConfiguration>? = null,
+    type: ReplicatorType? = null,
+    continuous: Boolean? = null,
+    authenticator: Authenticator? = null,
+    headers: Map<String, String>? = null,
+    pinnedServerCertificate: X509Certificate? = null,
+    maxAttempts: Int? = null,
+    maxAttemptWaitTime: Int? = null,
+    heartbeat: Int? = null,
+    enableAutoPurge: Boolean? = null
+): ReplicatorConfiguration {
+    val config = ReplicatorConfiguration(
+        target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint"),
+        collections ?: getCollectionConfigs(this)
+    )
+
+    copyReplConfig(
+        this,
+        config,
+        type,
+        continuous,
+        authenticator,
+        headers,
+        maxAttempts,
+        maxAttemptWaitTime,
+        heartbeat,
+        enableAutoPurge
+    )
+
+    (pinnedServerCertificate ?: this?.pinnedServerX509Certificate)?.let { config.setPinnedServerX509Certificate(it) }
+
+    return config
+}
+
+/**
+ * Create a DatabaseConfiguration, overriding the receiver's
+ * values with the passed parameters:
+ *
+ * @param databasePath The directory in which the database is stored.
+ *
+ * @see com.couchbase.lite.DatabaseConfiguration
+ * @deprecated Use ReplicatorConfigurationFactory().newConfig(String?, EncryptionKey?)
+ */
+@Deprecated(
+    "Use DatabaseConfigurationFactory.newConfig(String?, EncryptionKey?)",
+    replaceWith = ReplaceWith("DatabaseConfigurationFactory.newConfig(String?, EncryptionKey?)")
+)
+fun DatabaseConfiguration?.create(databasePath: String? = null) = this.newConfig(databasePath)
 
 /**
  * Configuration factory for new ReplicatorConfigurations
+ *
  * Usage:
- *     val replConfig = ReplicatorConfigurationFactory.create(...)
+ *      val replConfig = ReplicatorConfigurationFactory.create(...)
  */
 val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
 
 /**
- * Create a FullTextIndexConfiguration, overriding the receiver's
+ * Create a ReplicatorConfiguration, overriding the receiver's
  * values with the passed parameters:
  *
- * @param database legacy parameter: use collections instead.
- * @param target (required) The max size of the log file in bytes.
- * @param collections a map of collections to their configurations
+ * @param database the local database
+ * @param target (required) The replication endpoint.
  * @param type replicator type: push, pull, or push and pull: default is push and pull.
- * @param continuous continuous flag: true for continuous, false by default.
+ * @param continuous continuous flag: true for continuous. False by default.
  * @param authenticator connection authenticator.
  * @param headers extra HTTP headers to send in all requests to the remote target.
  * @param pinnedServerCertificate target server's SSL certificate.
@@ -64,19 +139,24 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param maxAttempts max retry attempts after connection failure.
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
- * @param enableAutoPurge auto-purge enabled: defaults true..
+ * @param enableAutoPurge auto-purge enabled.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
+ * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)
  */
+@Suppress("DEPRECATION")
+@Deprecated(
+    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)",
+    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)")
+)
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
     target: Endpoint? = null,
-    collections: Map<Collection, CollectionConfiguration>? = null,
     type: ReplicatorType? = null,
     continuous: Boolean? = null,
     authenticator: Authenticator? = null,
     headers: Map<String, String>? = null,
-    pinnedServerCertificate: X509Certificate? = null,
+    pinnedServerCertificate: ByteArray? = null,
     channels: List<String>? = null,
     documentIDs: List<String>? = null,
     pushFilter: ReplicationFilter? = null,
@@ -87,46 +167,42 @@ fun ReplicatorConfiguration?.create(
     heartbeat: Int? = null,
     enableAutoPurge: Boolean? = null
 ): ReplicatorConfiguration {
-    var colls = collections ?: getCollectionConfigs(this)
-
-    var db = database ?: this?.database
-    if (db == null) {
-        // no database specified: Just verify that all the collections belong to the same db.
-        db = AbstractDatabase.getDbForCollections(colls?.keys)
-    } else {
-        // database and collections specified: verify that the collections belong to the db
-        if (!colls.isNullOrEmpty()) {
-            db.verifyCollections(colls.keys)
-        } else {
-            // database specified but no collections: configure the default collection
-            val defaultCollection =
-                db.defaultCollection ?: throw IllegalArgumentException(
-                    "No collections provided and database has no default collection")
-            colls = mapOf(defaultCollection to CollectionConfiguration())
-        }
+    // ReplicatorConfiguration.getDatabase throws an ISE on null database
+    val db = database ?: try {
+        this?.database
+    } catch (e: IllegalStateException) {
+        null
     }
+    ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify a database")
+    checkDbCollections(db, this?.collections)
 
-    val replConfig = ReplicatorConfiguration(
-        colls?.toMutableMap(),
-        target ?: this?.target ?: error("Must specify a target"),
-        type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
-        continuous ?: this?.isContinuous ?: false,
-        authenticator ?: this?.authenticator,
-        headers ?: this?.headers,
-        pinnedServerCertificate ?: this?.pinnedServerX509Certificate,
-        maxAttempts ?: this?.maxAttempts ?: 0,
-        maxAttemptWaitTime ?: this?.maxAttemptWaitTime ?: 0,
-        heartbeat ?: this?.heartbeat ?: 0,
-        enableAutoPurge ?: this?.isAutoPurgeEnabled ?: true,
-        db
+    val config = ReplicatorConfiguration(
+        db,
+        target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint")
     )
 
-    // if there are legacy specifications, try to use them
-    channels ?: this?.channels?.let { replConfig.channels = it }
-    documentIDs ?: this?.documentIDs?.let { replConfig.documentIDs = it }
-    pushFilter ?: this?.pushFilter?.let { replConfig.pushFilter = it }
-    pullFilter ?: this?.pullFilter?.let { replConfig.pullFilter = it }
-    conflictResolver ?: this?.conflictResolver?.let { replConfig.conflictResolver = it }
+    copyReplConfig(
+        this,
+        config,
+        type,
+        continuous,
+        authenticator,
+        headers,
+        maxAttempts,
+        maxAttemptWaitTime,
+        heartbeat,
+        enableAutoPurge
+    )
 
-    return replConfig
+    copyLegacyReplConfig(
+        this,
+        config,
+        pinnedServerCertificate,
+        channels,
+        documentIDs,
+        pushFilter,
+        pullFilter,
+        conflictResolver)
+
+    return config
 }

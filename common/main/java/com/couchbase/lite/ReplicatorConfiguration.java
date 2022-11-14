@@ -18,7 +18,6 @@ package com.couchbase.lite;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import com.couchbase.lite.internal.ImmutableReplicatorConfiguration;
@@ -62,34 +61,9 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
 
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
 
-    //    // for Kotlin
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.UnnecessaryFullyQualifiedName"})
-    ReplicatorConfiguration(
-        @Nullable Map<Collection, CollectionConfiguration> collections,
-        @NonNull Endpoint target,
-        @NonNull com.couchbase.lite.ReplicatorType type,
-        boolean continuous,
-        @Nullable Authenticator authenticator,
-        @Nullable Map<String, String> headers,
-        @Nullable X509Certificate pinnedServerCertificate,
-        int maxAttempts,
-        int maxAttemptWaitTime,
-        int heartbeat,
-        boolean enableAutoPurge,
-        @Nullable Database database) {
-        super(
-            collections,
-            Preconditions.assertNotNull(target, "target"),
-            Preconditions.assertNotNull(type, "type"),
-            continuous,
-            authenticator,
-            headers,
-            pinnedServerCertificate,
-            maxAttempts,
-            maxAttemptWaitTime,
-            verifyHeartbeat(heartbeat),
-            enableAutoPurge,
-            database);
+    // For Kotlin
+    ReplicatorConfiguration(@NonNull Endpoint target, @Nullable Map<Collection, CollectionConfiguration> collections) {
+        super(null, collections, target);
     }
 
     @NonNull
