@@ -59,6 +59,9 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
  * @param heartbeat heartbeat interval, in seconds.
  * @param enableAutoPurge auto-purge enabled.
  *
+ * Note: A document that is blocked by a document Id filter will not be auto-purged
+ *       regardless of the setting of the enableAutoPurge property
+ *
  * @see com.couchbase.lite.ReplicatorConfiguration
  */
 fun ReplicatorConfiguration?.newConfig(
@@ -140,6 +143,9 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
  * @param enableAutoPurge auto-purge enabled.
+ *
+ * Note: A document that is blocked by a document Id filter will not be auto-purged
+ *       regardless of the setting of the enableAutoPurge property
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)
