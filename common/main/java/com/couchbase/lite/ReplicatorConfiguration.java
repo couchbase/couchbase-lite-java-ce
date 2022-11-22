@@ -63,7 +63,10 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
 
     // For Kotlin
     ReplicatorConfiguration(@NonNull Endpoint target, @Nullable Map<Collection, CollectionConfiguration> collections) {
-        super(null, collections, target);
+        super(
+            (collections == null) ? null : AbstractDatabase.getDbForCollections(collections.keySet()),
+            collections,
+            target);
     }
 
     @NonNull

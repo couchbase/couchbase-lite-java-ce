@@ -146,6 +146,9 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  *
  * Note: A document that is blocked by a document Id filter will not be auto-purged
  *       regardless of the setting of the enableAutoPurge property
+ * Warning: This factory method configures only the default collection!
+ *          Using it on a configuration that describes any collections other than the default
+ *          will loose all information associated with those collections
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)
