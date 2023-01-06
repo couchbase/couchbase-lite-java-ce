@@ -16,7 +16,7 @@
 //
 buildscript {
     ext {
-        KOTLIN_VERSION = '1.7.10'
+        KOTLIN_VERSION = '1.7.20'
         JACOCO_VERSION = '0.8.6'
 
         ROOT_DIR = "${projectDir}/../.."
@@ -31,7 +31,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jacoco:org.jacoco.core:$JACOCO_VERSION"
-        classpath 'gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5'
+        classpath 'com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.13'
     }
 }
 

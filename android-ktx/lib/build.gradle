@@ -183,16 +183,16 @@ configurations.all { resolutionStrategy.cacheChangingModulesFor 1, 'minutes' }
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.5.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
     implementation ("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}").setChanging(true)
 
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation 'androidx.test:runner:1.5.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 
@@ -374,7 +374,6 @@ gradle.projectsEvaluated {
 }
 task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
-task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks

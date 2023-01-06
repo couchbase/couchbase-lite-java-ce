@@ -86,7 +86,7 @@ ext {
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '3.14.7'
-    SPOTBUGS_VERSION = '4.4.2'
+    SPOTBUGS_VERSION = '4.7.3'
 }
 
 // Build platform
@@ -354,11 +354,11 @@ task checkstyle(type: Checkstyle) {
     reports {
         xml {
             enabled = true
-            setDestination(file("${REPORTS_DIR}/checkstyle.xml"))
+            outputLocation = file("${REPORTS_DIR}/checkstyle.xml")
         }
         html {
             enabled = true
-            setDestination(file("${REPORTS_DIR}/checkstyle.html"))
+            outputLocation = file("${REPORTS_DIR}/checkstyle.html")
         }
     }
 }
@@ -382,11 +382,11 @@ task pmd(type: Pmd) {
     reports {
         xml {
             enabled = true
-            setDestination(file("${REPORTS_DIR}/pmd.xml"))
+            outputLocation = file("${REPORTS_DIR}/pmd.xml")
         }
         html {
             enabled = true
-            setDestination(file("${REPORTS_DIR}/pmd.html"))
+            outputLocation = file("${REPORTS_DIR}/pmd.html")
         }
     }
 }
@@ -421,12 +421,13 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
         reports {
             xml {
-                enabled = (reportType == "Xml")
-                setDestination(file("${REPORTS_DIR}/spotbugs.xml"))
+                required = (reportType == "Xml")
+                outputLocation = file("${REPORTS_DIR}//spotbugs.xml")
             }
             html {
-                enabled = (reportType == "Html")
-                setDestination(file("${REPORTS_DIR}/spotbugs.html"))
+                required = (reportType == "Html")
+                outputLocation = file("${REPORTS_DIR}//spotbugs.html")
+                stylesheet = 'fancy-hist.xsl'
             }
         }
     }
@@ -681,7 +682,6 @@ publishing {
 ///////// Dev tasks
 task smokeTest(dependsOn: ['clean', 'compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
-task fullTest(dependsOn: ['smokeTest', 'devTest'])
 if (COVERAGE) { task coverage(dependsOn: ['test']) }
 
 ///////// CI tasks
