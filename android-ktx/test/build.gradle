@@ -141,7 +141,7 @@ dependencies {
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
-    androidTestImplementation 'androidx.test:runner:1.5.12'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

@@ -100,7 +100,7 @@ android {
     buildToolsVersion BUILD_TOOLS_VERSION
 
     // if you change this, be sure to update $ROOT/etc/jenkins/install_android_toolchain.sh
-    ndkVersion '25.0.8775105'
+    ndkVersion '25.1.8937393' //'25.0.8775105'
 
     externalNativeBuild {
         cmake {
@@ -314,11 +314,11 @@ task checkstyle(type: Checkstyle) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.html")
         }
     }
@@ -341,11 +341,11 @@ task pmd(type: Pmd) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.html")
         }
     }
@@ -419,8 +419,8 @@ task jacocoTestReport(type: JacocoReport) {
 
     executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
 }
 
