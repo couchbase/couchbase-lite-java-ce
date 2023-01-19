@@ -181,9 +181,13 @@ repositories {
 
 configurations.all { resolutionStrategy.cacheChangingModulesFor 1, 'minutes' }
 dependencies {
-    compileOnly 'androidx.annotation:annotation:1.5.0'
+    // androidx.work:work-runtime-ktx:2.7.1 requires 1.2.0
+    compileOnly 'androidx.annotation:annotation:1.2.0'
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+
+    // Work Manager support
+    implementation "androidx.work:work-runtime-ktx:2.7.1"
 
     implementation ("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}").setChanging(true)
 
