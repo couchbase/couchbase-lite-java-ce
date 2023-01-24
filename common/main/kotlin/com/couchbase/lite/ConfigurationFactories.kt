@@ -45,7 +45,10 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
 
 /**
  * Create a ReplicatorConfiguration, overriding the receiver's
- * values with the passed parameters:
+ * values with the passed parameters.
+ *
+ * Note: A document that is blocked by a document Id filter will not be auto-purged
+ *       regardless of the setting of the enableAutoPurge property
  *
  * @param target (required) The replication endpoint.
  * @param collections a map of collections to be replicated, to their configurations.
@@ -58,9 +61,7 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
  * @param enableAutoPurge auto-purge enabled.
- *
- * Note: A document that is blocked by a document Id filter will not be auto-purged
- *       regardless of the setting of the enableAutoPurge property
+ * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  */
@@ -75,7 +76,8 @@ fun ReplicatorConfiguration?.newConfig(
     maxAttempts: Int? = null,
     maxAttemptWaitTime: Int? = null,
     heartbeat: Int? = null,
-    enableAutoPurge: Boolean? = null
+    enableAutoPurge: Boolean? = null,
+    acceptParentDomainCookies: Boolean? = null
 ): ReplicatorConfiguration {
     val config = ReplicatorConfiguration(
         target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint"),
@@ -92,7 +94,8 @@ fun ReplicatorConfiguration?.newConfig(
         maxAttempts,
         maxAttemptWaitTime,
         heartbeat,
-        enableAutoPurge
+        enableAutoPurge,
+        acceptParentDomainCookies
     )
 
     (pinnedServerCertificate ?: this?.pinnedServerX509Certificate)?.let { config.setPinnedServerX509Certificate(it) }
@@ -127,6 +130,13 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * Create a ReplicatorConfiguration, overriding the receiver's
  * values with the passed parameters:
  *
+ * Note: A document that is blocked by a document Id filter will not be auto-purged
+ *       regardless of the setting of the enableAutoPurge property
+ *
+ * Warning: This factory method configures only the default collection!
+ *          Using it on a configuration that describes any collections other than the default
+ *          will loose all information associated with those collections
+ *
  * @param database the local database
  * @param target (required) The replication endpoint.
  * @param type replicator type: push, pull, or push and pull: default is push and pull.
@@ -142,13 +152,8 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param maxAttempts max retry attempts after connection failure.
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
- * @param enableAutoPurge auto-purge enabled.
- *
- * Note: A document that is blocked by a document Id filter will not be auto-purged
- *       regardless of the setting of the enableAutoPurge property
- * Warning: This factory method configures only the default collection!
- *          Using it on a configuration that describes any collections other than the default
- *          will loose all information associated with those collections
+ * @param enableAutoPurge auto-purge enabled..
+ * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
  * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)
@@ -174,7 +179,8 @@ fun ReplicatorConfiguration?.create(
     maxAttempts: Int? = null,
     maxAttemptWaitTime: Int? = null,
     heartbeat: Int? = null,
-    enableAutoPurge: Boolean? = null
+    enableAutoPurge: Boolean? = null,
+    acceptParentDomainCookies: Boolean? = null
 ): ReplicatorConfiguration {
     // ReplicatorConfiguration.getDatabase throws an ISE on null database
     val db = database ?: try {
@@ -200,7 +206,8 @@ fun ReplicatorConfiguration?.create(
         maxAttempts,
         maxAttemptWaitTime,
         heartbeat,
-        enableAutoPurge
+        enableAutoPurge,
+        acceptParentDomainCookies
     )
 
     copyLegacyReplConfig(
@@ -211,7 +218,8 @@ fun ReplicatorConfiguration?.create(
         documentIDs,
         pushFilter,
         pullFilter,
-        conflictResolver)
+        conflictResolver
+    )
 
     return config
 }
