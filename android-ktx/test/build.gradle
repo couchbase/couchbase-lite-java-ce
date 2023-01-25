@@ -48,12 +48,15 @@ ext {
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_CE_ANDROID_DIR = "${CBL_CE_ROOT_DIR}/android"
 
-    CBL_ANDROID_LIB = 'couchbase-lite-android'
+    CBL_ANDROID_LIB = 'couchbase-lite-android-ktx'
 }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
+
+// Set true to use mavenLocal instead of Proget
+def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
 
 
 // ----------------------------------------------------------------
@@ -64,7 +67,7 @@ group = CBL_GROUP
 version = BUILD_VERSION
 
 android {
-    namespace 'com.couchbase.lite.kotlin'
+    namespace 'com.couchbase.lite.kotlin.test'
 
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
@@ -120,27 +123,29 @@ android {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
-    maven {
-        url "http://proget.build.couchbase.com/maven2/cimaven"
-        allowInsecureProtocol = true
+    if (USE_LOCAL_MAVEN) { mavenLocal() }
+    else {
+        maven {
+            url "http://proget.build.couchbase.com/maven2/cimaven"
+            allowInsecureProtocol = true
+        }
     }
     google()
     mavenCentral()
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
+    compileOnly 'androidx.annotation:annotation:1.2.0'
+
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+
+    // Work Manager support
+    implementation "androidx.work:work-runtime-ktx:2.7.1"
 
     implementation("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
 
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
