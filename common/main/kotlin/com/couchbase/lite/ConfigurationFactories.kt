@@ -67,7 +67,7 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
  */
 fun ReplicatorConfiguration?.newConfig(
     target: Endpoint? = null,
-    collections: Map<Collection, CollectionConfiguration?>? = null,
+    collections: Map<out kotlin.collections.Collection<Collection>, CollectionConfiguration?>? = null,
     type: ReplicatorType? = null,
     continuous: Boolean? = null,
     authenticator: Authenticator? = null,
@@ -79,10 +79,15 @@ fun ReplicatorConfiguration?.newConfig(
     enableAutoPurge: Boolean? = null,
     acceptParentDomainCookies: Boolean? = null
 ): ReplicatorConfiguration {
-    val config = ReplicatorConfiguration(
-        target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint"),
-        collections ?: getCollectionConfigs(this)
-    )
+    val endPt =
+        target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint")
+    val config = if (collections == null) {
+        ReplicatorConfiguration(endPt, getCollectionConfigs(this))
+    } else {
+        val rc = ReplicatorConfiguration(endPt)
+        collections.forEach { rc.addCollections(it.key, it.value) }
+        rc
+    }
 
     copyReplConfig(
         this,

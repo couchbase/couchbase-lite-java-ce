@@ -118,7 +118,7 @@ class ConfigFactoryTest : BaseDbTest() {
             pullFilter = testPullFilter
         )
 
-        val collectionConfig = mapOf(testDatabase.defaultCollection!! to collConfig1)
+        val collectionConfig = mapOf(setOf(testCollection) to collConfig1)
         val config = ReplicatorConfigurationFactory.newConfig(
             collections = collectionConfig,
             target = target,
@@ -163,7 +163,7 @@ class ConfigFactoryTest : BaseDbTest() {
         )
         val config = ReplicatorConfigurationFactory.newConfig(
             testEndpoint,
-            mapOf(testCollection to collConfig1),
+            mapOf(listOf(testCollection) to collConfig1),
             type = ReplicatorType.PUSH,
             continuous = true,
             authenticator = testAuthenticator,
