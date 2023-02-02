@@ -67,7 +67,7 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
  */
 fun ReplicatorConfiguration?.newConfig(
     target: Endpoint? = null,
-    collections: Map<Collection, CollectionConfiguration>? = null,
+    collections: Map<Collection, CollectionConfiguration?>? = null,
     type: ReplicatorType? = null,
     continuous: Boolean? = null,
     authenticator: Authenticator? = null,
@@ -156,12 +156,12 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
- * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)
+ * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)
  */
 @Suppress("DEPRECATION")
 @Deprecated(
-    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)",
-    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration>, ...)")
+    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)",
+    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)")
 )
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
