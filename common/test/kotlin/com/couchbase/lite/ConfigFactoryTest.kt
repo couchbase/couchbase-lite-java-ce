@@ -118,7 +118,7 @@ class ConfigFactoryTest : BaseDbTest() {
             pullFilter = testPullFilter
         )
 
-        val collectionConfig = mapOf(setOf(testCollection) to collConfig1)
+        val collectionConfig = mapOf(setOf(testDatabase.defaultCollection!!) to collConfig1)
         val config = ReplicatorConfigurationFactory.newConfig(
             collections = collectionConfig,
             target = target,
@@ -131,7 +131,7 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        assertEquals(collectionConfig.keys, config.collections)
+        assertEquals(collectionConfig.keys.first(), config.collections)
         assertEquals(target, config.target)
         assertEquals(ReplicatorType.PUSH, config.type)
         assertTrue(config.isContinuous)

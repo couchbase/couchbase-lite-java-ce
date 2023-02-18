@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate
  * Configuration factory for new DatabaseConfigurations
  *
  * Usage:
- *      val dbConfig = DatabaseConfigurationFactory.create(...)
+ *      val dbConfig = DatabaseConfigurationFactory.newConfig(...)
  */
 val DatabaseConfigurationFactory: DatabaseConfiguration? = null
 
@@ -115,7 +115,7 @@ fun ReplicatorConfiguration?.newConfig(
  * @param databasePath The directory in which the database is stored.
  *
  * @see com.couchbase.lite.DatabaseConfiguration
- * @deprecated Use ReplicatorConfigurationFactory().newConfig(String?, EncryptionKey?)
+ * @deprecated Use DatabaseConfiguration().newConfig(String?, EncryptionKey?)
  */
 @Deprecated(
     "Use DatabaseConfigurationFactory.newConfig(String?, EncryptionKey?)",
@@ -161,12 +161,12 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
- * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)
+ * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)
  */
 @Suppress("DEPRECATION")
 @Deprecated(
-    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)",
-    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Collection, CollectionConfiguration?>, ...)")
+    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)",
+    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)")
 )
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
