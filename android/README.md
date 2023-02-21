@@ -72,5 +72,5 @@ Proguard configuration.  The rules are listed [here](https://docs.couchbase.com/
 
 ## License
 
-Apache 2 [license](https://info.couchbase.com/rs/302-GJY-034/images/2017-10-30_License_Agreement.pdf).
+Apache 2 [license] http://www.apache.org/licenses/LICENSE-2.0).
 
