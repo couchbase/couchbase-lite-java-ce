@@ -44,6 +44,14 @@ fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConf
 }
 
 /**
+ * Configuration factory for new ReplicatorConfigurations
+ *
+ * Usage:
+ *      val replConfig = ReplicatorConfigurationFactory.newConfig(...)
+ */
+val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
+
+/**
  * Create a ReplicatorConfiguration, overriding the receiver's
  * values with the passed parameters.
  *
@@ -124,14 +132,6 @@ fun ReplicatorConfiguration?.newConfig(
 fun DatabaseConfiguration?.create(databasePath: String? = null) = this.newConfig(databasePath)
 
 /**
- * Configuration factory for new ReplicatorConfigurations
- *
- * Usage:
- *      val replConfig = ReplicatorConfigurationFactory.create(...)
- */
-val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
-
-/**
  * Create a ReplicatorConfiguration, overriding the receiver's
  * values with the passed parameters:
  *
@@ -165,8 +165,8 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  */
 @Suppress("DEPRECATION")
 @Deprecated(
-    "Use ReplicatorConfigurationFactory.create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)",
-    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)")
+    "Use ReplicatorConfigurationFactory.newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>?, ...)",
+    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>?, ...)")
 )
 fun ReplicatorConfiguration?.create(
     database: Database? = null,
