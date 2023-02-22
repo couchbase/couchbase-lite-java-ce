@@ -1,6 +1,6 @@
 Copyright 2022
 
-[couchbase-lite-java : 3.1.0]
+[couchbase-lite-java : 3.2.0]
 
 
 Components: 
