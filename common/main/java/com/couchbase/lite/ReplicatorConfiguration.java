@@ -35,7 +35,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *
      * @param database the database to be synchronized
      * @param target   the endpoint with which to synchronize it
-     * @deprecated Use ReplicatorConfiguration.addCollection()
+     * @deprecated Use ReplicatorConfiguration(Endpoint)
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
