@@ -113,7 +113,7 @@ dependencies {
 
     testImplementation "com.couchbase.lite:${CBL_JAVA_LIB}:${BUILD_VERSION}"
 
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}"
     testImplementation 'junit:junit:4.13.2'
 }
 
