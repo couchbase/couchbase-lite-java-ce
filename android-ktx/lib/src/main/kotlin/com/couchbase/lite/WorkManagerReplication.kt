@@ -64,7 +64,7 @@ interface WorkManagerReplicatorFactory {
 
     fun oneTimeWorkRequestBuilder(): OneTimeWorkRequest.Builder {
         val req = OneTimeWorkRequestBuilder<ReplicatorWorker>()
-        addConfigFactory(req)
+        buildRequest(req)
         return req
     }
 
@@ -73,7 +73,7 @@ interface WorkManagerReplicatorFactory {
         flexInterval: Duration = repeatInterval
     ): PeriodicWorkRequest.Builder {
         val req = PeriodicWorkRequestBuilder<ReplicatorWorker>(repeatInterval, flexInterval)
-        addConfigFactory(req)
+        buildRequest(req)
         return req
     }
 
@@ -89,16 +89,17 @@ interface WorkManagerReplicatorFactory {
             flexInterval,
             flexIntervalTimeUnit
         )
-        addConfigFactory(req)
+        buildRequest(req)
         return req
     }
 
-    private fun addConfigFactory(req: WorkRequest.Builder<*, *>) {
-        req.setInputData(
-            Data.Builder()
-                .putString(ReplicatorWorker.KEY_REPLICATOR, this::class.java.canonicalName)
-                .build()
-        )
+    private fun buildRequest(req: WorkRequest.Builder<*, *>) {
+        req.addTag(tag)
+            .setInputData(
+                Data.Builder()
+                    .putString(ReplicatorWorker.KEY_REPLICATOR, this::class.java.canonicalName)
+                    .build()
+            )
     }
 }
 
@@ -127,10 +128,7 @@ class WorkManagerReplicatorConfiguration private constructor(replConfig: Replica
          */
         fun from(rConfig: ReplicatorConfiguration): WorkManagerReplicatorConfiguration {
             val wConfig = WorkManagerReplicatorConfiguration(
-                ReplicatorConfiguration(
-                    rConfig.target,
-                    getCollectionConfigs(rConfig)
-                )
+                ReplicatorConfiguration(rConfig.target, getCollectionConfigs(rConfig))
             )
             wConfig.type = rConfig.type
             wConfig.authenticator = rConfig.authenticator
@@ -168,7 +166,8 @@ class WorkManagerReplicatorConfiguration private constructor(replConfig: Replica
  * Once a `ReplicatorWorker` has been scheduled, its progress can be tracked
  * using the `LiveData` object provide by the `WorkManager`, like this:
  * ```
- * WorkManager.getInstance(context).getWorkInfosByTagLiveData(InventoryReplicatorFactory().tag)
+ * WorkManager.getInstance(context)
+ *     .getWorkInfosByTagLiveData(InventoryReplicatorFactory().tag)
  * ```
  *
  * That bit of code will produces a `LiveData<List<WorkflowInfo>>`.  Again, presuming that
