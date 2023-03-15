@@ -94,10 +94,11 @@ interface WorkManagerReplicatorFactory {
     }
 
     private fun addConfigFactory(req: WorkRequest.Builder<*, *>) {
-        req.setInputData(
-            Data.Builder()
-                .putString(ReplicatorWorker.KEY_REPLICATOR, this::class.java.canonicalName)
-                .build()
+        req.addTag(tag)
+            .setInputData(
+                Data.Builder()
+                    .putString(ReplicatorWorker.KEY_REPLICATOR, this::class.java.canonicalName)
+                    .build()
         )
     }
 }
