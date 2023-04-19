@@ -188,9 +188,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
     // Work Manager support
-    implementation "androidx.work:work-runtime-ktx:2.8.0"
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
-    implementation ("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}").setChanging(true)
+    implementation("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
 
     testImplementation 'junit:junit:4.13.2'
 
@@ -198,6 +198,9 @@ dependencies {
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // Work Manager Test support
+    androidTestImplementation "androidx.work:work-testing:2.8.1"
 }
 
 
