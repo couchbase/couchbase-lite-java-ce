@@ -69,7 +69,7 @@ ext {
     ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     DEPENDENCIES = ['okio', 'okhttp']
-    OKHTTP_VERSION = '3.14.7'
+    OKHTTP_VERSION = '4.11.0' //'3.14.7'
     SPOTBUGS_VERSION = '4.7.3'
 }
 
