@@ -612,7 +612,7 @@ publishing {
             artifactId "${JAR_ARTIFACT}${suffix}"
             version BUILD_VERSION
 
-            artifact jar
+            from components.java
             artifact sourcesJar
             artifact javadocJar
 
@@ -643,20 +643,6 @@ publishing {
                     url = CBL_SITE_URL
                     connection = CBL_PROJECT_URL
                     developerConnection = CBL_PROJECT_URL
-                }
-
-                withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-
-                    // Include only configured dependencies
-                    configurations.implementation.allDependencies.each {
-                        if (DEPENDENCIES.contains(it.name)) {
-                            def dep = dependenciesNode.appendNode('dependency')
-                            dep.appendNode('groupId', it.group)
-                            dep.appendNode('artifactId', it.name)
-                            dep.appendNode('version', it.version)
-                        }
-                    }
                 }
             }
         }
