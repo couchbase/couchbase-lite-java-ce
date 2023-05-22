@@ -18,7 +18,9 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.attributes.java.TargetJvmEnvironment
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 import java.util.regex.Pattern
 
@@ -601,6 +603,41 @@ artifacts {
 project.afterEvaluate {
     tasks.withType(Tar) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
     tasks.withType(Zip) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+}
+
+// Include Android variant definition in Gradle Module Metadata
+def androidApiConfig = configurations.create("androidApi").tap {
+    canBeResolved = false
+    canBeConsumed = true
+    attributes {
+        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.ANDROID))
+        attribute(KotlinPlatformType.attribute, KotlinPlatformType.androidJvm)
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_API))
+    }
+}
+
+dependencies {
+    androidApi("com.couchbase.lite:couchbase-lite-android:$version")
+}
+
+def androidRuntimeConfig = configurations.create("androidRuntime").tap {
+    extendsFrom(androidApiConfig)
+    canBeResolved = false
+    canBeConsumed = true
+    attributes {
+        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.ANDROID))
+        attribute(KotlinPlatformType.attribute, KotlinPlatformType.androidJvm)
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
+    }
+}
+
+(components.java as AdhocComponentWithVariants).with {
+    addVariantsFromConfiguration(androidApiConfig) {
+        mapToMavenScope("compile")
+    }
+    addVariantsFromConfiguration(androidRuntimeConfig) {
+        mapToMavenScope("runtime")
+    }
 }
 
 publishing {

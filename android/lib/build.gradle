@@ -17,6 +17,10 @@
 // Please try to keep this build file as similar to the other family build files
 // as is possible.
 //
+
+import org.gradle.api.attributes.java.TargetJvmEnvironment
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
 import java.time.Instant
 import java.util.regex.Pattern
 
@@ -501,6 +505,47 @@ publishing {
 }
 
 project.afterEvaluate {
+    // Include Java variant definition in Gradle Module Metadata
+    def javaApiConfig = configurations.create("javaApi").tap {
+        canBeResolved = false
+        canBeConsumed = true
+        attributes {
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
+            attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_API))
+        }
+    }
+
+    dependencies {
+        javaApi("com.couchbase.lite:couchbase-lite-java:$version")
+    }
+
+    def javaRuntimeConfig = configurations.create("javaRuntime").tap {
+        extendsFrom(javaApiConfig)
+        canBeResolved = false
+        canBeConsumed = true
+        attributes {
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
+            attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
+        }
+    }
+
+    // AdhocComponentWithVariants is wrapped by anonymous component class, find it with reflection
+    def adhocField = components.release.class.getDeclaredFields()
+            .find { it.getType() == AdhocComponentWithVariants }
+    adhocField.setAccessible(true)
+    AdhocComponentWithVariants adhocComponent = adhocField.get(components.release)
+
+    adhocComponent.with {
+        addVariantsFromConfiguration(javaApiConfig) {
+            mapToMavenScope("compile")
+        }
+        addVariantsFromConfiguration(javaRuntimeConfig) {
+            mapToMavenScope("runtime")
+        }
+    }
+
     publishing {
         publications {
             libRelease(MavenPublication) {
@@ -512,7 +557,6 @@ project.afterEvaluate {
                 artifact sourcesJar
                 artifact javadocJar
 
-                // include dependencies
                 pom.withXml {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
@@ -529,7 +573,6 @@ project.afterEvaluate {
                 artifact sourcesJar
                 artifact javadocJar
 
-                // include dependencies
                 pom.withXml {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
