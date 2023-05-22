@@ -634,9 +634,11 @@ def androidRuntimeConfig = configurations.create("androidRuntime").tap {
 (components.java as AdhocComponentWithVariants).with {
     addVariantsFromConfiguration(androidApiConfig) {
         mapToMavenScope("compile")
+        mapToOptional()
     }
     addVariantsFromConfiguration(androidRuntimeConfig) {
         mapToMavenScope("runtime")
+        mapToOptional()
     }
 }
 
@@ -680,6 +682,17 @@ publishing {
                     url = CBL_SITE_URL
                     connection = CBL_PROJECT_URL
                     developerConnection = CBL_PROJECT_URL
+                }
+
+                withXml {
+                    def dependencies = asNode().dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value())) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
         }

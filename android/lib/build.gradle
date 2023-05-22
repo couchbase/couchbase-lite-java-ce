@@ -540,9 +540,11 @@ project.afterEvaluate {
     adhocComponent.with {
         addVariantsFromConfiguration(javaApiConfig) {
             mapToMavenScope("compile")
+            mapToOptional()
         }
         addVariantsFromConfiguration(javaRuntimeConfig) {
             mapToMavenScope("runtime")
+            mapToOptional()
         }
     }
 
@@ -561,6 +563,15 @@ project.afterEvaluate {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
+
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value().last())) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
 
@@ -577,6 +588,15 @@ project.afterEvaluate {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
+
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value().last())) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
         }

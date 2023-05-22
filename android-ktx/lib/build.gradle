@@ -326,6 +326,15 @@ project.afterEvaluate {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
+
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (CBL_ANDROID_LIB != it.artifactId.last().value().last()) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
 
@@ -343,6 +352,15 @@ project.afterEvaluate {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
+
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (CBL_ANDROID_LIB != it.artifactId.last().value().last()) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
         }
