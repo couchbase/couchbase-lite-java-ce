@@ -510,6 +510,7 @@ project.afterEvaluate {
         canBeResolved = false
         canBeConsumed = true
         attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
             attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
             attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_API))
@@ -526,6 +527,7 @@ project.afterEvaluate {
         canBeResolved = false
         canBeConsumed = true
         attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
             attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
             attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
