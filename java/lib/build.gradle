@@ -616,6 +616,7 @@ def androidApiConfig = configurations.create("androidApi").tap {
     }
 }
 
+// Add variant artifact as a dependencies, since it's in another module
 dependencies {
     androidApi("com.couchbase.lite:couchbase-lite-android:$version")
 }

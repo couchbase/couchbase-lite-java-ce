@@ -516,6 +516,7 @@ project.afterEvaluate {
         }
     }
 
+    // Add variant artifact as a dependencies, since it's in another module
     dependencies {
         javaApi("com.couchbase.lite:couchbase-lite-java:$version")
     }
@@ -532,6 +533,8 @@ project.afterEvaluate {
     }
 
     // AdhocComponentWithVariants is wrapped by anonymous component class, find it with reflection
+    // can be replaced with (components.release as AdhocComponentWithVariants)
+    // with this fix: https://youtrack.jetbrains.com/issue/KT-58830
     def adhocField = components.release.class.getDeclaredFields()
             .find { it.getType() == AdhocComponentWithVariants }
     adhocField.setAccessible(true)
