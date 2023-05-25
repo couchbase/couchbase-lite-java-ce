@@ -225,8 +225,8 @@ model {
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
                     if (os.macOsX) {
-                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/include")
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/x86_64/lib/libLiteCore.dylib")
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/universal/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/universal/lib/libLiteCore.dylib")
                     }
                     else if (os.windows) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
@@ -715,7 +715,8 @@ def setupJNILibraryBuildTasks(library, platform) {
 }
 
 def createCopyNativeLibraryTask(library, targetPlatform) {
-    def libPath = "${CBL_NATIVE_DIR}/libs/${getNativeLibraryResourcePath(targetPlatform)}"
+    def libRootPath = "${CBL_NATIVE_DIR}/libs/${getOS(targetPlatform)}"
+    def libPath = "${libRootPath}/${getArch(targetPlatform)}/lib"
 
     // Copy LiteCore libraries for any other platforms, if available
     task copyLiteCore(type: Copy) { thisTask ->
@@ -725,19 +726,19 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
             exclude "**/icu"
 
             if (targetPlatform.operatingSystem.isMacOsX()) {
-                include "macos/x86_64/lib/libLiteCore.dylib"
+                include "macos/universal/lib/libLiteCore.dylib"
             }
 
             else if (targetPlatform.operatingSystem.isWindows()) {
                 include "windows/x86_64/lib/LiteCore.dll"
             }
 
-            // When building Linux, include everything
+            // Jenkins constructs the release on Linux: include everything
             else if (targetPlatform.operatingSystem.isLinux()) {
                 include "linux/x86_64/lib/libLiteCore.so"
 
-                include "macos/x86_64/lib/libLiteCore.dylib"
-                include "macos/x86_64/lib/libLiteCore.dylib.MD5"
+                include "macos/universal/lib/libLiteCore.dylib"
+                include "macos/universal/lib/libLiteCore.dylib.MD5"
                 include "macos/x86_64/lib/libLiteCoreJNI.dylib"
                 include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
 
@@ -761,8 +762,8 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
     // LiteCore lib (copied by copyLiteCore) for this platform.
     task signNativeLibs(dependsOn: ["copyJni", "copyLiteCore"]) { thisTask ->
         doLast {
-            fileTree(dir: libPath).each { lib ->
-                def fPath= lib.getPath()
+            fileTree(dir: libRootPath).each { lib ->
+                def fPath = lib.getPath()
                 if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
             }
         }
@@ -771,12 +772,19 @@ def createCopyNativeLibraryTask(library, targetPlatform) {
     processResources.dependsOn(["signNativeLibs"])
 }
 
-def getNativeLibraryResourcePath(platform) {
-    final path = "/x86_64/lib"
-    if (platform.operatingSystem.isMacOsX()) { return "macos${path}" }
-    else if (platform.operatingSystem.isWindows()) { return "windows${path}" }
-    else if (platform.operatingSystem.isLinux()) { return "linux${path}" }
-    else { return "${platform.operatingSystem.name}${path}" }
+def getOS(platform) {
+    if (platform.operatingSystem.isMacOsX()) { return "macos" }
+    else if (platform.operatingSystem.isWindows()) { return "windows" }
+    else if (platform.operatingSystem.isLinux()) { return "linux" }
+    else { return "${platform.operatingSystem.name}" }
+}
+
+def getArch(platform) {
+    final path = "//lib"
+    if (platform.operatingSystem.isMacOsX()) { return "x86_64" }
+    else if (platform.operatingSystem.isWindows()) { return "x86_64" }
+    else if (platform.operatingSystem.isLinux()) { return "x86_64" }
+    else { return "x86_64" }
 }
 
 def getLicenseVersion() { return getCommit("product-texts", "master") }
