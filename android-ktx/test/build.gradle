@@ -73,6 +73,13 @@ android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    kotlinOptions { jvmTarget = '1.8' }
+
     // mumbo-jumbo to prevent "More than one file was found" message
     packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
 

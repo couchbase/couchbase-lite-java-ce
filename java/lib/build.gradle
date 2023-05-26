@@ -353,11 +353,11 @@ task checkstyle(type: Checkstyle) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.html")
         }
     }
@@ -381,11 +381,11 @@ task pmd(type: Pmd) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.html")
         }
     }
@@ -486,8 +486,8 @@ jacocoTestReport {
         if (COVERAGE) { test.finalizedBy jacocoTestReport }
     }
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required = true
+        html.required = true
     }
 }
 

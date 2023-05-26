@@ -105,7 +105,7 @@ android {
     externalNativeBuild {
         cmake {
             // if you change this, be sure to update /etc/jenkins/build.sh
-            version "3.23.0"
+            version "3.25.0"
             path "${CBL_COMMON_DIR}/CMakeLists.txt"
         }
     }
@@ -122,6 +122,8 @@ android {
         exclude 'META-INF/*'
         doNotStrip '**.so'
     }
+
+    buildFeatures { buildConfig true }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
