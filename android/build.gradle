@@ -19,7 +19,7 @@ buildscript {
     ext {
         COMPILE_SDK_VERSION = 33
         BUILD_TOOLS_VERSION = '33.0.2'
-        KOTLIN_VERSION = '1.8.10'
+        KOTLIN_VERSION = '1.8.20'
 
         ANDROID_MIN_SDK = 22
         ANDROID_TARGET_SDK = 30
