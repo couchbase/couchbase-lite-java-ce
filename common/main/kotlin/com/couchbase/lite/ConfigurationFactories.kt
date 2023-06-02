@@ -32,13 +32,15 @@ fun ReplicatorConfiguration?.create(
     maxAttempts: Int? = null,
     maxAttemptWaitTime: Int? = null,
     heartbeat: Int? = null,
-    enableAutoPurge: Boolean? = null
+    enableAutoPurge: Boolean? = null,
+    acceptParentDomainCookies: Boolean? = null
 ) = ReplicatorConfiguration(
     database ?: this?.database ?: error("Must specify a database"),
     type ?: this?.type ?: ReplicatorType.PUSH_AND_PULL,
     continuous ?: this?.isContinuous ?: false,
     authenticator ?: this?.authenticator,
     headers ?: this?.headers,
+    acceptParentDomainCookies ?: this?.isAcceptParentDomainCookies ?: false,
     pinnedServerCertificate ?: this?.pinnedServerCertificate,
     channels ?: this?.channels,
     documentIDs ?: this?.documentIDs,
