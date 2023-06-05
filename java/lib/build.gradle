@@ -91,9 +91,9 @@ ext {
 
 // Build platform
 def PLATFORM = "???"
-if (OperatingSystem.current().isMacOsX()) { PLATFORM = "macos" }
-else if (OperatingSystem.current().isWindows()) { PLATFORM = "windows" }
+if (OperatingSystem.current().isWindows()) { PLATFORM = "windows" }
 else if (OperatingSystem.current().isLinux()) { PLATFORM = "linux" }
+else if (OperatingSystem.current().isMacOsX()) { PLATFORM = "macos" }
 
 // Comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -199,10 +199,6 @@ compileJava.options.compilerArgs += ["-h", CBL_JNI_INCLUDE_DIR]
 // Native Components:
 model {
     platforms {
-        osx {
-            architecture "x86_64"
-            operatingSystem "osx"
-        }
         windows {
             architecture "x86_64"
             operatingSystem "windows"
@@ -211,11 +207,31 @@ model {
             architecture "x86_64"
             operatingSystem "linux"
         }
+        osx_x86_64 {
+            architecture "x86_64"
+            operatingSystem "osx"
+        }
+        osx_aarch64 {
+            architecture "osx_aarch64"
+            operatingSystem "osx"
+        }
     }
 
     toolChains {
         visualCpp(VisualCpp)
-        clang(Clang)
+
+        clang(Clang) {
+            // Gradle 7.x still seems to get confused about toolchains on Mac: explicitly add -arch args.
+            target("osx_aarch64") {
+                cppCompiler.withArguments { args -> args << "-arch" << "arm64" }
+                linker.withArguments { args -> args << "-arch" << "arm64" }
+            }
+            target("osx_x86-64") {
+                cppCompiler.withArguments { args -> args << "-arch" << "x86_64" }
+                linker.withArguments { args -> args << "-arch" << "x86_64" }
+            }
+        }
+
         gcc(Gcc)
     }
 
@@ -224,11 +240,7 @@ model {
             liteCore {
                 binaries.withType(SharedLibraryBinary) {
                     def os = targetPlatform.operatingSystem
-                    if (os.macOsX) {
-                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/universal/include")
-                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/universal/lib/libLiteCore.dylib")
-                    }
-                    else if (os.windows) {
+                    if (os.windows) {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
                         sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
@@ -237,6 +249,10 @@ model {
                         headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
                         sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
                     }
+                    else if (os.macOsX) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/universal/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/universal/lib/libLiteCore.dylib")
+                    }
                 }
             }
         }
@@ -244,8 +260,11 @@ model {
 
     components {
         LiteCoreJNI(NativeLibrarySpec) {
-            if (PLATFORM == "macos") { targetPlatform "osx" }
-            else { targetPlatform PLATFORM }
+            if (PLATFORM != "macos") { targetPlatform PLATFORM }
+            else {
+                targetPlatform "osx_aarch64"
+                targetPlatform "osx_x86_64"
+            }
 
             sources {
                 cpp {
@@ -260,19 +279,11 @@ model {
             binaries.withType(StaticLibraryBinarySpec) { buildable = false }
 
             binaries.withType(SharedLibraryBinarySpec) { binary ->
-                setupJNILibraryBuildTasks(binary.sharedLibraryFile, targetPlatform)
+                createBuildJNILibraryTask(binary.sharedLibraryFile, targetPlatform)
             }
 
             binaries.all {
-                if (targetPlatform.operatingSystem.macOsX) {
-                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
-                    cppCompiler.args '-I', JAVA_INCLUDE
-                    cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
-                    cppCompiler.args '-std=c++17'
-                    cppCompiler.args '-stdlib=libc++'
-                    linker.args '-stdlib=libc++'
-                }
-                else if (targetPlatform.operatingSystem.windows) {
+                if (targetPlatform.operatingSystem.windows) {
                     cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
                     cppCompiler.args "-I${JAVA_INCLUDE}"
                     cppCompiler.args "-I${JAVA_INCLUDE}/win32"
@@ -286,6 +297,14 @@ model {
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
                     cppCompiler.args '-std=c++17'
+                }
+                else if (targetPlatform.operatingSystem.macOsX) {
+                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
+                    cppCompiler.args '-I', JAVA_INCLUDE
+                    cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
+                    cppCompiler.args '-std=c++17'
+                    cppCompiler.args '-stdlib=libc++'
+                    linker.args '-stdlib=libc++'
                 }
             }
         }
@@ -312,7 +331,7 @@ javadoc {
         locale = 'en_US'
         links "https://docs.oracle.com/javase/8/docs/api/"
         addStringOption('Xdoclint:none', '-quiet')
-        if (JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0) {
+        if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
             addStringOption("-release", "8")
             addBooleanOption('-ignore-source-errors', true)
         }
@@ -541,7 +560,7 @@ distributions {
                 // it is the license
                 // it is an explicit dependency
                 return it.isDirectory() ||
-                    (!name.equals(it.getPath())) ||
+                    (name != it.getPath()) ||
                     name.startsWith(JAR_ARTIFACT) ||
                     name.startsWith(CBL_LICENSE_FILE) ||
                     name.startsWith(CBL_NOTICES_FILE) ||
@@ -700,90 +719,90 @@ project.afterEvaluate {
     tasks.withType(Checkstyle) { shouldRunAfter compileJava }
 }
 
+// This task copied LiteCore binaries from their local cache <root>/common/lite-core
+// into the "native" directory for this build.
+// For MacOS and Windows that is just a single file: the appropriate LiteCore library
+// (a universal lib, for MacOS).
+// Linux is different because it is where the release binary is built: on Linux
+// we not only get the appropriate LiteCore library but LiteCore libs for all of
+// the other platforms and their JNI libs as well.
+task copyLiteCore(type: Copy) { thisTask ->
+    from(CBL_CORE_NATIVE_DIR) {
+        exclude "**/include"
+        exclude "**/pkgconfig"
+        exclude "**/icu"
+
+        if (PLATFORM == "windows") {
+            include "windows/x86_64/lib/LiteCore.dll"
+        }
+
+        else if (PLATFORM == "macos") {
+            include "macos/universal/lib/libLiteCore.dylib"
+        }
+
+        // Jenkins constructs the release on Linux: include everything
+        else if (PLATFORM == "linux") {
+            include "linux/x86_64/lib/libLiteCore.so"
+
+            include "windows/x86_64/lib/LiteCore.dll"
+            include "windows/x86_64/lib/LiteCore.dll.MD5"
+            include "windows/x86_64/lib/LiteCoreJNI.dll"
+            include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
+
+            include "macos/universal/lib/libLiteCore.dylib"
+            include "macos/universal/lib/libLiteCore.dylib.MD5"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
+        }
+    }
+
+    into "${CBL_NATIVE_DIR}/libs"
+}
+
+// Add an MD5 signature to any native library that doesn't already have one
+task signNativeLibs(dependsOn: ["copyLiteCore"]) { thisTask ->
+    doLast {
+        fileTree(dir: CBL_NATIVE_DIR).each { lib ->
+            def fPath = lib.getPath()
+            if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
+        }
+    }
+    processResources.dependsOn([thisTask])
+}
+
+// Create a task to build the JNI library
+def createBuildJNILibraryTask(library, platform) {
+    tasks.whenTaskAdded { task ->
+        def taskName = task.name.toLowerCase()
+        def platformName = platform.name.toLowerCase()
+        if ((taskName == "litecorejnisharedlibrary") || (taskName == "litecorejni${platformName}sharedlibrary")) {
+            task.dependsOn(compileJava)
+            tasks.create(name: "copyJni${platformName}", type: Copy, dependsOn: task) { thisTask ->
+                from library
+                into "${CBL_NATIVE_DIR}/libs/${getOS(platform)}/${getArch(platform)}/lib"
+                signNativeLibs.dependsOn([thisTask])
+            }
+        }
+    }
+}
+
 
 // ----------------------------------------------------------------
 // Extensions
 // ----------------------------------------------------------------
 
-def setupJNILibraryBuildTasks(library, platform) {
-    tasks.whenTaskAdded { task ->
-        if (task.name == "LiteCoreJNISharedLibrary") {
-            task.dependsOn(compileJava)
-            createCopyNativeLibraryTask(library, platform)
-        }
-    }
-}
-
-def createCopyNativeLibraryTask(library, targetPlatform) {
-    def libRootPath = "${CBL_NATIVE_DIR}/libs/${getOS(targetPlatform)}"
-    def libPath = "${libRootPath}/${getArch(targetPlatform)}/lib"
-
-    // Copy LiteCore libraries for any other platforms, if available
-    task copyLiteCore(type: Copy) { thisTask ->
-        from(CBL_CORE_NATIVE_DIR) {
-            exclude "**/include"
-            exclude "**/pkgconfig"
-            exclude "**/icu"
-
-            if (targetPlatform.operatingSystem.isMacOsX()) {
-                include "macos/universal/lib/libLiteCore.dylib"
-            }
-
-            else if (targetPlatform.operatingSystem.isWindows()) {
-                include "windows/x86_64/lib/LiteCore.dll"
-            }
-
-            // Jenkins constructs the release on Linux: include everything
-            else if (targetPlatform.operatingSystem.isLinux()) {
-                include "linux/x86_64/lib/libLiteCore.so"
-
-                include "macos/universal/lib/libLiteCore.dylib"
-                include "macos/universal/lib/libLiteCore.dylib.MD5"
-                include "macos/x86_64/lib/libLiteCoreJNI.dylib"
-                include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
-
-                include "windows/x86_64/lib/LiteCore.dll"
-                include "windows/x86_64/lib/LiteCore.dll.MD5"
-                include "windows/x86_64/lib/LiteCoreJNI.dll"
-                include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
-            }
-        }
-
-        into "${CBL_NATIVE_DIR}/libs"
-    }
-
-    // Copy the JNI native library generated for this platform
-    task copyJni(type: Copy, dependsOn: "LiteCoreJNISharedLibrary") {
-        from library
-        into libPath
-    }
-
-    // Add MD5 signatures to both the JNI lib (copied by copyJni) and to
-    // LiteCore lib (copied by copyLiteCore) for this platform.
-    task signNativeLibs(dependsOn: ["copyJni", "copyLiteCore"]) { thisTask ->
-        doLast {
-            fileTree(dir: libRootPath).each { lib ->
-                def fPath = lib.getPath()
-                if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
-            }
-        }
-    }
-
-    processResources.dependsOn(["signNativeLibs"])
-}
-
 def getOS(platform) {
-    if (platform.operatingSystem.isMacOsX()) { return "macos" }
-    else if (platform.operatingSystem.isWindows()) { return "windows" }
+    if (platform.operatingSystem.isWindows()) { return "windows" }
     else if (platform.operatingSystem.isLinux()) { return "linux" }
+    else if (platform.operatingSystem.isMacOsX()) { return "macos" }
     else { return "${platform.operatingSystem.name}" }
 }
 
 def getArch(platform) {
-    final path = "//lib"
-    if (platform.operatingSystem.isMacOsX()) { return "x86_64" }
-    else if (platform.operatingSystem.isWindows()) { return "x86_64" }
+    if (platform.operatingSystem.isWindows()) { return "x86_64" }
     else if (platform.operatingSystem.isLinux()) { return "x86_64" }
+    else if (platform.operatingSystem.isMacOsX() && (platform.name == "osx_aarch64")) { return "aarch" }
+    else if (platform.operatingSystem.isMacOsX() && (platform.name == "osx_x86_64")) { return "x86_64" }
     else { return "x86_64" }
 }
 
@@ -820,4 +839,3 @@ def getCommit(project, dflt) {
 
     return dflt
 }
-
