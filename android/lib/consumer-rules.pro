@@ -6,6 +6,8 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 #
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+
 -keep class com.couchbase.lite.ConnectionStatus { <init>(...); }
 -keep class com.couchbase.lite.LiteCoreException { static <methods>; }
 -keep class com.couchbase.lite.internal.replicator.CBLTrustManager {
@@ -20,6 +22,4 @@
     <fields>;
     <init>(...);
  }
-
-
 
