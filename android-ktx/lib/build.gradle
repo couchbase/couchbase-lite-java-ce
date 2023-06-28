@@ -78,6 +78,9 @@ def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.v
 //     ./gradlew -Pcoverage=true coverage
 def COVERAGE = project.hasProperty("coverage")
 
+// Set true to use mavenLocal instead of Proget
+def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
+
 
 // ----------------------------------------------------------------
 // Build
@@ -166,7 +169,7 @@ android {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
+    if (USE_LOCAL_MAVEN) { mavenLocal() }
     else {
         maven {
             url "http://proget.build.couchbase.com/maven2/cimaven"

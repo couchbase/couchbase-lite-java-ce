@@ -56,6 +56,9 @@ ext {
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
+// Set true to use mavenLocal instead of Proget
+def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
+
 
 // ----------------------------------------------------------------
 // Build
@@ -121,7 +124,7 @@ android {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
+    if (USE_LOCAL_MAVEN) { mavenLocal() }
     else {
         maven {
             url "http://proget.build.couchbase.com/maven2/cimaven"
