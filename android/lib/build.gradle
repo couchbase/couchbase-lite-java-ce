@@ -406,25 +406,25 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 // ----------------------------------------------------------------
 
 // The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-// The reason for this is that we want to be able to generate
-// binaries that have not been instrumented and do not require
-// the jacoco package when run
-task jacocoTestReport(type: JacocoReport) {
-    description = "Generate Jacoco coverage reports"
-    group = "reporting"
-
+//     ./gradlew -Pcoverage=true generateCoverageReport
+if (COVERAGE) {
+    jacoco { toolVersion = '0.8.10' }
     afterEvaluate {
-        sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
-        classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
+        task generateCoverageReport(type: JacocoReport, dependsOn: connectedDebugAndroidTest) {
+            description = "Generate Jacoco coverage reports"
+            group = "reporting"
 
-        if (COVERAGE) { connectedDebugAndroidTest.finalizedBy jacocoTestReport }
-    }
+            sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
+            classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
+            executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
 
-    executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
-    reports {
-        xml.required = true
-        html.required = true
+            reports {
+                xml.required = true
+                html.required = true
+            }
+        }
+
+        connectedDebugAndroidTest.ignoreFailures = true
     }
 }
 
@@ -580,7 +580,6 @@ gradle.projectsEvaluated {
     }
 }
 task devPublish(dependsOn: ['publishLibDebugPublicationToMavenLocal'])
-if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
