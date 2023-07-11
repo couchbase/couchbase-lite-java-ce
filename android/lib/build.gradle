@@ -408,7 +408,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 // The incantation for generating a coverage report is:
 //     ./gradlew -Pcoverage=true generateCoverageReport
 if (COVERAGE) {
-    jacoco { toolVersion = '0.8.10' }
+    jacoco { toolVersion = JACOCO_VERSION }
     afterEvaluate {
         task generateCoverageReport(type: JacocoReport, dependsOn: connectedDebugAndroidTest) {
             description = "Generate Jacoco coverage reports"

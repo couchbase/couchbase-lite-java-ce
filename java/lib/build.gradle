@@ -465,7 +465,10 @@ compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
 test {
-    jacoco { enabled = COVERAGE }
+    if (COVERAGE) {
+        jacoco { enabled = true }
+        finalizedBy jacocoTestReport
+     }
 
     if (System.env.LD_LIBRARY_PATH != null) { jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}" }
 
@@ -494,19 +497,24 @@ test {
 // ----------------------------------------------------------------
 
 // The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
+//     ./gradlew -Pcoverage=true generateCoverageReport
 // The reason for this is that we want to be able to generate
 // binaries that have not been instrumented and do not require
 // the jacoco package when run
-jacoco { toolVersion = JACOCO_VERSION }
-jacocoTestReport {
-    afterEvaluate {
-        classDirectories.setFrom(classDirectories.files.collect { fileTree(dir: it, exclude: FILE_FILTER) })
-        if (COVERAGE) { test.finalizedBy jacocoTestReport }
-    }
-    reports {
-        xml.required = true
-        html.required = true
+if (COVERAGE) {
+    jacoco { toolVersion = JACOCO_VERSION }
+
+    jacocoTestReport {
+        dependsOn test
+
+        afterEvaluate {
+            classDirectories.setFrom(classDirectories.files.collect { fileTree(dir: it, exclude: FILE_FILTER) })
+        }
+
+        reports {
+            xml.required = true
+            html.required = true
+        }
     }
 }
 
@@ -701,7 +709,8 @@ publishing {
 ///////// Dev tasks
 task smokeTest(dependsOn: ['clean', 'compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
-if (COVERAGE) { task coverage(dependsOn: ['test']) }
+
+if (COVERAGE) { task generateCoverageReport(dependsOn: ['jacocoTestReport']) }
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
