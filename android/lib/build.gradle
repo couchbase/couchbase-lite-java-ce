@@ -32,7 +32,6 @@ plugins {
     id 'pmd'
     id 'com.github.spotbugs'
     id 'maven-publish'
-    id 'jacoco'
 
     // handy plugin for discovering task dependencies
     //id 'com.dorongold.task-tree' version "1.5"
@@ -79,11 +78,6 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 
 // Target repo for maven publish
 def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
-
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-def COVERAGE = project.hasProperty("coverage")
 
 
 // ----------------------------------------------------------------
@@ -152,7 +146,6 @@ android {
 
             debuggable true
             minifyEnabled false
-            testCoverageEnabled COVERAGE
 
             externalNativeBuild {
                 cmake {
@@ -171,7 +164,6 @@ android {
         release {
             debuggable false
             minifyEnabled false
-            testCoverageEnabled false
 
             externalNativeBuild {
                 cmake {
@@ -397,34 +389,6 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
                 stylesheet = 'fancy-hist.xsl'
             }
         }
-    }
-}
-
-
-// ----------------------------------------------------------------
-// Coverage
-// ----------------------------------------------------------------
-
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true generateCoverageReport
-if (COVERAGE) {
-    jacoco { toolVersion = JACOCO_VERSION }
-    afterEvaluate {
-        task generateCoverageReport(type: JacocoReport, dependsOn: connectedDebugAndroidTest) {
-            description = "Generate Jacoco coverage reports"
-            group = "reporting"
-
-            sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
-            classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
-            executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
-
-            reports {
-                xml.required = true
-                html.required = true
-            }
-        }
-
-        connectedDebugAndroidTest.ignoreFailures = true
     }
 }
 

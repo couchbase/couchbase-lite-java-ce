@@ -6,8 +6,7 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,11 +72,6 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 // Target repo for maven publish
 def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
 
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-def COVERAGE = project.hasProperty("coverage")
-
 // Set true to use mavenLocal instead of Proget
 def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
 
@@ -126,7 +120,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            testCoverageEnabled COVERAGE
 
             buildConfigField "boolean", "ENTERPRISE", "false"
             buildConfigField "boolean", "CBL_DEBUG", "true"
@@ -135,6 +128,7 @@ android {
         release {
             debuggable false
             minifyEnabled false
+
             buildConfigField "boolean", "ENTERPRISE", "false"
             buildConfigField "boolean", "CBL_DEBUG", "false"
         }
@@ -210,34 +204,6 @@ dependencies {
 
     // Work Manager Test support
     androidTestImplementation "androidx.work:work-testing:2.8.1"
-}
-
-
-// ----------------------------------------------------------------
-// Coverage
-// ----------------------------------------------------------------
-
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-// The reason for this is that we want to be able to generate
-// binaries that have not been instrumented and do not require
-// the jacoco package when run
-task jacocoTestReport(type: JacocoReport) {
-    description = "Generate Jacoco coverage reports"
-    group = "reporting"
-
-    afterEvaluate {
-        sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
-        classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
-
-        if (COVERAGE) { connectedDebugAndroidTest.finalizedBy jacocoTestReport }
-    }
-
-    executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
-    reports {
-        xml.required = true
-        html.required = true
-    }
 }
 
 
@@ -391,7 +357,6 @@ gradle.projectsEvaluated {
 }
 task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'compileDebugAndroidTestSources', 'compileDebugUnitTestSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
-if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
 task ciBuild(dependsOn: ['assembleRelease'])

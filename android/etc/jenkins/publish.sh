@@ -5,12 +5,13 @@
 PRODUCT='couchbase-lite-android'
 LIB_NAME="${PRODUCT}"
 EDITION='community'
+POM_FILE='pom.xml'
 
-MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
-
+PROGET_URL='https://proget.sc.couchbase.com'
+MAVEN_URL="${PROGET_URL}/maven2/internalmaven/com/couchbase/lite"
 
 function usage() {
-    echo "Usage: $0 <release version> <build number> <artifacts path> <workspace path>"
+    echo "Usage: $0 "'<release version> <build number> <artifacts path> <workspace path>'
     exit 1
 }
 
@@ -33,24 +34,23 @@ if ! hash mvn 2>/dev/null; then
     exit 1
 fi
 
+BUILD="${VERSION}-${BUILD_NUMBER}"
 STATUS=0
 
-echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
+echo "======== PUBLISH Couchbase Lite Android, Community Edition v${BUILD}"
 
-## Really should promote the existing package, instead of re-publishing
-## Something like this:
-## curl -X POST  -H "Content-Type: application/json" \
-##     --data '{"API_Key": "<promote key>", "groupName": "com.couchbase.lite", "packageName": "couchbase-lite-android", "version": "2.7.0-43", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
-##      http://proget.build.couchbase.com/api/promotions/promote
-## At present that call fails to promote the entire package (bad PK copying the source tar)
-## so, for now, just republish the same bits.
-./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
+echo "======== Promote ${LIB_NAME}-${BUILD}"
+curl --trace-ascii - -H "Content-Type: application/json" \
+    --data '{"API_Key": "'"${PROGET_PROMOTION_TOKEN}"'", "name": "'"${LIB_NAME}"'", "group": "com.couchbase.lite", "version": "'"${BUILD}"'", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
+    "${PROGET_URL}/api/promotions/promote"
 
 echo "======== Copy artifacts to staging directory"
-POM_FILE='pom.xml'
-cp lib/build/outputs/aar/*.aar "${ARTIFACTS}/"
-cp lib/build/libs/*.jar "${ARTIFACTS}/"
-cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
+pushd "${ARTIFACTS}"
+curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.pom" -o "${POM_FILE}"
+curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.aar" -o "${LIB_NAME}-${BUILD}-release.aar"
+curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-javadoc.jar"
+curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-sources.jar"
+popd
 
 echo "======== Pull dependencies for zip"
 DEPS_DIR="${WORKSPACE}/dependencies"
@@ -69,13 +69,13 @@ rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
 mkdir license lib docs
-cp "${DEPS_DIR}/target/dependency/"*.jar lib
-cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
-cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
+cp "${DEPS_DIR}/target/dependency/okio"*.jar lib
+cp "${DEPS_DIR}/target/dependency/okhttp"*.jar lib
+cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
+cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
-# Black duck bs
-curl -Lfs https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-android/blackduck/${VERSION}/notices.txt -o notices.txt || true
-zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${VERSION}-${BUILD_NUMBER}.zip" *
+curl -Lfs --remote-name "https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-android/blackduck/${VERSION}/notices.txt" || true
+zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${BUILD}.zip" *
 popd
 
 echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
