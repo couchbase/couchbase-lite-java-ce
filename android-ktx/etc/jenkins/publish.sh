@@ -42,7 +42,7 @@ STATUS=0
 echo "======== PUBLISH Couchbase Lite Android Kotlin Extensions, Community Edition v${BUILD}"
 
 echo "======== Promote ${LIB_NAME}-${BUILD}"
-curl --trace-ascii - -H "Content-Type: application/json" \
+curl -v -H "Content-Type: application/json" \
     --data '{"API_Key": "'"${PROGET_PROMOTION_TOKEN}"'", "name": "'"${LIB_NAME}"'", "group": "com.couchbase.lite", "version": "'"${BUILD}"'", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
     "${PROGET_URL}/api/promotions/promote"
 
@@ -62,7 +62,7 @@ pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
 diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies -gs "${COMMON_ETC}/mvn/settings.xml" -PCblInternalMaven
+mvn -B install dependency:copy-dependencies -gs "${COMMON_ETC}/mvn/settings.xml" -PCblInternalMaven
 popd
 
 echo "======== Create zip"

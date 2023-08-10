@@ -40,7 +40,7 @@ STATUS=0
 echo "======== PUBLISH Couchbase Lite Android, Community Edition v${BUILD}"
 
 echo "======== Promote ${LIB_NAME}-${BUILD}"
-curl --trace-ascii - -H "Content-Type: application/json" \
+curl -v -H "Content-Type: application/json" \
     --data '{"API_Key": "'"${PROGET_PROMOTION_TOKEN}"'", "name": "'"${LIB_NAME}"'", "group": "com.couchbase.lite", "version": "'"${BUILD}"'", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
     "${PROGET_URL}/api/promotions/promote"
 

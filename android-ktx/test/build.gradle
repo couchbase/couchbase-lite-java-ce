@@ -26,7 +26,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'jacoco'
 }
 
 
@@ -58,11 +57,6 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 
 // Set true to use mavenLocal instead of Proget
 def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
-
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//    ./gradlew -PautomatedTests=true -Pcoverage=true generateCoverageReport
-def COVERAGE = project.hasProperty("coverage")
 
 
 // ----------------------------------------------------------------
@@ -102,13 +96,11 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            testCoverageEnabled COVERAGE
         }
 
         release {
             debuggable false
             minifyEnabled false
-            testCoverageEnabled false
         }
     }
 
@@ -181,38 +173,6 @@ dependencies {
 
     // Work Manager Test support
     androidTestImplementation "androidx.work:work-testing:2.8.1"
-}
-
-
-// ----------------------------------------------------------------
-// Coverage
-// ----------------------------------------------------------------
-
-// The incantation for generating a coverage report is:
-//     ./gradlew -PautomatedTests=true -Pcoverage=true generateCoverageReport
-if (COVERAGE) {
-    jacoco { toolVersion = JACOCO_VERSION }
-    afterEvaluate {
-        task generateCoverageReport(type: JacocoReport, dependsOn: connectedDebugAndroidTest) {
-            description = "Generate Jacoco coverage reports"
-            group = "reporting"
-
-            sourceDirectories.setFrom(files([
-                "${CBL_COMMON_DIR}/main/java",
-                "${CBL_COMMON_ANDROID_DIR}/main/java",
-                "${CBL_CE_COMMON_DIR}/main/java",
-                "${CBL_CE_ANDROID_DIR}/src/main/java"]))
-            classDirectories.setFrom("${projectDir}/classes")
-            executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
-
-            reports {
-                xml.required = true
-                html.required = true
-            }
-        }
-
-        connectedDebugAndroidTest.ignoreFailures = true
-    }
 }
 
 
