@@ -1,19 +1,17 @@
 #!/bin/bash
 #
-# Publish Couchbase Lite Android Kotlin Extensions, Community Edition
+# Package and release Couchbase Lite Java release, Community Edition
 #
-PRODUCT='couchbase-lite-android-ktx'
+PRODUCT='couchbase-lite-java'
 LIB_NAME="${PRODUCT}"
 EDITION='community'
-POM_FILE='pom-ktx.xml'
+POM_FILE='pom.xml'
 
 PROGET_URL='https://proget.sc.couchbase.com'
 MAVEN_URL="${PROGET_URL}/maven2/internalmaven/com/couchbase/lite"
 
-COMMON_ETC="`pwd`/../../common/etc"
-
 function usage() {
-    echo "Usage: $0 "'<release version> <build number> <artifacts path> <workspace path>'
+    echo "Usage: $0 "'<release version> <build number> <artifacts path> <workspace path> [<maven feed>]'
     exit 1
 }
 
@@ -39,7 +37,7 @@ fi
 BUILD="${VERSION}-${BUILD_NUMBER}"
 STATUS=0
 
-echo "======== PUBLISH Couchbase Lite Android Kotlin Extensions, Community Edition v${BUILD}"
+echo "======== RELEASE Couchbase Lite Java release, Community Edition v${BUILD}"
 
 echo "======== Promote ${LIB_NAME}-${BUILD}"
 curl -v -H "Content-Type: application/json" \
@@ -49,7 +47,7 @@ curl -v -H "Content-Type: application/json" \
 echo "======== Copy artifacts to staging directory"
 pushd "${ARTIFACTS}"
 curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.pom" -o "${POM_FILE}"
-curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.aar" -o "${LIB_NAME}-${BUILD}-release.aar"
+curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.jar"
 curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-javadoc.jar"
 curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-sources.jar"
 popd
@@ -60,8 +58,7 @@ rm -rf "${DEPS_DIR}"
 mkdir -p "${DEPS_DIR}"
 pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
-sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
-mvn -B install dependency:copy-dependencies -gs "${COMMON_ETC}/mvn/settings.xml" -PCblInternalMaven
+mvn -B install dependency:copy-dependencies
 popd
 
 echo "======== Create zip"
@@ -72,14 +69,13 @@ pushd "${ZIP_STAGING}"
 mkdir license lib docs
 cp "${DEPS_DIR}/target/dependency/okio"*.jar lib
 cp "${DEPS_DIR}/target/dependency/okhttp"*.jar lib
-cp "${DEPS_DIR}/target/dependency/couchbase-lite-android"*.aar "lib/couchbase-lite-android-${VERSION}.aar"
-cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
+cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}.jar" "lib/${LIB_NAME}-${VERSION}.jar"
 cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
-curl -Lfs --remote-name "https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-android/blackduck/${VERSION}/notices.txt" || true
+curl -Lfs --remote-name "https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-java/blackduck/${VERSION}/notices.txt" || true
 zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${BUILD}.zip" *
 popd
 
-echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android Kotlin Extensions, Community Edition"
+echo "======== RELEASE COMPLETE (${STATUS}) Couchbase Lite Java release, Enterprise Edition"
 exit $STATUS
 

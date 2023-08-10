@@ -59,8 +59,7 @@ mkdir -p "${DEPS_DIR}"
 pushd "${DEPS_DIR}"
 cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
 sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
-diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies
+mvn -B install dependency:copy-dependencies
 popd
 
 echo "======== Create zip"

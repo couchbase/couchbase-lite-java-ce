@@ -36,7 +36,6 @@ plugins {
     id 'pmd'
     id 'com.github.spotbugs'
     id 'maven-publish'
-    id 'jacoco'
 
     // handy plugin for discovering task dependencies
     // id "com.dorongold.task-tree" version "2.1.0"
@@ -104,11 +103,6 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // Set -Pverbose to get full console logs for tests
 def VERBOSE = project.hasProperty("verbose")
-
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage coverage
-def COVERAGE = project.hasProperty("coverage")
 
 
 // ----------------------------------------------------------------
@@ -465,11 +459,6 @@ compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
 test {
-    if (COVERAGE) {
-        jacoco { enabled = true }
-        finalizedBy jacocoTestReport
-     }
-
     if (System.env.LD_LIBRARY_PATH != null) { jvmArgs "-Djava.library.path=${System.env.LD_LIBRARY_PATH}" }
 
     workingDir = new File(workingDir, ".test-" + new Date().format('yyMMddHHmm'))
@@ -488,33 +477,6 @@ test {
         showExceptions = true
         showStackTraces = true
         exceptionFormat = 'full'
-    }
-}
-
-
-// ----------------------------------------------------------------
-// Coverage
-// ----------------------------------------------------------------
-
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true generateCoverageReport
-// The reason for this is that we want to be able to generate
-// binaries that have not been instrumented and do not require
-// the jacoco package when run
-if (COVERAGE) {
-    jacoco { toolVersion = JACOCO_VERSION }
-
-    jacocoTestReport {
-        dependsOn test
-
-        afterEvaluate {
-            classDirectories.setFrom(classDirectories.files.collect { fileTree(dir: it, exclude: FILE_FILTER) })
-        }
-
-        reports {
-            xml.required = true
-            html.required = true
-        }
     }
 }
 
@@ -710,13 +672,11 @@ publishing {
 task smokeTest(dependsOn: ['clean', 'compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
 
-if (COVERAGE) { task generateCoverageReport(dependsOn: ['jacocoTestReport']) }
-
 ///////// CI tasks
 task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
 task ciBuild(dependsOn: ['assemble'])
 task ciTest(dependsOn: ['test'])
-task ciPublish(dependsOn: ['distZip', 'generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
+task ciPublish(dependsOn: ['generatePomFileForCouchbaseLiteJavaPublication', 'publishCouchbaseLiteJavaPublicationToMavenRepository'])
 
 // ordering (roughly last to first)
 project.afterEvaluate {
