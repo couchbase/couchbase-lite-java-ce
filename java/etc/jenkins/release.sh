@@ -34,6 +34,7 @@ if ! hash mvn 2>/dev/null; then
     exit 1
 fi
 
+SUPPORT_LIBS="${WORKSPACE}/cbl-java/common/lite-core/linux/x86_64/lib"
 BUILD="${VERSION}-${BUILD_NUMBER}"
 STATUS=0
 
@@ -66,12 +67,13 @@ ZIP_STAGING="${WORKSPACE}/staging"
 rm -rf "${ZIP_STAGING}"
 mkdir -p "${ZIP_STAGING}"
 pushd "${ZIP_STAGING}"
-mkdir license lib docs
+mkdir docs lib license support
+cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
 cp "${DEPS_DIR}/target/dependency/okio"*.jar lib
 cp "${DEPS_DIR}/target/dependency/okhttp"*.jar lib
 cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}.jar" "lib/${LIB_NAME}-${VERSION}.jar"
-cp "${ARTIFACTS}/${LIB_NAME}-${BUILD}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
 cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
+cp "${SUPPORT_LIBS}/"libgcc_s.so "${SUPPORT_LIBS}/"libicudata.so.?? "${SUPPORT_LIBS}/"libicui18n.so.?? "${SUPPORT_LIBS}/"libicuuc.so.?? "${SUPPORT_LIBS}/"libstdc++.so.? support
 curl -Lfs --remote-name "https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-java/blackduck/${VERSION}/notices.txt" || true
 zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${BUILD}.zip" *
 popd

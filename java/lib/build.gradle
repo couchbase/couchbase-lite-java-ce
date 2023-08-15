@@ -52,7 +52,6 @@ ext {
 
     CBL_GROUP = 'com.couchbase.lite'
     JAR_ARTIFACT = 'couchbase-lite-java'
-    ZIP_ARTIFACT = 'couchbase-lite-java-community'
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
     CBL_NOTICES_FILE = "notices.txt"
@@ -486,77 +485,6 @@ test {
 // ----------------------------------------------------------------
 
 jar { archivesBaseName = JAR_ARTIFACT }
-
-
-// ----------------------------------------------------------------
-// Distribution
-// ----------------------------------------------------------------
-
-distributions {
-    main {
-        distributionBaseName = ZIP_ARTIFACT
-        contents {
-            if (PLATFORM == "linux") {
-                into("support") {
-                    from("${CBL_CORE_NATIVE_DIR}/linux//x86_64/lib")
-                    // this depends on the copy following (not copying) symbolic links
-                    include 'libgcc_s.so'
-                    include 'libicudata.so.??'
-                    include 'libicui18n.so.??'
-                    include 'libicuuc.so.??'
-                    include 'libstdc++.so.?'
-                    exclude '**/pkgconfig'
-                    exclude '**/icu'
-                }
-            }
-
-            def license = fileTree(CBL_LICENSE_DIR)
-            license.include CBL_LICENSE_FILE
-            into("license") { from license }
-
-            def blackduck = fileTree("${projectDir}/..")
-            blackduck.include CBL_NOTICES_FILE
-            into(".") { from blackduck }
-
-            def javadoc = fileTree("${buildDir}/libs")
-            javadoc.include "*-javadoc.jar"
-            into("docs") { from javadoc }
-
-            include {
-                def name = it.name
-                // allow it if it is a directory,
-                // it is nested in a folder (name != path)
-                // it is our artifact
-                // it is the license
-                // it is an explicit dependency
-                return it.isDirectory() ||
-                    (name != it.getPath()) ||
-                    name.startsWith(JAR_ARTIFACT) ||
-                    name.startsWith(CBL_LICENSE_FILE) ||
-                    name.startsWith(CBL_NOTICES_FILE) ||
-                    DEPENDENCIES.contains(name.split("-")[0])
-            }
-
-            // Move the main jar file into lib folder
-            // and remove the build numbers
-            eachFile {
-                def name = it.name
-                def path = it.path
-
-                if (name.endsWith("javadoc.jar")) {
-                    it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}-javadoc.jar"
-                }
-
-                else if (name.startsWith(JAR_ARTIFACT) &&
-                    name.endsWith(".jar") &&
-                    (!path.contains("/lib/"))) {
-                    it.name = "${JAR_ARTIFACT}-${BUILD_RELEASE}.jar"
-                    it.path = path.replaceFirst("(${ZIP_ARTIFACT}[^/]+).+") { _, p -> "${p}/lib/${it.name}" }
-                }
-            }
-        }
-    }
-}
 
 
 // ----------------------------------------------------------------

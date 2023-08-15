@@ -3,11 +3,11 @@
 # Build Couchbase Lite Java for Linux, MacOS, Windows, Community Edition
 # This script assumes the the OSX and Windows builds are available on latestbuilds
 #
-LATESTBUILDS="http://latestbuilds.service.couchbase.com/builds/latestbuilds"
+PROGET_URL='https://proget.sc.couchbase.com'
+MAVEN_URL="${PROGET_URL}/maven2/cimaven/com/couchbase/lite"
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-ROOT_DIR="${SCRIPT_DIR}/../../../.."
-CORE_DIR="${ROOT_DIR}/common/lite-core"
+PRODUCT='couchbase-lite-java'
+LIB_NAME="${PRODUCT}"
 
 function usage() {
    echo "Usage: $0 <release version> <build number> <workspace path>"
@@ -25,34 +25,30 @@ if [ -z "${BUILD_NUMBER}" ]; then usage; fi
 WORKSPACE="$3"
 if [ -z "${WORKSPACE}" ]; then usage; fi
 
-echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}"
+BUILD="${VERSION}-${BUILD_NUMBER}"
+CORE_DIR="${WORKSPACE}/cbl-java/common/lite-core"
 
-echo "======== Linux: Download Platform Artifacts"
-# Linux LiteCore should already be in place,
-# because it was pulled during the check phase
+echo "======== BUILD Couchbase Lite Java for Linux, Community Edition v${BUILD}"
 
 NATIVE_LIBS_DIR="${WORKSPACE}/native_libs"
 rm -rf "${NATIVE_LIBS_DIR}" > /dev/null 2>&1
 mkdir -p "${NATIVE_LIBS_DIR}/libs"
 pushd "${NATIVE_LIBS_DIR}" > /dev/null
 
-NATIVE_LIB="couchbase-lite-java-community-${VERSION}"
-NATIVE_BUILD="${NATIVE_LIB}-${BUILD_NUMBER}"
+# Linux LiteCore should already be in place,
+# because it was pulled during the check phase
 for PLATFORM in macos windows; do
-   rm -rf "${PLATFORM}" > /dev/null 2>&1
    mkdir  "${PLATFORM}"
    pushd "${PLATFORM}" > /dev/null 2>&1
 
-   curl -f -L "${LATESTBUILDS}/couchbase-lite-java/${VERSION}/${BUILD_NUMBER}/${NATIVE_BUILD}-${PLATFORM}.zip" -o "${PLATFORM}.zip" || exit 4
+   echo "======== Download Platform Artifacts: $PLATFORM"
+   curl "${MAVEN_URL}/${LIB_NAME}-${PLATFORM}/${BUILD}/${LIB_NAME}-${PLATFORM}-${BUILD}.jar" -o cbl.jar || exit 4
 
-   unzip "${PLATFORM}.zip"
-
-   jar -xf "${NATIVE_BUILD}/lib/couchbase-lite-java-${VERSION}.jar" libs
+   jar -xf cbl.jar libs
    cp -R libs/* ../libs
 
    popd > /dev/null
 done
-find .
 cp -R libs/* "${CORE_DIR}"
 
 popd > /dev/null

@@ -50,10 +50,3 @@ $ ..\couchbase-lite-java\scripts\build_litecore.bat 2019 CE [d]
 $ ./gradlew build
 ```
 
-#### 3.2 Create distribution zip file
-
-```
-$ ./gradlew distZip
-```
-
-The generated zip file will located at `build/distribution` directory.
