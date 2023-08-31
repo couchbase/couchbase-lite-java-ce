@@ -93,6 +93,12 @@ def COVERAGE = project.hasProperty("coverage")
 group = CBL_GROUP
 version = BUILD_VERSION
 
+androidComponents {
+    onVariants(selector().withBuildType("debug")) {
+        packaging.jniLibs.keepDebugSymbols.add("**/*so")
+    }
+}
+
 android {
     namespace 'com.couchbase.lite'
 
@@ -116,12 +122,6 @@ android {
     }
 
     kotlinOptions { jvmTarget = '1.8' }
-
-    packagingOptions {
-        // mumbo-jumbo to prevent "More than one file was found" message
-        exclude 'META-INF/*'
-        doNotStrip '**.so'
-    }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
