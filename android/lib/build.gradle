@@ -87,6 +87,13 @@ def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.v
 group = CBL_GROUP
 version = BUILD_VERSION
 
+// don't strip symbols from the debug build
+androidComponents {
+    onVariants(selector().withBuildType("debug")) {
+        packaging.jniLibs.keepDebugSymbols.add("**/*so")
+    }
+}
+
 android {
     namespace 'com.couchbase.lite'
 
@@ -110,12 +117,6 @@ android {
     }
 
     kotlinOptions { jvmTarget = '1.8' }
-
-    packagingOptions {
-        // mumbo-jumbo to prevent "More than one file was found" message
-        exclude 'META-INF/*'
-        doNotStrip '**.so'
-    }
 
     buildFeatures { buildConfig true }
 
