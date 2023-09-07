@@ -3,11 +3,9 @@
 # Build Couchbase Lite Java for Linux, MacOS, Windows, Community Edition
 # This script assumes the the OSX and Windows builds are available on latestbuilds
 #
-PROGET_URL='https://proget.sc.couchbase.com'
-MAVEN_URL="${PROGET_URL}/maven2/cimaven/com/couchbase/lite"
+MAVEN_URL='https://proget.sc.couchbase.com/maven2/cimaven/com/couchbase/lite'
 
-PRODUCT='couchbase-lite-java'
-LIB_NAME="${PRODUCT}"
+LIB_NAME='couchbase-lite-java'
 
 function usage() {
    echo "Usage: $0 <release version> <build number> <workspace path>"

@@ -67,7 +67,6 @@ ext {
     BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
     BUILD_COMMIT = getBuildId()
 
-    CBL_LICENSE_DIR = "${ROOT_DIR}/legal/mobile/couchbase-lite/license"
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
