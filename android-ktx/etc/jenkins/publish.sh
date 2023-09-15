@@ -4,7 +4,6 @@
 #
 LIB_NAME='couchbase-lite-android-ktx'
 EDITION='community'
-POM_FILE='pom-ktx.xml'
 
 PROGET_URL='https://proget.sc.couchbase.com'
 MAVEN_URL="${PROGET_URL}/maven2/internalmaven/com/couchbase/lite"
@@ -37,7 +36,7 @@ echo
 
 echo "======== Copy artifacts to staging directory"
 pushd "${ARTIFACTS}"
-curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.pom" -o "${POM_FILE}"
+curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.pom" -o pom-ktx.xml
 curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.aar" -o "${LIB_NAME}-${BUILD}-release.aar"
 curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-javadoc.jar"
 curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-sources.jar"

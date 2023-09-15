@@ -54,7 +54,6 @@ ext {
     JAR_ARTIFACT = 'couchbase-lite-java'
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
-    CBL_NOTICES_FILE = "notices.txt"
     CBL_LICENSE_FILE = "LICENSE_community.txt"
     CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/${CBL_LICENSE_FILE}"
     CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root'

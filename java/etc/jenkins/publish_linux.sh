@@ -9,10 +9,9 @@ function usage() {
     exit 1
 }
 
-# Don't need four args anymore but must be backwards compatibile
-if [ "$#" -ne 4 ]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
 
-BUILD_NUMBER="$2"
+BUILD_NUMBER="$1"
 if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 STATUS=0
