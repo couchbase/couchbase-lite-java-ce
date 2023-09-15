@@ -2,19 +2,17 @@
 #
 # Publish Couchbase Lite Android, Community Edition
 #
-PRODUCT='couchbase-lite-android'
-LIB_NAME="${PRODUCT}"
-EDITION='community'
+LIB_NAME='couchbase-lite-android'
 
-MAVEN_URL="http://proget.build.couchbase.com/maven2/internalmaven"
-
+PROGET_URL='https://proget.sc.couchbase.com'
+MAVEN_URL="${PROGET_URL}/maven2/internalmaven/com/couchbase/lite"
 
 function usage() {
-    echo "Usage: $0 <release version> <build number> <artifacts path> <workspace path>"
+    echo "Usage: $0 "'<release version> <build number> <artifacts path>'
     exit 1
 }
 
-if [ "$#" -ne 4 ]; then usage; fi
+if [ "$#" -lt 3 ]; then usage; fi
 
 VERSION="$1"
 if [ -z "$VERSION" ]; then usage; fi
@@ -25,59 +23,23 @@ if [ -z "$BUILD_NUMBER" ]; then usage; fi
 ARTIFACTS="$3"
 if [ -z "$ARTIFACTS" ]; then usage; fi
 
-WORKSPACE="$4"
-if [ -z "$WORKSPACE" ]; then usage; fi
+BUILD="${VERSION}-${BUILD_NUMBER}"
 
-if ! hash mvn 2>/dev/null; then
-    echo "Cannot find the 'mvn' command.  Please be sure it is on the PATH"
-    exit 1
-fi
+echo "======== PUBLISH Couchbase Lite Android, Community Edition v${BUILD}"
 
-STATUS=0
-
-echo "======== PUBLISH Couchbase Lite Android, Community Edition v`cat ../../version.txt`-${BUILD_NUMBER}" 
-
-## Really should promote the existing package, instead of re-publishing
-## Something like this:
-## curl -X POST  -H "Content-Type: application/json" \
-##     --data '{"API_Key": "<promote key>", "groupName": "com.couchbase.lite", "packageName": "couchbase-lite-android", "version": "2.7.0-43", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
-##      http://proget.build.couchbase.com/api/promotions/promote
-## At present that call fails to promote the entire package (bad PK copying the source tar)
-## so, for now, just republish the same bits.
-./gradlew ciPublish -PbuildNumber="${BUILD_NUMBER}" -PmavenUrl="${MAVEN_URL}" || STATUS=7
+echo "======== Promote ${LIB_NAME}-${BUILD}"
+curl -v -H "Content-Type: application/json" \
+    --data '{"API_Key": "'"${PROGET_PROMOTION_TOKEN}"'", "name": "'"${LIB_NAME}"'", "group": "com.couchbase.lite", "version": "'"${BUILD}"'", "fromFeed": "cimaven", "toFeed": "internalmaven"}' \
+    "${PROGET_URL}/api/promotions/promote"
+echo
 
 echo "======== Copy artifacts to staging directory"
-POM_FILE='pom.xml'
-cp lib/build/outputs/aar/*.aar "${ARTIFACTS}/"
-cp lib/build/libs/*.jar "${ARTIFACTS}/"
-cp lib/build/publications/libRelease/pom-default.xml "${ARTIFACTS}/${POM_FILE}"
-
-echo "======== Pull dependencies for zip"
-DEPS_DIR="${WORKSPACE}/dependencies"
-rm -rf "${DEPS_DIR}"
-mkdir -p "${DEPS_DIR}"
-pushd "${DEPS_DIR}"
-cp "${ARTIFACTS}/${POM_FILE}" ./pom.xml
-sed -i.bak "s#<packaging>aar</packaging>#<packaging>pom</packaging>#" pom.xml
-diff pom.xml pom.xml.bak
-mvn install dependency:copy-dependencies
+pushd "${ARTIFACTS}"
+curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.pom" -o pom.xml
+curl "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}.aar" -o "${LIB_NAME}-${BUILD}-release.aar"
+curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-javadoc.jar"
+curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-sources.jar"
 popd
 
-echo "======== Create zip"
-ZIP_STAGING="${WORKSPACE}/staging"
-rm -rf "${ZIP_STAGING}"
-mkdir -p "${ZIP_STAGING}"
-pushd "${ZIP_STAGING}"
-mkdir license lib docs
-cp "${DEPS_DIR}/target/dependency/"*.jar lib
-cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-release.aar" "lib/${LIB_NAME}-${VERSION}.aar"
-cp "${ARTIFACTS}/${LIB_NAME}-${VERSION}-${BUILD_NUMBER}-javadoc.jar" "docs/${LIB_NAME}-${VERSION}-javadoc.jar"
-cp "${WORKSPACE}/cbl-java/legal/mobile/couchbase-lite/license/LICENSE_${EDITION}.txt" license/LICENSE.TXT
-# Black duck bs
-curl -Lfs https://raw.githubusercontent.com/couchbase/product-metadata/master/couchbase-lite-android/blackduck/${VERSION}/notices.txt -o notices.txt || true
-zip -r "${ARTIFACTS}/${PRODUCT}-${EDITION}-${VERSION}-${BUILD_NUMBER}.zip" *
-popd
-
-echo "======== PUBLICATION COMPLETE (${STATUS}) Couchbase Lite Android, Community Edition"
-exit $STATUS
+echo "======== PUBLICATION COMPLETE Couchbase Lite Android, Community Edition"
 

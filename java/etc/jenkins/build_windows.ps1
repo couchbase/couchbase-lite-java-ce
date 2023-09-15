@@ -15,7 +15,7 @@ Write-Host "======== Windows: Download Lite Core"
 & $toolsDir\fetch_core.ps1 -Edition "CE"
 
 Write-Host "======== Windows: Build Java"
-& "$PSScriptRoot\..\..\gradlew.bat" --no-daemon ciBuild -PbuildNumber=$buildNumber
+& "$PSScriptRoot\..\..\gradlew.bat" --no-daemon ciBuild -PbuildNumber="$buildNumber"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build failing with error $LASTEXITCODE"
     $status = 6

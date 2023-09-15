@@ -19,9 +19,6 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Publish failing with error $LASTEXITCODE"
 }
 
-Write-Host "======== Windows: Copy artifacts to staging directory"
-Copy-Item "lib\build\distributions\couchbase-lite-java*.zip" -Destination "$artifactsDir\couchbase-lite-java-community-$version-$buildNumber-windows.zip"
-
 Write-Host "======== Windows: PUBLICATION COMPLETE $status"
 exit $status
 

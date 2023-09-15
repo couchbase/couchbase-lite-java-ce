@@ -32,7 +32,6 @@ plugins {
     id 'pmd'
     id 'com.github.spotbugs'
     id 'maven-publish'
-    id 'jacoco'
 
     // handy plugin for discovering task dependencies
     //id 'com.dorongold.task-tree' version "1.5"
@@ -80,11 +79,6 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 // Target repo for maven publish
 def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
 
-// Set true to enable coverage
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-def COVERAGE = project.hasProperty("coverage")
-
 
 // ----------------------------------------------------------------
 // Build
@@ -93,6 +87,7 @@ def COVERAGE = project.hasProperty("coverage")
 group = CBL_GROUP
 version = BUILD_VERSION
 
+// don't strip symbols from the debug build
 androidComponents {
     onVariants(selector().withBuildType("debug")) {
         packaging.jniLibs.keepDebugSymbols.add("**/*so")
@@ -150,7 +145,6 @@ android {
 
             debuggable true
             minifyEnabled false
-            testCoverageEnabled COVERAGE
 
             externalNativeBuild {
                 cmake {
@@ -169,7 +163,6 @@ android {
         release {
             debuggable false
             minifyEnabled false
-            testCoverageEnabled false
 
             externalNativeBuild {
                 cmake {
@@ -400,34 +393,6 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
 
 // ----------------------------------------------------------------
-// Coverage
-// ----------------------------------------------------------------
-
-// The incantation for generating a coverage report is:
-//     ./gradlew -Pcoverage=true coverage
-// The reason for this is that we want to be able to generate
-// binaries that have not been instrumented and do not require
-// the jacoco package when run
-task jacocoTestReport(type: JacocoReport) {
-    description = "Generate Jacoco coverage reports"
-    group = "reporting"
-
-    afterEvaluate {
-        sourceDirectories.setFrom(project.files(android.sourceSets.main.java.srcDirs))
-        classDirectories.setFrom("${buildDir}/intermediates/javac/debug/classes")
-
-        if (COVERAGE) { connectedDebugAndroidTest.finalizedBy jacocoTestReport }
-    }
-
-    executionData fileTree(dir: "${buildDir}/outputs/code_coverage", includes: ["**/*.ec"])
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
-
-// ----------------------------------------------------------------
 // Publication
 // ----------------------------------------------------------------
 
@@ -578,7 +543,6 @@ gradle.projectsEvaluated {
     }
 }
 task devPublish(dependsOn: ['publishLibDebugPublicationToMavenLocal'])
-if (COVERAGE) { task coverage(dependsOn: ['connectedDebugAndroidTest']) }
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['checkstyle', 'lint', 'pmd', 'spotbugsXml', 'test'])
