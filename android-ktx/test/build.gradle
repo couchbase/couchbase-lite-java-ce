@@ -91,7 +91,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         if (TEST_FILTER != null) { testInstrumentationRunnerArguments.notAnnotation = TEST_FILTER }
     }
- 
+
     buildTypes {
         debug {
             debuggable true

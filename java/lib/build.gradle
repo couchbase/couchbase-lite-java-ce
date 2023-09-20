@@ -614,7 +614,7 @@ project.afterEvaluate {
     tasks.withType(Checkstyle) { shouldRunAfter compileJava }
 }
 
-// This task copied LiteCore binaries from their local cache <root>/common/lite-core
+// This task copies LiteCore binaries from their local cache <root>/common/lite-core
 // into the "native" directory for this build.
 // For MacOS and Windows that is just a single file: the appropriate LiteCore library
 // (a universal lib, for MacOS).
@@ -734,3 +734,4 @@ def getCommit(project, dflt) {
 
     return dflt
 }
+
