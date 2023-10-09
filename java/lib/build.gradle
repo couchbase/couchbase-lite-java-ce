@@ -320,7 +320,7 @@ javadoc {
         encoding = 'UTF-8'
         charSet = 'UTF-8'
         locale = 'en_US'
-        links "https://docs.oracle.com/javase/8/docs/api/"
+        "https://docs.oracle.com/en/java/javase/11/docs/api"
         addStringOption('Xdoclint:none', '-quiet')
         if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
             addStringOption("-release", "8")

@@ -24,7 +24,7 @@ import androidx.work.WorkRequest
 import com.couchbase.lite.internal.AbstractWorkManagerReplicatorConfiguration
 import com.couchbase.lite.internal.ReplicatorWorker
 import com.couchbase.lite.internal.getCollectionConfigs
-import com.couchbase.lite.internal.support.Log
+import com.couchbase.lite.internal.logging.Log
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
