@@ -648,6 +648,8 @@ task copyLiteCore(type: Copy) { thisTask ->
             include "macos/universal/lib/libLiteCore.dylib.MD5"
             include "macos/x86_64/lib/libLiteCoreJNI.dylib"
             include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
+            include "macos/aarch64/lib/libLiteCoreJNI.dylib"
+            include "macos/aarch64/lib/libLiteCoreJNI.dylib.MD5"
         }
     }
 
