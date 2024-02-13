@@ -422,9 +422,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
         classDirs = fileTree(dir: "${buildDir}/classes/java/main")
 
-        def classpaths = []
-        tasks.withType(JavaCompile).each { task -> classpaths = task.classpath }
-        classpaths.each { dir -> auxClassPaths += project.files(dir) }
+        tasks.findByName("compileJava").classpath.forEach { auxClassPaths += project.files(it) }
 
         excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
         onlyAnalyze = ['com.couchbase.lite.-']
