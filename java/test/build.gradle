@@ -64,6 +64,9 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 // Set -Pverbose to get full console logs for tests
 def VERBOSE = project.hasProperty("verbose")
 
+// Set true to use mavenLocal instead of Proget
+def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
+
 
 // ----------------------------------------------------------------
 // Build
@@ -99,11 +102,11 @@ java {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
-    maven {
-        url "http://proget.build.couchbase.com/maven2/cimaven"
-        allowInsecureProtocol = true
+    if (USE_LOCAL_MAVEN) { mavenLocal() }
+    else {
+        maven { url "https://proget.sc.couchbase.com/maven2/cimaven" }
     }
+
     google()
     mavenCentral()
 }

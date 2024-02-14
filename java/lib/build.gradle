@@ -582,7 +582,6 @@ publishing {
                 username mavenRepoUser
                 password mavenRepoPass
             }
-            allowInsecureProtocol = true
         }
     }
 }

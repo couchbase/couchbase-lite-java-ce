@@ -2,7 +2,7 @@
 #
 # Build Couchbase Lite Android Kotlin Extensions, Community Edition
 #
-MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
+MAVEN_URL="https://proget.sc.couchbase.com/maven2/cimaven"
 
 
 function usage() {

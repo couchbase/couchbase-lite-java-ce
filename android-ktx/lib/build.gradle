@@ -70,7 +70,7 @@ ext {
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
 // Target repo for maven publish
-def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
+def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // Set true to use mavenLocal instead of Proget
 def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
@@ -174,10 +174,7 @@ android {
 repositories {
     if (USE_LOCAL_MAVEN) { mavenLocal() }
     else {
-        maven {
-            url "http://proget.build.couchbase.com/maven2/cimaven"
-            allowInsecureProtocol = true
-        }
+        maven { url "https://proget.sc.couchbase.com/maven2/cimaven" }
     }
     google()
     mavenCentral()
@@ -275,7 +272,6 @@ publishing {
                 username mavenRepoUser
                 password mavenRepoPass
             }
-            allowInsecureProtocol = true
         }
     }
 }
@@ -348,13 +344,16 @@ project.afterEvaluate {
 def preBuildTask = tasks.findByName('preBuild')
 gradle.projectsEvaluated {
     rootProject.subprojects.each { p ->
-        if (p.name == 'ce_android') {
-            def d = p.tasks.findByName('devPublish')
-            preBuildTask.dependsOn d
-            preBuildTask.mustRunAfter d
+         if (p.name == 'ce_android') {
+            def publishTask = p.tasks.findByName('devPublish')
+            if (publishTask != null) {
+                preBuildTask.dependsOn publishTask
+                preBuildTask.mustRunAfter publishTask
+            }
         }
     }
-}
+}   
+
 task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'compileDebugAndroidTestSources', 'compileDebugUnitTestSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
 
