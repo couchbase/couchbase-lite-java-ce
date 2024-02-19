@@ -17,6 +17,10 @@
 // Please try to keep this build file as similar to the other family build files
 // as is possible.
 //
+
+import org.gradle.api.attributes.java.TargetJvmEnvironment
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
 import java.time.Instant
 import java.util.regex.Pattern
 
@@ -467,6 +471,54 @@ publishing {
 }
 
 project.afterEvaluate {
+    // Include Java variant definition in Gradle Module Metadata
+    def javaApiConfig = configurations.create("javaApi").tap {
+        canBeResolved = false
+        canBeConsumed = true
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
+            attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_API))
+        }
+    }
+
+    // Add variant artifact as a dependencies, since it's in another module
+    dependencies {
+        javaApi("com.couchbase.lite:couchbase-lite-java:$version")
+    }
+
+    def javaRuntimeConfig = configurations.create("javaRuntime").tap {
+        extendsFrom(javaApiConfig)
+        canBeResolved = false
+        canBeConsumed = true
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM))
+            attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
+        }
+    }
+
+    // AdhocComponentWithVariants is wrapped by anonymous component class, find it with reflection
+    // can be replaced with (components.release as AdhocComponentWithVariants)
+    // with this fix: https://youtrack.jetbrains.com/issue/KT-58830
+    def adhocField = components.release.class.getDeclaredFields()
+            .find { it.getType() == AdhocComponentWithVariants }
+    adhocField.setAccessible(true)
+    AdhocComponentWithVariants adhocComponent = adhocField.get(components.release)
+
+    adhocComponent.with {
+        addVariantsFromConfiguration(javaApiConfig) {
+            mapToMavenScope("compile")
+            mapToOptional()
+        }
+        addVariantsFromConfiguration(javaRuntimeConfig) {
+            mapToMavenScope("runtime")
+            mapToOptional()
+        }
+    }
+
     publishing {
         publications {
             libRelease(MavenPublication) {
@@ -474,25 +526,21 @@ project.afterEvaluate {
                 artifactId CBL_ARTIFACT_ID
                 version BUILD_VERSION
 
-                artifact bundleReleaseAar
+                from components.release
                 artifact sourcesJar
                 artifact javadocJar
 
-                // include dependencies
                 pom.withXml {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    def dependenciesNode = root.appendNode('dependencies')
+                    def dependencies = root.dependencies.dependency
 
                     // Include only configured dependencies
-                    configurations.implementation.allDependencies.each {
-                        if (DEPENDENCIES.contains(it.name)) {
-                            def dep = dependenciesNode.appendNode('dependency')
-                            dep.appendNode('groupId', it.group)
-                            dep.appendNode('artifactId', it.name)
-                            dep.appendNode('version', it.version)
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value().last())) {
+                            it.parent().remove(it)
                         }
                     }
                 }
@@ -503,25 +551,21 @@ project.afterEvaluate {
                 artifactId CBL_ARTIFACT_ID
                 version BUILD_VERSION
 
-                artifact bundleDebugAar
+                from components.debug
                 artifact sourcesJar
                 artifact javadocJar
 
-                // include dependencies
                 pom.withXml {
                     def root = asNode()
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    def dependenciesNode = root.appendNode('dependencies')
+                    def dependencies = root.dependencies.dependency
 
                     // Include only configured dependencies
-                    configurations.implementation.allDependencies.each {
-                        if (DEPENDENCIES.contains(it.name)) {
-                            def dep = dependenciesNode.appendNode('dependency')
-                            dep.appendNode('groupId', it.group)
-                            dep.appendNode('artifactId', it.name)
-                            dep.appendNode('version', it.version)
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value().last())) {
+                            it.parent().remove(it)
                         }
                     }
                 }

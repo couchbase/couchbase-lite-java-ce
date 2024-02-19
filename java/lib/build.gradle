@@ -18,7 +18,9 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.attributes.java.TargetJvmEnvironment
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 import java.util.regex.Pattern
 
@@ -516,6 +518,46 @@ project.afterEvaluate {
     tasks.withType(Zip) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 }
 
+// Include Android variant definition in Gradle Module Metadata
+def androidApiConfig = configurations.create("androidApi").tap {
+    canBeResolved = false
+    canBeConsumed = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
+        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.ANDROID))
+        attribute(KotlinPlatformType.attribute, KotlinPlatformType.androidJvm)
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_API))
+    }
+}
+
+// Add variant artifact as a dependencies, since it's in another module
+dependencies {
+    androidApi("com.couchbase.lite:couchbase-lite-android:$version")
+}
+
+def androidRuntimeConfig = configurations.create("androidRuntime").tap {
+    extendsFrom(androidApiConfig)
+    canBeResolved = false
+    canBeConsumed = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.LIBRARY))
+        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment.class, TargetJvmEnvironment.ANDROID))
+        attribute(KotlinPlatformType.attribute, KotlinPlatformType.androidJvm)
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
+    }
+}
+
+(components.java as AdhocComponentWithVariants).with {
+    addVariantsFromConfiguration(androidApiConfig) {
+        mapToMavenScope("compile")
+        mapToOptional()
+    }
+    addVariantsFromConfiguration(androidRuntimeConfig) {
+        mapToMavenScope("runtime")
+        mapToOptional()
+    }
+}
+
 publishing {
     publications {
         couchbaseLiteJava(MavenPublication) {
@@ -525,7 +567,7 @@ publishing {
             artifactId "${JAR_ARTIFACT}${suffix}"
             version BUILD_VERSION
 
-            artifact jar
+            from components.java
             artifact sourcesJar
             artifact javadocJar
 
@@ -559,15 +601,12 @@ publishing {
                 }
 
                 withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
+                    def dependencies = asNode().dependencies.dependency
 
                     // Include only configured dependencies
-                    configurations.implementation.allDependencies.each {
-                        if (DEPENDENCIES.contains(it.name)) {
-                            def dep = dependenciesNode.appendNode('dependency')
-                            dep.appendNode('groupId', it.group)
-                            dep.appendNode('artifactId', it.name)
-                            dep.appendNode('version', it.version)
+                    dependencies.each {
+                        if (!DEPENDENCIES.contains(it.artifactId.last().value())) {
+                            it.parent().remove(it)
                         }
                     }
                 }

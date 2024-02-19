@@ -185,10 +185,10 @@ dependencies {
     // androidx.work:work-runtime-ktx:2.8.0 requires 1.3.0
     compileOnly 'androidx.annotation:annotation:1.3.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
     // Work Manager support
-    implementation "androidx.work:work-runtime-ktx:2.8.1"
+    compileOnly "androidx.work:work-runtime-ktx:2.8.1"
 
     implementation("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
 
@@ -199,7 +199,10 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+
     // Work Manager Test support
+    androidTestImplementation "androidx.work:work-runtime-ktx:2.8.1"
     androidTestImplementation "androidx.work:work-testing:2.8.1"
 }
 
@@ -288,7 +291,7 @@ project.afterEvaluate {
                 artifactId CBL_ARTIFACT_ID
                 version BUILD_VERSION
 
-                artifact bundleReleaseAar
+                from components.release
                 artifact dokkaJar
                 artifact sourcesJar
 
@@ -298,12 +301,14 @@ project.afterEvaluate {
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    def dependenciesNode = root.appendNode('dependencies')
-                    def dep = dependenciesNode.appendNode('dependency')
-                    dep.appendNode('groupId', CBL_GROUP)
-                    dep.appendNode('artifactId', CBL_ANDROID_LIB)
-                    dep.appendNode('version', BUILD_VERSION)
-                    dep.appendNode('type', CBL_ANDROID_TYPE)
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (CBL_ANDROID_LIB != it.artifactId.last().value().last()) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
 
@@ -312,7 +317,7 @@ project.afterEvaluate {
                 artifactId CBL_ARTIFACT_ID
                 version BUILD_VERSION
 
-                artifact bundleDebugAar
+                from components.debug
                 artifact dokkaJar
                 artifact sourcesJar
 
@@ -322,12 +327,14 @@ project.afterEvaluate {
                     root.appendNode('description', CBL_DESCRIPTION)
                     root.children().last() + pomConfig
 
-                    def dependenciesNode = root.appendNode('dependencies')
-                    def dep = dependenciesNode.appendNode('dependency')
-                    dep.appendNode('groupId', CBL_GROUP)
-                    dep.appendNode('artifactId', CBL_ANDROID_LIB)
-                    dep.appendNode('version', BUILD_VERSION)
-                    dep.appendNode('type', CBL_ANDROID_TYPE)
+                    def dependencies = root.dependencies.dependency
+
+                    // Include only configured dependencies
+                    dependencies.each {
+                        if (CBL_ANDROID_LIB != it.artifactId.last().value().last()) {
+                            it.parent().remove(it)
+                        }
+                    }
                 }
             }
         }
