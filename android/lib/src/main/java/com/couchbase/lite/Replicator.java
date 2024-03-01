@@ -56,7 +56,7 @@ public final class Replicator extends AbstractReplicator {
     @NonNull
     protected C4Replicator createReplicatorForTarget(@NonNull Endpoint target) throws LiteCoreException {
         if (target instanceof URLEndpoint) { return getRemoteC4Replicator(((URLEndpoint) target).getURL()); }
-        throw new IllegalStateException("unrecognized endpoint type: " + target);
+        throw new CouchbaseLiteError("unrecognized endpoint type: " + target);
     }
 
     @Override

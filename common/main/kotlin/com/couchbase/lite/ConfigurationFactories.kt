@@ -190,7 +190,7 @@ fun ReplicatorConfiguration?.create(
     // ReplicatorConfiguration.getDatabase throws an ISE on null database
     val db = database ?: try {
         this?.database
-    } catch (e: IllegalStateException) {
+    } catch (e: CouchbaseLiteError) {
         null
     }
     ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify a database")
