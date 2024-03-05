@@ -1,4 +1,3 @@
-//
 // Copyright (c) 2017, 2018, 2019 Couchbase, Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -282,12 +281,14 @@ model {
                     cppCompiler.args '/EHsc'
                     cppCompiler.args '/wd4068'
                     cppCompiler.args '/std:c++17'
+                    linker.args "/def:${CBL_COMMON_DIR}/jni_win.ld"
                 }
                 else if (targetPlatform.operatingSystem.linux) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
                     cppCompiler.args '-std=c++17'
+                    linker.args "-Wl,--version-script=${CBL_COMMON_DIR}/jni_gnu.ld"
                 }
                 else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
@@ -296,6 +297,7 @@ model {
                     cppCompiler.args '-std=c++17'
                     cppCompiler.args '-stdlib=libc++'
                     linker.args '-stdlib=libc++'
+                    linker.args "-Wl,-exported_symbols_list,${CBL_COMMON_DIR}/jni_osx.ld"
                 }
             }
         }
