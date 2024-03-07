@@ -25,7 +25,9 @@ public final class Defaults {
         private LogFile() {}
 
         /** Plaintext is not used, and instead binary encoding is used in log files */
-        public static final boolean USE_PLAIN_TEXT = false;
+        public static final boolean USE_PLAINTEXT = false;
+        @Deprecated
+        public static final boolean USE_PLAIN_TEXT = USE_PLAINTEXT;
 
         /** 512 KiB for the size of a log file */
         public static final long MAX_SIZE = 524288;
@@ -60,7 +62,9 @@ public final class Defaults {
         public static final int MAX_ATTEMPTS_CONTINUOUS = Integer.MAX_VALUE;
 
         /** Max wait time between retry attempts in seconds */
-        public static final int MAX_ATTEMPT_WAIT_TIME = 300;
+        public static final int MAX_ATTEMPTS_WAIT_TIME = 300;
+        @Deprecated
+        public static final int MAX_ATTEMPT_WAIT_TIME = MAX_ATTEMPTS_WAIT_TIME;
 
         /** Purge documents when a user loses access */
         public static final boolean ENABLE_AUTO_PURGE = true;

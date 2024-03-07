@@ -148,7 +148,7 @@ class WorkManagerReplicatorConfiguration private constructor(replConfig: Replica
                 Log.d(LogDomain.REPLICATOR, "ReplicatorConfiguration.maxAttempts ignored: ${rConfig.maxAttempts}")
             }
 
-            if (rConfig.maxAttemptWaitTime != Defaults.Replicator.MAX_ATTEMPT_WAIT_TIME) {
+            if (rConfig.maxAttemptWaitTime != Defaults.Replicator.MAX_ATTEMPTS_WAIT_TIME) {
                 Log.d(
                     LogDomain.REPLICATOR,
                     "ReplicatorConfiguration.maxAttemptWaitTime ignored: ${rConfig.maxAttemptWaitTime}"
