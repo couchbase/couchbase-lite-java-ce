@@ -70,10 +70,11 @@ ext {
     CBL_COMMON_JAVA_DIR = "${CBL_COMMON_ROOT_DIR}/java"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
+    CBL_COMMON_ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     GENERATED_DIR = "${buildDir}/generated/sources"
     REPORTS_DIR = "${buildDir}/reports"
-    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
+    ETC_DIR = "${buildDir}/../../etc"
 
     CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
     CBL_NATIVE_DIR = "${buildDir}/native"
@@ -281,14 +282,14 @@ model {
                     cppCompiler.args '/EHsc'
                     cppCompiler.args '/wd4068'
                     cppCompiler.args '/std:c++17'
-                    linker.args "/def:${CBL_COMMON_DIR}/jni_win.ld"
+                    linker.args "/def:${ETC_DIR}/ld/jni_win.ld"
                 }
                 else if (targetPlatform.operatingSystem.linux) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
                     cppCompiler.args '-I', JAVA_INCLUDE
                     cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
                     cppCompiler.args '-std=c++17'
-                    linker.args "-Wl,--version-script=${CBL_COMMON_DIR}/jni_gnu.ld"
+                    linker.args "-Wl,--version-script=${ETC_DIR}/ld/jni_gnu.ld"
                 }
                 else if (targetPlatform.operatingSystem.macOsX) {
                     cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
@@ -297,7 +298,7 @@ model {
                     cppCompiler.args '-std=c++17'
                     cppCompiler.args '-stdlib=libc++'
                     linker.args '-stdlib=libc++'
-                    linker.args "-Wl,-exported_symbols_list,${CBL_COMMON_DIR}/jni_osx.ld"
+                    linker.args "-Wl,-exported_symbols_list,${ETC_DIR}/ld/jni_osx.ld"
                 }
             }
         }
@@ -344,11 +345,11 @@ checkstyle {
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
-        checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
+        checkstyle fileTree(dir: "${CBL_COMMON_ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
     }
 
-    configFile = file("${ETC_DIR}/checkstyle/checkstyle.xml")
-    configProperties = ['configDir': file("${ETC_DIR}/checkstyle")]
+    configFile = file("${CBL_COMMON_ETC_DIR}/checkstyle/checkstyle.xml")
+    configProperties = ['configDir': file("${CBL_COMMON_ETC_DIR}/checkstyle")]
 
     showViolations true
 }
@@ -385,7 +386,7 @@ task pmd(type: Pmd) {
     group 'verification'
     afterEvaluate { dependsOn generateCBLVersion }
 
-    ruleSetFiles = files("${ETC_DIR}/pmd/pmd.xml")
+    ruleSetFiles = files("${CBL_COMMON_ETC_DIR}/pmd/pmd.xml")
 
     source = sourceSets.main.java.srcDirs
     include '**/*.java'
@@ -426,7 +427,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 
         tasks.findByName("compileJava").classpath.forEach { auxClassPaths += project.files(it) }
 
-        excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
+        excludeFilter = file("${CBL_COMMON_ETC_DIR}/spotbugs/spotbugs.xml")
         onlyAnalyze = ['com.couchbase.lite.-']
 
         reports {

@@ -49,7 +49,6 @@ ext {
     CBL_CE_JAVA_DIR = "${CBL_CE_ROOT_DIR}/java"
 
     REPORTS_DIR = "${buildDir}/reports"
-    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     CBL_NATIVE_DIR = "${buildDir}/native"
 

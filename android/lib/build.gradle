@@ -63,9 +63,9 @@ ext {
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
+    CBL_COMMON_ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     REPORTS_DIR = "${buildDir}/reports"
-    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '4.11.0' //'3.14.7'
@@ -291,11 +291,11 @@ checkstyle {
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
-        checkstyle fileTree(dir: "${ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
+        checkstyle fileTree(dir: "${CBL_COMMON_ETC_DIR}/checkstyle", include: ['kotlin-checks-0.9.jar'])
     }
 
-    configFile file("${ETC_DIR}/checkstyle/checkstyle.xml")
-    configProperties = ['configDir': file("${ETC_DIR}/checkstyle")]
+    configFile file("${CBL_COMMON_ETC_DIR}/checkstyle/checkstyle.xml")
+    configProperties = ['configDir': file("${CBL_COMMON_ETC_DIR}/checkstyle")]
 
     showViolations true
 }
@@ -330,7 +330,7 @@ task pmd(type: Pmd) {
     description 'PMD'
     group 'verification'
 
-    ruleSetFiles = files("${ETC_DIR}/pmd/pmd.xml")
+    ruleSetFiles = files("${CBL_COMMON_ETC_DIR}/pmd/pmd.xml")
 
     source = android.sourceSets.main.java.srcDirs
     include '**/*.java'
@@ -376,7 +376,7 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
             }
         }
 
-        excludeFilter = file("${ETC_DIR}/spotbugs/spotbugs.xml")
+        excludeFilter = file("${CBL_COMMON_ETC_DIR}/spotbugs/spotbugs.xml")
         onlyAnalyze = ['com.couchbase.lite.-']
 
         reports {
