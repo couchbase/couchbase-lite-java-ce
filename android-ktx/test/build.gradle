@@ -144,7 +144,7 @@ android {
 repositories {
     if (USE_LOCAL_MAVEN) { mavenLocal() }
     else {
-        maven { url "https://proget.ce.couchbase.com/maven2/cimaven" }
+        maven { url "https://proget.sc.couchbase.com/maven2/cimaven" }
     }
     google()
     mavenCentral()
@@ -154,12 +154,12 @@ dependencies {
     // androidx.work:work-runtime-ktx:2.8.0 requires 1.3.0
     compileOnly 'androidx.annotation:annotation:1.3.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 
     // Work Manager support
     implementation "androidx.work:work-runtime-ktx:2.8.1"
 
-    implementation("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}") { changing = true }
+    implementation "com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}"
 
     testImplementation 'junit:junit:4.13.2'
 
