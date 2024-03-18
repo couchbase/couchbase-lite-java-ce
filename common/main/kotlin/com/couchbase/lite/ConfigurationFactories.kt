@@ -93,7 +93,9 @@ fun ReplicatorConfiguration?.newConfig(
         ReplicatorConfiguration(endPt, getCollectionConfigs(this))
     } else {
         val rc = ReplicatorConfiguration(endPt)
-        collections.forEach { rc.addCollections(it.key, it.value) }
+        for (e: Map.Entry<kotlin.collections.Collection<Collection>, CollectionConfiguration?> in collections) {
+            rc.addCollections(e.key, e.value)
+        }
         rc
     }
 
