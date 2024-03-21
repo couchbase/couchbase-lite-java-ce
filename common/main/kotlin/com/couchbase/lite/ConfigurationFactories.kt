@@ -29,7 +29,7 @@ val DatabaseConfigurationFactory: DatabaseConfiguration? = null
 
 /**
  * Create a DatabaseConfiguration, overriding the receiver's
- * values with the passed parameters:
+ * values with the passed parameters.
  *
  * @param databasePath The directory in which the database is stored.
  *
@@ -62,7 +62,7 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * Note: A document that is blocked by a document Id filter will not be auto-purged
  *       regardless of the setting of the enableAutoPurge property
  *
- * @param target (required) The replication endpoint.
+ * @param target (required) The replication target endpoint.
  * @param collections a map of collections to be replicated, to their configurations.
  * @param type replicator type: push, pull, or push and pull: default is push and pull.
  * @param continuous continuous flag: true for continuous, false by default.
@@ -97,6 +97,7 @@ fun ReplicatorConfiguration?.newConfig(
         ReplicatorConfiguration(endPt, getCollectionConfigs(this))
     } else {
         val rc = ReplicatorConfiguration(endPt)
+        // Lint will flip out if you try to use `forEach` here.
         for (e: Map.Entry<kotlin.collections.Collection<Collection>, CollectionConfiguration?> in collections) {
             rc.addCollections(e.key, e.value)
         }
@@ -163,11 +164,11 @@ fun DatabaseConfiguration?.create(databasePath: String? = null) = this.newConfig
  * @param maxAttempts max retry attempts after connection failure.
  * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
  * @param heartbeat heartbeat interval, in seconds.
- * @param enableAutoPurge auto-purge enabled..
+ * @param enableAutoPurge auto-purge enabled.
  * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
- * @deprecated Use ReplicatorConfigurationFactory().create(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)
+ * @deprecated Use ReplicatorConfigurationFactory().newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)
  */
 @Suppress("DEPRECATION")
 @Deprecated(
