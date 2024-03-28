@@ -1,3 +1,4 @@
+//
 // Copyright (c) 2017, 2018, 2019 Couchbase, Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +38,7 @@ plugins {
     id 'maven-publish'
 
     // handy plugin for discovering task dependencies
-    // id "com.dorongold.task-tree" version "2.1.0"
+    // id "com.dorongold.task-tree" version "2.1.1"
 }
 
 
@@ -53,8 +54,7 @@ ext {
     JAR_ARTIFACT = 'couchbase-lite-java'
     CBL_DESCRIPTION = 'Couchbase Lite is an embedded lightweight, document-oriented (NoSQL), syncable database engine.'
     CBL_LICENSE = 'Couchbase, Inc. Community Edition License Agreement'
-    CBL_LICENSE_FILE = "LICENSE_community.txt"
-    CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/${CBL_LICENSE_FILE}"
+    CBL_LICENSE_URL = "https://raw.githubusercontent.com/couchbase/product-texts/${getLicenseVersion()}/mobile/couchbase-lite/license/LICENSE_community.txt"
     CBL_PROJECT_URL = 'https://github.com:couchbase/couchbase-lite-java-ce-root'
     CBL_ISSUES_URL = 'https://github.com/couchbase/couchbase-lite-java-ce-root/issues'
     CBL_SITE_URL = 'https://developer.couchbase.com/mobile/'
@@ -323,7 +323,7 @@ javadoc {
         encoding = 'UTF-8'
         charSet = 'UTF-8'
         locale = 'en_US'
-        "https://docs.oracle.com/en/java/javase/11/docs/api"
+        links "https://docs.oracle.com/en/java/javase/11/docs/api"
         addStringOption('Xdoclint:none', '-quiet')
         if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
             addStringOption("-release", "8")

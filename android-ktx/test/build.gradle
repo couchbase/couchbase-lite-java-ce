@@ -1,6 +1,4 @@
 //
-// build.gradle
-//
 // Copyright (c) 2017, 2018, 2019, 2020 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,16 +45,14 @@ ext {
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_CE_ANDROID_DIR = "${CBL_CE_ROOT_DIR}/android"
-
-    CBL_ANDROID_LIB = 'couchbase-lite-android-ktx'
 }
+
+// This module is for testing on Jenkins.  Require a build number
+if (BUILD_NUMBER == "SNAPSHOT") { throw new InvalidUserDataException ("!!! A build number is required") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
-
-// Set true to use mavenLocal instead of Proget
-def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
 
 
 // ----------------------------------------------------------------
@@ -142,10 +138,12 @@ android {
 }
 
 repositories {
-    if (USE_LOCAL_MAVEN) { mavenLocal() }
-    else {
-        maven { url "https://proget.sc.couchbase.com/maven2/cimaven" }
+    // This module is used to test a cimaven candidate
+    maven {
+        url "https://proget.sc.couchbase.com/maven2/cimaven"
+        content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
     }
+
     google()
     mavenCentral()
 }
@@ -159,7 +157,7 @@ dependencies {
     // Work Manager support
     implementation "androidx.work:work-runtime-ktx:2.8.1"
 
-    implementation "com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}"
+    implementation "com.couchbase.lite:couchbase-lite-android-ktx:${BUILD_VERSION}"
 
     testImplementation 'junit:junit:4.13.2'
 
