@@ -1,7 +1,5 @@
 //
-// build.gradle
-//
-// Copyright (c) 2017, 2018, 2019, 2020 Couchbase, Inc.
+// Copyright (c) 2017, 2018, 2019, 2020, 2024 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,6 +61,9 @@ ext {
 
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
+
+    // This is a local build if doesn't have a legit build number
+    DEV_BUILD = BUILD_NUMBER == "SNAPSHOT"
 }
 
 // comma separated list of annotations for tests that should not be run.
@@ -71,9 +72,6 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
-
-// Set true to use mavenLocal instead of Proget
-def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
 
 
 // ----------------------------------------------------------------
@@ -98,6 +96,8 @@ android {
 
     // mumbo-jumbo to prevent "More than one file was found" message
     packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
+
+    buildFeatures { buildConfig true }  
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
@@ -172,10 +172,18 @@ android {
 }
 
 repositories {
-    if (USE_LOCAL_MAVEN) { mavenLocal() }
-    else {
-        maven { url "https://proget.sc.couchbase.com/maven2/cimaven" }
+    if (DEV_BUILD) {
+        // For dev builds, CBL-Android is in maven local
+        mavenLocal()
     }
+    else {
+        // For official builds CBL-Android is in the internal proget staging feed
+        maven {
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+            content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
+        }
+    }
+
     google()
     mavenCentral()
 }
