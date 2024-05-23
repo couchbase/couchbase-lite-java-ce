@@ -27,7 +27,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'maven-publish'
-    id("org.jetbrains.dokka") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 
@@ -84,7 +84,6 @@ version = BUILD_VERSION
 android {
     namespace 'com.couchbase.lite.kotlin'
 
-    compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
     compileOptions {
@@ -100,6 +99,7 @@ android {
     buildFeatures { buildConfig true }  
 
     defaultConfig {
+        compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30100
@@ -204,7 +204,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Work Manager Test support
     androidTestImplementation "androidx.work:work-testing:2.8.1"
@@ -263,7 +262,7 @@ task dokkaJar(type: Jar, dependsOn: dokkaJavadoc) {
 task sourcesJar(type: Jar) {
     archiveBaseName = "${CBL_ARTIFACT_ID}"
     archiveClassifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+    from project.android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
@@ -347,7 +346,7 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-// If there is a ce_android project around, depend on its devPublish task
+// If there is an ee_android project around, get it to publish its artifacts before this build runs
 def preBuildTask = tasks.findByName('preBuild')
 gradle.projectsEvaluated {
     rootProject.subprojects.each { p ->

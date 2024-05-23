@@ -95,11 +95,10 @@ androidComponents {
 android {
     namespace 'com.couchbase.lite'
 
-    compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
     // if you change this, be sure to update $ROOT/etc/jenkins/install_android_toolchain.sh
-    ndkVersion '25.1.8937393' //'25.0.8775105'
+    ndkVersion '25.1.8937393'
 
     externalNativeBuild {
         cmake {
@@ -119,6 +118,7 @@ android {
     buildFeatures { buildConfig true }
 
     defaultConfig {
+        compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30200
@@ -161,6 +161,8 @@ android {
         }
 
         release {
+            ndk.debugSymbolLevel 'SYMBOL_TABLE'
+
             debuggable false
             minifyEnabled false
 
@@ -236,7 +238,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 
@@ -247,19 +248,18 @@ dependencies {
 task javadoc(type: Javadoc) {
     failOnError false
 
-    afterEvaluate { dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin }
-
-    source android.sourceSets.main.java.srcDirs
+    source project.android.sourceSets.main.java.srcDirs
     exclude "com/couchbase/lite/internal/**"
 
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += project.files(android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
-    classpath += project.files("${buildDir}/generated/source/buildConfig/release")
     afterEvaluate {
-        classpath += files(
-            android.libraryVariants.collect { variant ->
-                if (variant.name == "release") { variant.javaCompileProvider.get().classpath.files }
-            })
+        dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin
+
+        classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
+        classpath += project.files(project.android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
+        classpath += project.files("${buildDir}/generated/source/buildConfig/release")
+        classpath += files(project.android.libraryVariants.collect { variant ->
+            if (variant.name == "release") { variant.javaCompileProvider.get().classpath.files }
+        })
     }
 
     options {
@@ -300,7 +300,7 @@ task checkstyle(type: Checkstyle) {
     description 'Checkstyle'
     group 'verification'
 
-    source android.sourceSets.main.java.srcDirs
+    source project.android.sourceSets.main.java.srcDirs
     include '**/*.java'
     exclude FILE_FILTER
 
@@ -329,7 +329,7 @@ task pmd(type: Pmd) {
 
     ruleSetFiles = files("${CBL_COMMON_ETC_DIR}/pmd/pmd.xml")
 
-    source = android.sourceSets.main.java.srcDirs
+    source = project.android.sourceSets.main.java.srcDirs
     include '**/*.java'
     exclude FILE_FILTER
 
@@ -356,19 +356,18 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        afterEvaluate { dependsOn generateDebugRFile, generateReleaseRFile, compileDebugKotlin, compileReleaseKotlin, compileDebugJavaWithJavac }
-
         effort = "max"
         reportLevel = "medium"
         ignoreFailures = false
 
-        sourceDirs = project.files(android.sourceSets.main.java.srcDirs)
-
+        sourceDirs = project.files(project.android.sourceSets.main.java.srcDirs)
         classDirs = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes")
 
-        android.getBootClasspath().each { dir -> auxClassPaths += project.files(dir) }
         afterEvaluate {
-            android.libraryVariants.collect { variant ->
+            dependsOn generateDebugRFile, generateReleaseRFile, compileDebugKotlin, compileReleaseKotlin, compileDebugJavaWithJavac
+
+            project.android.getBootClasspath().each { dir -> auxClassPaths += project.files(dir) }
+            project.android.libraryVariants.collect { variant ->
                 auxClassPaths += project.files(variant.javaCompileProvider.get().classpath.files)
             }
         }
@@ -443,7 +442,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task sourcesJar(type: Jar) {
     archiveBaseName = "${CBL_ARTIFACT_ID}"
     archiveClassifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+    from project.android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
@@ -549,12 +548,12 @@ task ciPublish(dependsOn: ['javadocJar', 'generatePomFileForLibReleasePublicatio
 
 // ordering (roughly last to first)
 project.afterEvaluate {
-    tasks.withType(Javadoc) { shouldRunAfter connectedDebugAndroidTest }
+    tasks.withType(Javadoc).configureEach { task -> task.shouldRunAfter connectedDebugAndroidTest }
     connectedDebugAndroidTest.shouldRunAfter smokeTest
     testDebugUnitTest.shouldRunAfter smokeTest
-    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
-    tasks.withType(Pmd) { shouldRunAfter tasks.withType(Checkstyle) }
-    tasks.withType(Checkstyle) { shouldRunAfter compileDebugSources }
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach { task -> task.shouldRunAfter tasks.withType(Pmd) }
+    tasks.withType(Pmd).configureEach { task -> task.shouldRunAfter tasks.withType(Checkstyle) }
+    tasks.withType(Checkstyle).configureEach { task -> task.shouldRunAfter compileDebugSources }
 }
 
 // Clean

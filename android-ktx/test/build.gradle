@@ -65,7 +65,6 @@ version = BUILD_VERSION
 android {
     namespace 'com.couchbase.lite.kotlin.test'
 
-    compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
     compileOptions {
@@ -79,6 +78,7 @@ android {
     packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
 
     defaultConfig {
+        compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30100
@@ -157,6 +157,7 @@ dependencies {
     // Work Manager support
     implementation "androidx.work:work-runtime-ktx:2.8.1"
 
+    // Testing the Android CE KTX package
     implementation "com.couchbase.lite:couchbase-lite-android-ktx:${BUILD_VERSION}"
 
     testImplementation 'junit:junit:4.13.2'
@@ -164,7 +165,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Work Manager Test support
     androidTestImplementation "androidx.work:work-testing:2.8.1"
