@@ -17,17 +17,16 @@
 package com.couchbase.lite.internal;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
+
+import com.couchbase.lite.CouchbaseLiteException;
 
 
 public final class CBLVariantExtensions {
     private CBLVariantExtensions() { }
 
-    public static void initVariant(@NonNull Object lock, @NonNull File tmpDir) { }
-
-   @VisibleForTesting
-   public static boolean setExtensionPath(@NonNull Object lock, @NonNull File tmpDir) { return false; }
+    public static void initVariant(@NonNull Object lock, @NonNull File tmpDir) throws CouchbaseLiteException {
+        throw new CouchbaseLiteException("Vector Search not supported on this platform");
+    }
 }
-
