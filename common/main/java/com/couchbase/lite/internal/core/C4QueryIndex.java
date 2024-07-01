@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 Couchbase, Inc.
+// Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,20 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-package com.couchbase.lite.internal;
-
-import android.content.Context;
+package com.couchbase.lite.internal.core;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-
-public final class CBLVariantExtensions {
-    private CBLVariantExtensions() { }
-
-    public static void initVariant(@NonNull Object lock, @NonNull Context ctxt) { }
-
-    @VisibleForTesting
-    public static boolean setExtensionPath(@NonNull Object lock, @NonNull Context ctxt) { return false; }
+public class C4QueryIndex {
+    C4QueryIndex(@NonNull Object ignore) { }
 }
-

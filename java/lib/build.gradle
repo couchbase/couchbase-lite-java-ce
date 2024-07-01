@@ -378,12 +378,14 @@ task checkstyle(type: Checkstyle) {
 
 /////// PMD
 pmd {
-    toolVersion '6.26.0'
+    toolVersion '6.47.0'
     ruleSets = []
-}
+}   
 task pmd(type: Pmd) {
     description 'PMD'
     group 'verification'
+    maxHeapSize = '2g'
+
     afterEvaluate { dependsOn generateCBLVersion }
 
     ruleSetFiles = files("${CBL_COMMON_ETC_DIR}/pmd/pmd.xml")
