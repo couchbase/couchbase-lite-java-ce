@@ -17,7 +17,7 @@ package com.couchbase.lite;
 
 import androidx.annotation.NonNull;
 
-import com.couchbase.lite.internal.core.C4QueryIndex;
+import com.couchbase.lite.internal.core.C4Index;
 
 
 /**
@@ -29,14 +29,24 @@ public class QueryIndex {
     @NonNull
     private final String name;
 
-    QueryIndex(@NonNull Collection collection, @NonNull String name, @NonNull C4QueryIndex ignore) {
+    QueryIndex(@NonNull Collection collection, @NonNull String name, @NonNull C4Index ignore) {
         this.collection = collection;
         this.name = name;
     }
 
+    /**
+     * The collection object.
+     *
+     * @return the collection to which this index belongs.
+     */
     @NonNull
     public Collection getCollection() { return collection; }
 
+    /**
+     * The name of the index.
+     *
+     * @return the name of the index.
+     */
     @NonNull
     public String getName() { return name; }
 }

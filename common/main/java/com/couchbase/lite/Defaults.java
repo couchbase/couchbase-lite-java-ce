@@ -63,8 +63,6 @@ public final class Defaults {
 
         /** Max wait time between retry attempts in seconds */
         public static final int MAX_ATTEMPTS_WAIT_TIME = 300;
-        @Deprecated
-        public static final int MAX_ATTEMPT_WAIT_TIME = MAX_ATTEMPTS_WAIT_TIME;
 
         /** Purge documents when a user loses access */
         public static final boolean ENABLE_AUTO_PURGE = true;
