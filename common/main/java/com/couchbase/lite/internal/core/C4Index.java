@@ -17,6 +17,10 @@ package com.couchbase.lite.internal.core;
 
 import androidx.annotation.NonNull;
 
-public class C4QueryIndex {
-    C4QueryIndex(@NonNull Object ignore) { }
+
+public final class C4Index {
+    @NonNull
+    public static C4Index create(long peer) { return new C4Index(); }
+
+    private C4Index() { }
 }
