@@ -56,6 +56,7 @@ CBL {
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_getDocExpiration;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_getDocumentCount;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_getIndexesInfo;
+        Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_getIndex;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_isValid;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_purgeDoc;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Collection_setDocExpiration;
@@ -144,7 +145,6 @@ CBL {
         Java_com_couchbase_lite_internal_core_impl_NativeC4_getBuildInfo;
         Java_com_couchbase_lite_internal_core_impl_NativeC4_getMessage;
         Java_com_couchbase_lite_internal_core_impl_NativeC4_getVersion;
-        Java_com_couchbase_lite_internal_core_impl_NativeC4_setExtPath;
         Java_com_couchbase_lite_internal_core_impl_NativeC4_setTempDir;
         Java_com_couchbase_lite_internal_core_impl_NativeC4_setenv;
         Java_com_couchbase_lite_internal_fleece_impl_NativeFLArray_count;
