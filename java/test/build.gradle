@@ -95,7 +95,8 @@ java {
 }
 
 repositories {
-    // This module is used to test a cimaven candidate
+    // This module is used to test a cimaven candidate for release
+    // It will, almost always, be run by Jenkins
     maven {
         url "https://proget.sc.couchbase.com/maven2/cimaven"
         content { includeGroupByRegex "com\\.couchbase\\.lite.*" }

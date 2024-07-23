@@ -17,6 +17,7 @@
 buildscript {
     ext {
         COMPILE_SDK_VERSION = 33
+        // if you change this, be sure to update etc/jenkins/install_android_toolchain.sh
         BUILD_TOOLS_VERSION = '34.0.0'
         KOTLIN_VERSION = '1.9.24'
 

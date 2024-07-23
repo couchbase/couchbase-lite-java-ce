@@ -102,7 +102,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            // if you change this, be sure to update /etc/jenkins/build.sh
+            // if you change this, be sure to update etc/jenkins/install_android_toolchain.sh
             version "3.25.0"
             path "${CBL_COMMON_DIR}/CMakeLists.txt"
         }
