@@ -362,6 +362,7 @@ gradle.projectsEvaluated {
 
 task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'compileDebugAndroidTestSources', 'compileDebugUnitTestSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
+task devPublish(dependsOn: ['publishLibDebugPublicationToMavenLocal'])
 
 ///////// CI tasks
 task ciBuild(dependsOn: ['assembleRelease'])

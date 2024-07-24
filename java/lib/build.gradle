@@ -599,6 +599,7 @@ publishing {
 ///////// Dev tasks
 task smokeTest(dependsOn: ['clean', 'compileJava', 'checkstyle', 'pmd', 'spotbugsHtml', 'testClasses'])
 task devTest(dependsOn: ['test'])
+task devPublish(dependsOn: ['publishCouchbaseLiteJavaPublicationToMavenLocal'])
 
 ///////// CI tasks
 task ciCheck(dependsOn: ['compileJava', 'checkstyle', 'pmd', 'spotbugsXml', 'testClasses'])
