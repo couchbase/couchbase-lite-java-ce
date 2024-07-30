@@ -39,7 +39,7 @@ public final class DatabaseConfiguration extends AbstractDatabaseConfiguration {
      */
     public DatabaseConfiguration(@Nullable DatabaseConfiguration config) { super(config); }
 
-    DatabaseConfiguration(@Nullable ImmutableDatabaseConfiguration config) { super(config); }
+    DatabaseConfiguration(@NonNull ImmutableDatabaseConfiguration config) { super(config); }
 
     //---------------------------------------------
     // protected methods
