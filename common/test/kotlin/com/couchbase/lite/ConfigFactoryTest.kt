@@ -36,20 +36,35 @@ class ConfigFactoryTest : BaseDbTest() {
     ///// Database Configuration
 
     @Test
-    fun testDatabaseConfigurationFactory() {
-        val config = DatabaseConfigurationFactory.newConfig(databasePath = testPath)
-        assertEquals(testPath, config.directory)
+    fun testDatabaseConfigurationFactoryDefaults() {
+        val config = DatabaseConfigurationFactory.newConfig()
+        assertEquals(Defaults.Database.FULL_SYNC, config.isFullSync)
     }
 
     @Test
-    fun testFullTextIndexConfigurationFactoryCopyWithChanges() {
-        val config1 = DatabaseConfigurationFactory.newConfig(databasePath = testPath)
+    fun testDatabaseConfigurationFactory() {
+        val config = DatabaseConfigurationFactory.newConfig(
+            databasePath = testPath,
+            fullSync = true
+        )
+        assertEquals(testPath, config.directory)
+        assertTrue(config.isFullSync)
+    }
+
+    @Test
+    fun testDatabaseConfigurationFactoryCopyWithChanges() {
+        val config1 = DatabaseConfigurationFactory.newConfig(
+            databasePath = testPath,
+            fullSync = true
+        )
 
         val config2 = config1.newConfig()
 
         assertEquals(testPath, config1.directory)
+        assertTrue(config1.isFullSync)
 
         assertEquals(testPath, config2.directory)
+        assertTrue(config2.isFullSync)
     }
 
     ///// ReplicatorConfiguration
