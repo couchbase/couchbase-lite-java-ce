@@ -35,10 +35,14 @@ val DatabaseConfigurationFactory: DatabaseConfiguration? = null
  *
  * @see com.couchbase.lite.DatabaseConfiguration
  */
-fun DatabaseConfiguration?.newConfig(databasePath: String? = null): DatabaseConfiguration {
+fun DatabaseConfiguration?.newConfig(
+    databasePath: String? = null,
+    fullSync: Boolean? = null
+): DatabaseConfiguration {
     val config = DatabaseConfiguration()
 
     (databasePath ?: this?.directory)?.let { config.directory = it }
+    (fullSync ?: this?.isFullSync)?.let { config.setFullSync(it) }
 
     return config
 }
