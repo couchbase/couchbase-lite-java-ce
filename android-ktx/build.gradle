@@ -17,7 +17,7 @@
 buildscript {
     ext {
         COMPILE_SDK_VERSION = 33
-        BUILD_TOOLS_VERSION = '33.0.1'
+        BUILD_TOOLS_VERSION = '34.0.0'
         KOTLIN_VERSION = '1.8.20'
         JACOCO_VERSION = '0.8.10'
 
@@ -35,7 +35,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.4.0'
     }
 }
 

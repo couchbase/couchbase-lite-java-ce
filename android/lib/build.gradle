@@ -247,19 +247,18 @@ dependencies {
 task javadoc(type: Javadoc) {
     failOnError false
 
-    afterEvaluate { dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin }
-
-    source android.sourceSets.main.java.srcDirs
+    source project.android.sourceSets.main.java.srcDirs
     exclude "com/couchbase/lite/internal/**"
 
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += project.files(android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
-    classpath += project.files("${buildDir}/generated/source/buildConfig/release")
     afterEvaluate {
-        classpath += files(
-            android.libraryVariants.collect { variant ->
-                if (variant.name == "release") { variant.javaCompileProvider.get().classpath.files }
-            })
+        dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin
+    
+        classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
+        classpath += project.files(project.android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
+        classpath += project.files("${buildDir}/generated/source/buildConfig/release")
+        classpath += files(project.android.libraryVariants.collect { variant ->
+            if (variant.name == "release") { variant.javaCompileProvider.get().classpath.files }
+        })
     }
 
     options {
