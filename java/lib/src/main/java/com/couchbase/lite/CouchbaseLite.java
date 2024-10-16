@@ -54,7 +54,7 @@ public final class CouchbaseLite {
      * @param debug true if debugging
      * @throws CouchbaseLiteError on initialization failure
      */
-    @Internal
+    @Internal("This class is not part of the public API")
     public static void init(boolean debug) {
         final File curDir = FileUtils.getCurrentDirectory();
         init(debug, curDir, new File(curDir, CouchbaseLiteInternal.SCRATCH_DIR_NAME));
@@ -74,7 +74,7 @@ public final class CouchbaseLite {
      * @param scratchDir scratch directory for SQLite
      * @throws CouchbaseLiteError on initialization failure
      */
-    @Internal
+    @Internal("This class is not part of the public API")
     public static void init(boolean debug, @NonNull File rootDir, @NonNull File scratchDir) {
         CouchbaseLiteInternal.init(debug, rootDir, scratchDir);
     }
