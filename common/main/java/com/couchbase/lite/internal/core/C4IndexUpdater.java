@@ -18,9 +18,12 @@ package com.couchbase.lite.internal.core;
 import androidx.annotation.NonNull;
 
 
-public final class C4Index {
+public final class C4IndexUpdater {
     @NonNull
-    public static C4Index create(long peer) { return new C4Index(); }
+    public static C4IndexUpdater create(long unused) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    private C4Index() { }
+    private C4IndexUpdater() { }
 }
+
