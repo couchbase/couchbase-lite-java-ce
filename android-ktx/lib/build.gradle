@@ -71,11 +71,7 @@ ext {
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
 // Target repo for maven publish
-def MAVEN_URL = (project.hasProperty("mavenUrl")) ? mavenUrl : "http://nowhere.void/"
-
-// Set true to use mavenLocal instead of Proget
-def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
-
+def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
 // ----------------------------------------------------------------
 // Build
@@ -99,6 +95,8 @@ android {
 
     // mumbo-jumbo to prevent "More than one file was found" message
     packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
+
+    buildFeatures { buildConfig true }
 
     defaultConfig {
         minSdkVersion ANDROID_MIN_SDK
@@ -171,18 +169,23 @@ android {
 }
 
 repositories {
-    if (USE_LOCAL_MAVEN) { mavenLocal() }
+    if (BUILD_NUMBER == "SNAPSHOT") {
+        // For dev builds, CBL-Android is in maven local
+        mavenLocal()
+    }
     else {
+        // For official builds CBL-Android is in the internal proget staging feed
         maven {
-            url "http://proget.build.couchbase.com/maven2/cimaven"
-            allowInsecureProtocol = true
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+            content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
         }
     }
+
     google()
     mavenCentral()
 }
 
-configurations.all { resolutionStrategy.cacheChangingModulesFor 1, 'minutes' }
+configurations.all { resolutionStrategy.cacheChangingModulesFor 1, 'seconds' }
 dependencies {
     // androidx.work:work-runtime-ktx:2.7.1 requires 1.2.0
     compileOnly 'androidx.annotation:annotation:1.2.0'

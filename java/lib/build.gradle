@@ -363,11 +363,11 @@ task checkstyle(type: Checkstyle) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.html")
         }
     }
@@ -391,11 +391,11 @@ task pmd(type: Pmd) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.html")
         }
     }
