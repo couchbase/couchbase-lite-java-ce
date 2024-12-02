@@ -61,9 +61,6 @@ ext {
 
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
-
-    // This is a local build if doesn't have a legit build number
-    DEV_BUILD = BUILD_NUMBER == "SNAPSHOT"
 }
 
 // comma separated list of annotations for tests that should not be run.
@@ -96,7 +93,7 @@ android {
     // mumbo-jumbo to prevent "More than one file was found" message
     packagingOptions { exclude 'META-INF/library_release.kotlin_module' }
 
-    buildFeatures { buildConfig true }  
+    buildFeatures { buildConfig true }
 
     defaultConfig {
         compileSdk COMPILE_SDK_VERSION
@@ -113,8 +110,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         if (TEST_FILTER != null) { testInstrumentationRunnerArguments.notAnnotation = TEST_FILTER }
     }
-
-    buildFeatures { buildConfig true }
 
     buildTypes {
         debug {
@@ -172,7 +167,7 @@ android {
 }
 
 repositories {
-    if (DEV_BUILD) {
+    if (BUILD_NUMBER == "SNAPSHOT") {
         // For dev builds, CBL-Android is in maven local
         mavenLocal()
     }

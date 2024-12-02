@@ -36,7 +36,11 @@ ext {
 
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
-    BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
+
+    // if validating a release, we'll use the released bits
+    BUILD_VERSION = "${BUILD_RELEASE}" 
+    // normally, though, we will use a local build
+    if (BUILD_NUMBER != "RELEASE") { BUILD_VERSION = "${BUILD_VERSION}-${BUILD_NUMBER}" }
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
@@ -45,14 +49,18 @@ ext {
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_CE_ANDROID_DIR = "${CBL_CE_ROOT_DIR}/android"
-}
 
+    CBL_ANDROID_LIB = 'couchbase-lite-android-ktx'
+}
+ 
 // This module is for testing on Jenkins.  Require a build number
 if (BUILD_NUMBER == "SNAPSHOT") { throw new InvalidUserDataException ("!!! A build number is required") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
+
+print "Testing ${BUILD_VERSION}"
 
 
 // ----------------------------------------------------------------
@@ -138,9 +146,15 @@ android {
 }
 
 repositories {
-    // This module is used to test a cimaven candidate
     maven {
-        url "https://proget.sc.couchbase.com/maven2/cimaven"
+        if (BUILD_NUMBER == "RELEASE") {
+            // Validate a released build
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
+        }
+        else {
+            // Test a cimaven candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+        }
         content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
     }
 
@@ -158,7 +172,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:2.8.1"
 
     // Testing the Android CE KTX package
-    implementation "com.couchbase.lite:couchbase-lite-android-ktx:${BUILD_VERSION}"
+    implementation "com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}"
 
     testImplementation 'junit:junit:4.13.2'
 
