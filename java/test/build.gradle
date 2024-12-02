@@ -36,7 +36,11 @@ ext {
 
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
-    BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
+
+    // if validating a release, we'll use the released bits
+    BUILD_VERSION = "${BUILD_RELEASE}"
+    // normally, though, we will use a local build
+    if (BUILD_NUMBER != "RELEASE") { BUILD_VERSION = "${BUILD_VERSION}-${BUILD_NUMBER}" }
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
@@ -48,6 +52,8 @@ ext {
     REPORTS_DIR = "${buildDir}/reports"
 
     CBL_NATIVE_DIR = "${buildDir}/native"
+
+    CBL_JAVA_LIB = 'couchbase-lite-java'
 }
 
 // This module is for testing on Jenkins.  Require a build number
@@ -59,6 +65,8 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 
 // Set -Pverbose to get full console logs for tests
 def VERBOSE = project.hasProperty("verbose")
+
+print "Testing ${BUILD_VERSION}"
 
 
 // ----------------------------------------------------------------
@@ -95,9 +103,15 @@ java {
 }
 
 repositories {
-    // This module is used to test a cimaven candidate
     maven {
-        url "https://proget.sc.couchbase.com/maven2/cimaven"
+        if (BUILD_NUMBER == "RELEASE") {
+            // Validate a release
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
+        }
+        else {
+            // Test a release candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+        }
         content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
     }
 
@@ -108,7 +122,7 @@ repositories {
 dependencies {
     testCompileOnly 'androidx.annotation:annotation:1.3.0'
 
-    testImplementation "com.couchbase.lite:couchbase-lite-java:${BUILD_VERSION}"
+    testImplementation "com.couchbase.lite:${CBL_JAVA_LIB}:${BUILD_VERSION}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}"
     testImplementation 'junit:junit:4.13.2'
