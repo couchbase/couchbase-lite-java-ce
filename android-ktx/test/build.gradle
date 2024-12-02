@@ -39,7 +39,11 @@ ext {
 
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
-    BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
+
+    // if validating a release, we'll use the released bits
+    BUILD_VERSION = "${BUILD_RELEASE}" 
+    // normally, though, we will use a local build
+    if (BUILD_NUMBER != "RELEASE") { BUILD_VERSION = "${BUILD_VERSION}-${BUILD_NUMBER}" }
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
@@ -51,13 +55,15 @@ ext {
 
     CBL_ANDROID_LIB = 'couchbase-lite-android-ktx'
 }
+ 
+// This module is for testing on Jenkins.  Require a build number
+if (BUILD_NUMBER == "SNAPSHOT") { throw new InvalidUserDataException ("!!! A build number is required") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
 def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.replaceAll("\\s", "")
 
-// Set true to use mavenLocal instead of Proget
-def USE_LOCAL_MAVEN = project.hasProperty("useLocalMaven")
+print "Testing ${BUILD_VERSION}"
 
 
 // ----------------------------------------------------------------
@@ -143,13 +149,18 @@ android {
 }
 
 repositories {
-    if (USE_LOCAL_MAVEN) { mavenLocal() }
-    else {
-        maven {
-            url "http://proget.build.couchbase.com/maven2/cimaven"
-            allowInsecureProtocol = true
+    maven {
+        if (BUILD_NUMBER == "RELEASE") {
+            // Validate a released build
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
         }
+        else {
+            // Test a cimaven candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+        }
+        content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
     }
+
     google()
     mavenCentral()
 }

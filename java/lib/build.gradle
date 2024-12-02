@@ -147,12 +147,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'androidx.annotation:annotation:1.5.0'
+    compileOnly 'androidx.annotation:annotation:1.2.0'
     compileOnly "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
 
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 
-    testCompileOnly 'androidx.annotation:annotation:1.5.0'
+    testCompileOnly 'androidx.annotation:annotation:1.3.0'
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}"
     testImplementation 'junit:junit:4.13.2'
@@ -363,11 +363,11 @@ task checkstyle(type: Checkstyle) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/checkstyle.html")
         }
     }
@@ -391,11 +391,11 @@ task pmd(type: Pmd) {
 
     reports {
         xml {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.xml")
         }
         html {
-            enabled = true
+            required = true
             outputLocation = file("${REPORTS_DIR}/pmd.html")
         }
     }

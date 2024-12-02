@@ -39,7 +39,11 @@ ext {
 
     BUILD_RELEASE = file("${ROOT_DIR}/version.txt").text.trim()
     BUILD_NUMBER = (project.hasProperty("buildNumber") && buildNumber) ? buildNumber : "SNAPSHOT"
-    BUILD_VERSION = "${BUILD_RELEASE}-${BUILD_NUMBER}"
+
+    // if validating a release, we'll use the released bits
+    BUILD_VERSION = "${BUILD_RELEASE}"
+    // normally, though, we will use a local build
+    if (BUILD_NUMBER != "RELEASE") { BUILD_VERSION = "${BUILD_VERSION}-${BUILD_NUMBER}" }
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR= "${CBL_COMMON_ROOT_DIR}/common"
@@ -49,13 +53,14 @@ ext {
     CBL_CE_JAVA_DIR = "${CBL_CE_ROOT_DIR}/java"
 
     REPORTS_DIR = "${buildDir}/reports"
-    ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     CBL_NATIVE_DIR = "${buildDir}/native"
 
     CBL_JAVA_LIB = 'couchbase-lite-java'
-    if (BUILD_NUMBER == "SNAPSHOT") { CBL_JAVA_LIB = "${CBL_JAVA_LIB}-macos" }
 }
+
+// This module is for testing on Jenkins.  Require a build number
+if (BUILD_NUMBER == "SNAPSHOT") { throw new InvalidUserDataException ("!!! A build number is required") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -64,6 +69,7 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 // Set -Pverbose to get full console logs for tests
 def VERBOSE = project.hasProperty("verbose")
 
+print "Testing ${BUILD_VERSION}"
 
 // ----------------------------------------------------------------
 // Build
@@ -99,17 +105,24 @@ java {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") { mavenLocal() }
     maven {
-        url "http://proget.build.couchbase.com/maven2/cimaven"
-        allowInsecureProtocol = true
+        if (BUILD_NUMBER == "RELEASE") {
+            // Validate a release
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
+        }
+        else {
+            // Test a release candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven"
+        }
+        content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
     }
+
     google()
     mavenCentral()
 }
 
 dependencies {
-    testCompileOnly 'androidx.annotation:annotation:1.5.0'
+    testCompileOnly 'androidx.annotation:annotation:1.2.0'
 
     testImplementation "com.couchbase.lite:${CBL_JAVA_LIB}:${BUILD_VERSION}"
 
