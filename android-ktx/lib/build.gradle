@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017, 2018, 2019, 2020 Couchbase, Inc.
+// Copyright (c) 2017, 2018, 2019, 2024 Couchbase, Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ ext {
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
 }
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) { throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -74,6 +75,8 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
+
+println "Building CBL Android KTX ${BUILD_VERSION}@${BUILD_COMMIT}"
 
 group = CBL_GROUP
 version = BUILD_VERSION
@@ -341,7 +344,7 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 ///////// Dev tasks
-// If there is an ee_android project around, get it to publish its artifacts before this build runs
+// If there is a ce_android project around, depend on its devPublish task
 def preBuildTask = tasks.findByName('preBuild')
 gradle.projectsEvaluated {
     rootProject.subprojects.each { p ->
