@@ -58,9 +58,9 @@ ext {
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
+    CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
-    CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
     CBL_COMMON_ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     REPORTS_DIR = "${buildDir}/reports"
@@ -69,6 +69,7 @@ ext {
     OKHTTP_VERSION = '4.12.0'
     SPOTBUGS_VERSION = '4.7.3'
 }
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) { throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}") }
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -81,6 +82,8 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
+
+println "Building CBL Android ${BUILD_VERSION}@${BUILD_COMMIT}"
 
 group = CBL_GROUP
 version = BUILD_VERSION
@@ -95,7 +98,6 @@ androidComponents {
 android {
     namespace 'com.couchbase.lite'
 
-    compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
     // if you change this, be sure to update $ROOT/etc/jenkins/install_android_toolchain.sh
@@ -103,7 +105,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            // if you change this, be sure to update /etc/jenkins/build.sh
+            // if you change this, be sure to update etc/jenkins/install_android_toolchain.sh
             version "3.25.0"
             path "${CBL_COMMON_DIR}/CMakeLists.txt"
         }
@@ -119,6 +121,7 @@ android {
     buildFeatures { buildConfig true }
 
     defaultConfig {
+        compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30200
@@ -161,6 +164,8 @@ android {
         }
 
         release {
+            ndk.debugSymbolLevel 'SYMBOL_TABLE'
+
             debuggable false
             minifyEnabled false
 
@@ -236,7 +241,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 
@@ -252,7 +256,7 @@ task javadoc(type: Javadoc) {
 
     afterEvaluate {
         dependsOn generateReleaseBuildConfig, generateReleaseRFile, compileReleaseKotlin
-    
+
         classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
         classpath += project.files(project.android.sourceSets.main.java.srcDirs.join(File.pathSeparator))
         classpath += project.files("${buildDir}/generated/source/buildConfig/release")
