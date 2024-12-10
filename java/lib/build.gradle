@@ -84,6 +84,7 @@ ext {
     OKHTTP_VERSION = '4.12.0'
     SPOTBUGS_VERSION = '4.7.3'
 }
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) { throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}") }
 
 // Build platform
 def PLATFORM = "???"
@@ -105,6 +106,8 @@ def VERBOSE = project.hasProperty("verbose")
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
+
+println "Building CBL Java ${BUILD_VERSION}@${BUILD_COMMIT}"
 
 group = CBL_GROUP
 version = BUILD_VERSION
