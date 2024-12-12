@@ -19,6 +19,7 @@
     <fields>;
 }
 -keep class com.couchbase.lite.internal.fleece.FLSliceResult {
+    static <methods>;
     <fields>;
     <init>(...);
 }
