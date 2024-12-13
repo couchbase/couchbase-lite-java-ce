@@ -62,7 +62,10 @@ ext {
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
 }
-if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) { throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}") }
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) {
+    throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
+}
+
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -170,14 +173,18 @@ android {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") {
-        // For dev builds, CBL-Android is in maven local
-        mavenLocal()
+    if (BUILD_VERSION =~ /SNAPSHOT$/) { mavenLocal() }
+    else if ((BUILD_VERSION =~ /-\d+$/)) {
+        maven {
+            // Test a release candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven/"
+            content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
+        }
     }
     else {
-        // For official builds CBL-Android is in the internal proget staging feed
         maven {
-            url "https://proget.sc.couchbase.com/maven2/cimaven"
+            // Validate a release
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
             content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
         }
     }
