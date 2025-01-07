@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024-present Couchbase, Inc All rights reserved.
+// Copyright (c) 2025-present Couchbase, Inc All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public final class Defaults {
         public static final boolean FULL_SYNC = false;
 
         /**
-         * Memory mapped database files are enabled by default, except on MacOS
+         * Memory mapped database files are enabled by default
          */
         public static final boolean MMAP_ENABLED = true;
     }
@@ -52,6 +52,25 @@ public final class Defaults {
          * 1 rotated file present (2 total, including the currently active log file)
          */
         public static final int MAX_ROTATE_COUNT = 1;
+    }
+
+    public static final class FileLogSink {
+        private FileLogSink() { }
+
+        /**
+         * Plaintext is not used, and instead binary encoding is used in log files
+         */
+        public static final boolean USE_PLAINTEXT = false;
+
+        /**
+         * 512 KiB for the size of a log file
+         */
+        public static final long MAX_SIZE = 524288;
+
+        /**
+         * 2 files preserved during each log rotation
+         */
+        public static final int MAX_KEPT_FILES = 2;
     }
 
     public static final class FullTextIndex {
