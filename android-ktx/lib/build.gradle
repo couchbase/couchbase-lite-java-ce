@@ -62,7 +62,7 @@ ext {
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
 }
-if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) {
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-/)) {
     throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
 }
 

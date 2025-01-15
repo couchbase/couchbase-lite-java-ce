@@ -53,7 +53,7 @@ ext {
     CBL_ANDROID_LIB = 'couchbase-lite-android-ktx'
 }
 // This module is for testing on Jenkins.  Require a real build number
-if (!(BUILD_VERSION ==~ /\d{1,2}\.\d{1,2}\.\d{1,2}(-\d{1,5})?/)) {
+if (!(BUILD_VERSION ==~ /\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-\d{1,5}?/)) {
     throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
 }
 
