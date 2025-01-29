@@ -79,7 +79,7 @@ def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 // Build
 // ----------------------------------------------------------------
 
-println "Building CBL Android KTX ${BUILD_VERSION}@${BUILD_COMMIT}"
+println "Building CBL Android KTX ${BUILD_VERSION}@${BUILD_COMMIT} with CBL ${CBL_ANDROID_LIB}:${BUILD_VERSION}"
 
 group = CBL_GROUP
 version = BUILD_VERSION
