@@ -2,7 +2,7 @@
 #
 # Build Couchbase Lite Android, Community Edition
 #
-MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
+MAVEN_URL="https://proget.sc.couchbase.com/maven2/cimaven"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TOOLS_DIR="${SCRIPT_DIR}/../../../../etc/jenkins"
@@ -22,7 +22,7 @@ BUILD_NUMBER="$2"
 if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 REPORTS="$3"
-if [ -z "REPORTS" ]; then usage; fi
+if [ -z "$REPORTS" ]; then usage; fi
 
 STATUS=0
 

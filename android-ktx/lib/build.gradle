@@ -1,13 +1,10 @@
 //
-// build.gradle
-//
-// Copyright (c) 2017, 2018, 2019, 2020 Couchbase, Inc.
+// Copyright (c) 2017, 2018, 2019, 2020, 2024 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +27,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'maven-publish'
-    id("org.jetbrains.dokka") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 
@@ -65,6 +62,9 @@ ext {
     CBL_ANDROID_LIB = 'couchbase-lite-android'
     CBL_ANDROID_TYPE = 'aar'
 }
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-/)) {
+    throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
+}
 
 // comma separated list of annotations for tests that should not be run.
 // e.g., -PtestFilter='com.couchbase.lite.internal.utils.SlowTest,com.couchbase.lite.internal.utils.VerySlowTest'
@@ -73,9 +73,12 @@ def TEST_FILTER = (!project.hasProperty("testFilter")) ? null : testFilter.repla
 // Target repo for maven publish
 def MAVEN_URL = (!project.hasProperty("mavenUrl")) ? null : mavenUrl
 
+
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
+
+println "Building CBL Android KTX ${BUILD_VERSION}@${BUILD_COMMIT} with CBL ${CBL_ANDROID_LIB}:${BUILD_VERSION}"
 
 group = CBL_GROUP
 version = BUILD_VERSION
@@ -83,7 +86,6 @@ version = BUILD_VERSION
 android {
     namespace 'com.couchbase.lite.kotlin'
 
-    compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION
 
     compileOptions {
@@ -99,6 +101,7 @@ android {
     buildFeatures { buildConfig true }
 
     defaultConfig {
+        compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
         versionCode 30100
@@ -169,14 +172,18 @@ android {
 }
 
 repositories {
-    if (BUILD_NUMBER == "SNAPSHOT") {
-        // For dev builds, CBL-Android is in maven local
-        mavenLocal()
+    if (BUILD_VERSION =~ /SNAPSHOT$/) { mavenLocal() }
+    else if ((BUILD_VERSION =~ /-\d+$/)) {
+        maven {
+            // Test a release candidate
+            url "https://proget.sc.couchbase.com/maven2/cimaven/"
+            content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
+        }
     }
     else {
-        // For official builds CBL-Android is in the internal proget staging feed
         maven {
-            url "https://proget.sc.couchbase.com/maven2/cimaven"
+            // Validate a release
+            url "https://mobile.maven.couchbase.com/maven2/dev/"
             content { includeGroupByRegex "com\\.couchbase\\.lite.*" }
         }
     }
@@ -185,26 +192,25 @@ repositories {
     mavenCentral()
 }
 
-configurations.all { resolutionStrategy.cacheChangingModulesFor 1, 'seconds' }
 dependencies {
-    // androidx.work:work-runtime-ktx:2.7.1 requires 1.2.0
-    compileOnly 'androidx.annotation:annotation:1.2.0'
+    // androidx.work:work-runtime-ktx:2.8.0 requires 1.3.0
+    compileOnly 'androidx.annotation:annotation:1.3.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 
     // Work Manager support
-    implementation "androidx.work:work-runtime-ktx:2.7.1"
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
-    implementation ("com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}").setChanging(true)
+    implementation "com.couchbase.lite:${CBL_ANDROID_LIB}:${BUILD_VERSION}"
 
     testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
- 
-    androidTestImplementation "androidx.work:work-testing:2.6.0"
+
+    // Work Manager Test support
+    androidTestImplementation "androidx.work:work-testing:2.8.1"
 }
 
 
@@ -260,7 +266,7 @@ task dokkaJar(type: Jar, dependsOn: dokkaJavadoc) {
 task sourcesJar(type: Jar) {
     archiveBaseName = "${CBL_ARTIFACT_ID}"
     archiveClassifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+    from project.android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
@@ -276,7 +282,6 @@ publishing {
                 username mavenRepoUser
                 password mavenRepoPass
             }
-            allowInsecureProtocol = true
         }
     }
 }
@@ -349,15 +354,19 @@ project.afterEvaluate {
 def preBuildTask = tasks.findByName('preBuild')
 gradle.projectsEvaluated {
     rootProject.subprojects.each { p ->
-        if (p.name == 'ce_android') {
-            def d = p.tasks.findByName('devPublish')
-            preBuildTask.dependsOn d
-            preBuildTask.mustRunAfter d
+         if (p.name == 'ce_android') {
+            def publishTask = p.tasks.findByName('devPublish')
+            if (publishTask != null) {
+                preBuildTask.dependsOn publishTask
+                preBuildTask.mustRunAfter publishTask
+            }
         }
     }
 }
+
 task smokeTest(dependsOn: ['clean', 'compileDebugSources', 'compileDebugAndroidTestSources', 'compileDebugUnitTestSources', 'lint'])
 task devTest(dependsOn: ['connectedDebugAndroidTest'])
+task devPublish(dependsOn: ['publishLibDebugPublicationToMavenLocal'])
 
 ///////// CI tasks
 task ciBuild(dependsOn: ['assembleRelease'])

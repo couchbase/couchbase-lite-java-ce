@@ -2,7 +2,7 @@
 #
 # Publish Couchbase Lite Java for Linux, Community Edition
 #
-MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
+MAVEN_URL="https://proget.sc.couchbase.com/maven2/cimaven"
 
 function usage() {
     echo "Usage: $0 "'<build number>'
