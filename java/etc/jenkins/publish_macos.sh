@@ -2,7 +2,7 @@
 #
 # Publish Couchbase Lite Java for MacOS, Community Edition
 #
-MAVEN_URL="http://proget.build.couchbase.com/maven2/cimaven"
+MAVEN_URL="https://proget.sc.couchbase.com/maven2/cimaven"
 STATUS=0
 
 function usage() {

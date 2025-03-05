@@ -9,7 +9,7 @@ param (
     [string]$artifactsDir
 )
 
-$mavenUrl= "http://proget.build.couchbase.com/maven2/cimaven"
+$mavenUrl= "https://proget.sc.couchbase.com/maven2/cimaven"
 $status = 0
 
 Write-Host "======== PUBLISH Couchbase Lite Java for Windows, Community Edition"

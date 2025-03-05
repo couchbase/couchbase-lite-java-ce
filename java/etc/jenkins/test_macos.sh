@@ -13,7 +13,7 @@ BUILD_NUMBER="$1"
 if [ -z "$BUILD_NUMBER" ]; then usage; fi
 
 REPORTS="$2"
-if [ -z "REPORTS" ]; then usage; fi
+if [ -z "$REPORTS" ]; then usage; fi
 
 STATUS=0
 
