@@ -58,18 +58,17 @@ ext {
 
     CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
     CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
-    CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
     CBL_CE_ROOT_DIR = "${ROOT_DIR}/ce"
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
+    CBL_COMMON_ANDROID_DIR = "${CBL_COMMON_ROOT_DIR}/android"
     CBL_COMMON_ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
     REPORTS_DIR = "${buildDir}/reports"
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '4.12.0'
-    SPOTBUGS_VERSION = '4.7.3'
 }
-if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}-/)) {
+if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-/)) {
     throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
 }
 
@@ -102,13 +101,11 @@ android {
 
     buildToolsVersion BUILD_TOOLS_VERSION
 
-    // if you change this, be sure to update $ROOT/etc/jenkins/install_android_toolchain.sh
-    ndkVersion '25.1.8937393' //'25.0.8775105'
+    ndkVersion NDK_VERSION
 
     externalNativeBuild {
         cmake {
-            // if you change this, be sure to update etc/jenkins/install_android_toolchain.sh
-            version "3.25.0"
+            version CMAKE_VERSION
             path "${CBL_COMMON_DIR}/CMakeLists.txt"
         }
     }
@@ -219,7 +216,7 @@ android {
     }
 
     lintOptions {
-        disable 'UseSparseArrays'
+        disable 'UseSparseArrays', 'CustomX509TrustManager'
         abortOnError false
     }
 }
@@ -230,7 +227,9 @@ repositories {
 }
 
 dependencies {
+    //androidx.work:work-runtime:2.8.1 requires annotations 1.3.0
     compileOnly 'androidx.annotation:annotation:1.3.0'
+
     compileOnly "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
 
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
@@ -240,9 +239,9 @@ dependencies {
 
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}"
 
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:core:1.5.0'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test:core:1.6.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
 }
 
 
@@ -289,7 +288,7 @@ def FILE_FILTER = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifes
 
 /////// Checkstyle
 checkstyle {
-    toolVersion = "8.42"
+    toolVersion = CHECKSTYLE_VERSION
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
@@ -305,7 +304,7 @@ task checkstyle(type: Checkstyle) {
     description 'Checkstyle'
     group 'verification'
 
-    source android.sourceSets.main.java.srcDirs
+    source project.android.sourceSets.main.java.srcDirs
     include '**/*.java'
     exclude FILE_FILTER
 
@@ -325,7 +324,7 @@ task checkstyle(type: Checkstyle) {
 
 /////// PMD
 pmd {
-    toolVersion '6.47.0'
+    toolVersion PMD_VERSION
     ruleSets = []
 }   
 task pmd(type: Pmd) {
@@ -335,7 +334,7 @@ task pmd(type: Pmd) {
 
     ruleSetFiles = files("${CBL_COMMON_ETC_DIR}/pmd/pmd.xml")
 
-    source = android.sourceSets.main.java.srcDirs
+    source project.android.sourceSets.main.java.srcDirs
     include '**/*.java'
     exclude FILE_FILTER
 
@@ -362,19 +361,18 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        afterEvaluate { dependsOn generateDebugRFile, generateReleaseRFile, compileDebugKotlin, compileReleaseKotlin, compileDebugJavaWithJavac }
-
         effort = "max"
         reportLevel = "medium"
         ignoreFailures = false
 
-        sourceDirs = project.files(android.sourceSets.main.java.srcDirs)
-
+        sourceDirs = project.files(project.android.sourceSets.main.java.srcDirs)
         classDirs = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes")
 
-        android.getBootClasspath().each { dir -> auxClassPaths += project.files(dir) }
         afterEvaluate {
-            android.libraryVariants.collect { variant ->
+            dependsOn generateDebugRFile, generateReleaseRFile, compileDebugKotlin, compileReleaseKotlin, compileDebugJavaWithJavac
+
+            project.android.getBootClasspath().each { dir -> auxClassPaths += project.files(dir) }
+            project.android.libraryVariants.collect { variant ->
                 auxClassPaths += project.files(variant.javaCompileProvider.get().classpath.files)
             }
         }
@@ -449,7 +447,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task sourcesJar(type: Jar) {
     archiveBaseName = "${CBL_ARTIFACT_ID}"
     archiveClassifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+    from project.android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
@@ -555,12 +553,12 @@ task ciPublish(dependsOn: ['javadocJar', 'generatePomFileForLibReleasePublicatio
 
 // ordering (roughly last to first)
 project.afterEvaluate {
-    tasks.withType(Javadoc) { shouldRunAfter connectedDebugAndroidTest }
+    tasks.withType(Javadoc).configureEach { task -> task.shouldRunAfter connectedDebugAndroidTest }
     connectedDebugAndroidTest.shouldRunAfter smokeTest
     testDebugUnitTest.shouldRunAfter smokeTest
-    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
-    tasks.withType(Pmd) { shouldRunAfter tasks.withType(Checkstyle) }
-    tasks.withType(Checkstyle) { shouldRunAfter compileDebugSources }
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach { task -> task.shouldRunAfter tasks.withType(Pmd) }
+    tasks.withType(Pmd).configureEach { task -> task.shouldRunAfter tasks.withType(Checkstyle) }
+    tasks.withType(Checkstyle).configureEach { task -> task.shouldRunAfter compileDebugSources }
 }
 
 // Clean
