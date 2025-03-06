@@ -16,9 +16,12 @@
 //
 buildscript {
     ext {
+        // if you change any of this, be sure to update etc/jenkins/install_android_toolchain.sh
         COMPILE_SDK_VERSION = 33
         BUILD_TOOLS_VERSION = '34.0.0'
-        KOTLIN_VERSION = '1.8.20'
+        KOTLIN_VERSION = '1.9.10'
+        CHECKSTYLE_VERSION = "8.42"
+        PMD_VERSION = '6.55.0'
 
         ANDROID_MIN_SDK = 22
         ANDROID_TARGET_SDK = 30
@@ -34,7 +37,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
-        classpath 'com.android.tools.build:gradle:8.4.0'
+        classpath 'com.android.tools.build:gradle:8.4.2'
     }
 }
 
