@@ -1,6 +1,4 @@
 //
-// build.gradle
-//
 // Copyright (c) 2017, 2018, 2019, 2020, 2021, 2022, 2023 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +14,11 @@
 //
 buildscript {
     ext {
+        // if you change any of this, be sure to update etc/jenkins/install_android_toolchain.sh
         KOTLIN_VERSION = '1.9.24'
+        CHECKSTYLE_VERSION = "8.42"
+        PMD_VERSION = '6.55.0'
+        SPOTBUGS_VERSION = '4.7.3'
         JACOCO_VERSION = '0.8.10'
 
         ROOT_DIR = "${projectDir}/../.."

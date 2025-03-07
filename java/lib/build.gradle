@@ -82,7 +82,6 @@ ext {
 
     DEPENDENCIES = ['okio', 'okhttp']
     OKHTTP_VERSION = '4.12.0'
-    SPOTBUGS_VERSION = '4.7.3'
 }
 if (!(BUILD_VERSION =~ /^\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-/)) {
     throw new InvalidUserDataException ("!!! Bad version: ${BUILD_VERSION}")
@@ -152,7 +151,9 @@ repositories {
 }
 
 dependencies {
+    //androidx.work:work-runtime:2.8.1 requires annotations 1.3.0
     compileOnly 'androidx.annotation:annotation:1.3.0'
+
     compileOnly "com.github.spotbugs:spotbugs-annotations:${SPOTBUGS_VERSION}"
 
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
@@ -346,7 +347,7 @@ def FILE_FILTER = ['**/gen/**', "okhttp3/**", "org/json/**"]
 
 /////// Checkstyle
 checkstyle {
-    toolVersion = "8.42"
+    toolVersion = CHECKSTYLE_VERSION
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${toolVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:1.39.0"
@@ -383,9 +384,9 @@ task checkstyle(type: Checkstyle) {
 
 /////// PMD
 pmd {
-    toolVersion '6.47.0'
+    toolVersion PMD_VERSION
     ruleSets = []
-}   
+}
 task pmd(type: Pmd) {
     description 'PMD'
     group 'verification'
