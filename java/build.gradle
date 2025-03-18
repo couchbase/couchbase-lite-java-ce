@@ -15,7 +15,7 @@
 buildscript {
     ext {
         // if you change any of this, be sure to update etc/jenkins/install_android_toolchain.sh
-        KOTLIN_VERSION = '1.9.24'
+        KOTLIN_VERSION = '2.1.10'
         CHECKSTYLE_VERSION = "8.42"
         PMD_VERSION = '6.55.0'
         SPOTBUGS_VERSION = '4.7.3'
