@@ -90,7 +90,7 @@ android {
         compileSdk COMPILE_SDK_VERSION
         minSdkVersion ANDROID_MIN_SDK
         targetSdkVersion ANDROID_TARGET_SDK
-        versionCode 30200
+        versionCode 30203
         versionName BUILD_VERSION
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
