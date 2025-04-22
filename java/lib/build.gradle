@@ -288,6 +288,7 @@ model {
                     cppCompiler.args '/EHsc'
                     cppCompiler.args '/wd4068'
                     cppCompiler.args '/std:c++17'
+                    cppCompiler.args '-D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR'
                     linker.args "/def:${ETC_DIR}/ld/jni_win.ld"
                 }
                 else if (targetPlatform.operatingSystem.linux) {
