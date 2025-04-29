@@ -15,6 +15,7 @@
 //
 package com.couchbase.lite;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -52,6 +53,7 @@ public final class Replicator extends AbstractReplicator {
             : new AndroidConnectivityObserver(mgr, Replicator.this::getC4Replicator);
     }
 
+    @GuardedBy("getDbLock()")
     @Override
     @NonNull
     protected C4Replicator createReplicatorForTarget(@NonNull Endpoint target) throws LiteCoreException {
