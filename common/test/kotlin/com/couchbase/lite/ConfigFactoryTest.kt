@@ -5,12 +5,7 @@
 package com.couchbase.lite
 
 import com.couchbase.lite.internal.replicator.AbstractCBLWebSocket
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNotSame
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
@@ -38,7 +33,7 @@ class ConfigFactoryTest : BaseDbTest() {
     @Test
     fun testDatabaseConfigurationFactoryDefaults() {
         val config = DatabaseConfigurationFactory.newConfig()
-        assertEquals(Defaults.Database.FULL_SYNC, config.isFullSync)
+        Assert.assertEquals(Defaults.Database.FULL_SYNC, config.isFullSync)
     }
 
     @Test
@@ -47,8 +42,8 @@ class ConfigFactoryTest : BaseDbTest() {
             databasePath = testPath,
             fullSync = true
         )
-        assertEquals(testPath, config.directory)
-        assertTrue(config.isFullSync)
+        Assert.assertEquals(testPath, config.directory)
+        Assert.assertTrue(config.isFullSync)
     }
 
     @Test
@@ -60,11 +55,11 @@ class ConfigFactoryTest : BaseDbTest() {
 
         val config2 = config1.newConfig()
 
-        assertEquals(testPath, config1.directory)
-        assertTrue(config1.isFullSync)
+        Assert.assertEquals(testPath, config1.directory)
+        Assert.assertTrue(config1.isFullSync)
 
-        assertEquals(testPath, config2.directory)
-        assertTrue(config2.isFullSync)
+        Assert.assertEquals(testPath, config2.directory)
+        Assert.assertTrue(config2.isFullSync)
     }
 
     ///// ReplicatorConfiguration
@@ -84,14 +79,14 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        assertEquals(target, config.target)
-        assertEquals(ReplicatorType.PUSH, config.type)
-        assertTrue(config.isContinuous)
-        assertEquals(testAuthenticator, config.authenticator)
-        assertEquals(testHeaders, config.headers)
-        assertEquals(20, config.maxAttempts)
-        assertEquals(100, config.heartbeat)
-        assertEquals(false, config.isAutoPurgeEnabled)
+        Assert.assertEquals(target, config.target)
+        Assert.assertEquals(ReplicatorType.PUSH, config.type)
+        Assert.assertTrue(config.isContinuous)
+        Assert.assertEquals(testAuthenticator, config.authenticator)
+        Assert.assertEquals(testHeaders, config.headers)
+        Assert.assertEquals(20, config.maxAttempts)
+        Assert.assertEquals(100, config.heartbeat)
+        Assert.assertEquals(false, config.isAutoPurgeEnabled)
     }
 
     // Create config with an empty collection
@@ -110,14 +105,14 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        assertEquals(target, config.target)
-        assertEquals(ReplicatorType.PUSH, config.type)
-        assertTrue(config.isContinuous)
-        assertEquals(testAuthenticator, config.authenticator)
-        assertEquals(testHeaders, config.headers)
-        assertEquals(20, config.maxAttempts)
-        assertEquals(100, config.heartbeat)
-        assertEquals(false, config.isAutoPurgeEnabled)
+        Assert.assertEquals(target, config.target)
+        Assert.assertEquals(ReplicatorType.PUSH, config.type)
+        Assert.assertTrue(config.isContinuous)
+        Assert.assertEquals(testAuthenticator, config.authenticator)
+        Assert.assertEquals(testHeaders, config.headers)
+        Assert.assertEquals(20, config.maxAttempts)
+        Assert.assertEquals(100, config.heartbeat)
+        Assert.assertEquals(false, config.isAutoPurgeEnabled)
     }
 
     // Create config with explicitly configured default collection
@@ -146,24 +141,24 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        assertEquals(collectionConfig.keys.first(), config.collections)
-        assertEquals(target, config.target)
-        assertEquals(ReplicatorType.PUSH, config.type)
-        assertTrue(config.isContinuous)
-        assertEquals(testAuthenticator, config.authenticator)
-        assertEquals(testHeaders, config.headers)
-        assertEquals(20, config.maxAttempts)
-        assertEquals(100, config.heartbeat)
-        assertEquals(false, config.isAutoPurgeEnabled)
+        Assert.assertEquals(collectionConfig.keys.first(), config.collections)
+        Assert.assertEquals(target, config.target)
+        Assert.assertEquals(ReplicatorType.PUSH, config.type)
+        Assert.assertTrue(config.isContinuous)
+        Assert.assertEquals(testAuthenticator, config.authenticator)
+        Assert.assertEquals(testHeaders, config.headers)
+        Assert.assertEquals(20, config.maxAttempts)
+        Assert.assertEquals(100, config.heartbeat)
+        Assert.assertEquals(false, config.isAutoPurgeEnabled)
 
         val collConfig2 = config.getCollectionConfiguration(testDatabase.defaultCollection)
-        assertNotNull(collConfig2)
-        assertNotSame(collConfig1, collConfig2)
-        assertEquals(testChannels, collConfig2!!.channels)
-        assertEquals(testResolver, collConfig2.conflictResolver)
-        assertEquals(testDocIds, collConfig2.documentIDs)
-        assertEquals(testPushFilter, collConfig2.pushFilter)
-        assertEquals(testPullFilter, collConfig2.pullFilter)
+        Assert.assertNotNull(collConfig2)
+        Assert.assertNotSame(collConfig1, collConfig2)
+        Assert.assertEquals(testChannels, collConfig2!!.channels)
+        Assert.assertEquals(testResolver, collConfig2.conflictResolver)
+        Assert.assertEquals(testDocIds, collConfig2.documentIDs)
+        Assert.assertEquals(testPushFilter, collConfig2.pushFilter)
+        Assert.assertEquals(testPullFilter, collConfig2.pullFilter)
     }
 
     // Create config with a configured non-default collection
@@ -188,29 +183,29 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        assertEquals(testEndpoint, config.target)
-        assertEquals(ReplicatorType.PUSH, config.type)
-        assertTrue(config.isContinuous)
-        assertEquals(testAuthenticator, config.authenticator)
-        assertEquals(testHeaders, config.headers)
-        assertEquals(20, config.maxAttempts)
-        assertEquals(100, config.heartbeat)
-        assertEquals(false, config.isAutoPurgeEnabled)
+        Assert.assertEquals(testEndpoint, config.target)
+        Assert.assertEquals(ReplicatorType.PUSH, config.type)
+        Assert.assertTrue(config.isContinuous)
+        Assert.assertEquals(testAuthenticator, config.authenticator)
+        Assert.assertEquals(testHeaders, config.headers)
+        Assert.assertEquals(20, config.maxAttempts)
+        Assert.assertEquals(100, config.heartbeat)
+        Assert.assertEquals(false, config.isAutoPurgeEnabled)
 
         val colls = config.collections
-        assertNotNull(colls)
-        assertEquals(1, colls.size)
-        assertTrue(colls.contains(testCollection))
+        Assert.assertNotNull(colls)
+        Assert.assertEquals(1, colls.size)
+        Assert.assertTrue(colls.contains(testCollection))
 
         val collConfig2 = config.getCollectionConfiguration(testCollection)
 
-        assertNotNull(collConfig2)
-        assertNotSame(collConfig1, collConfig2!!)
-        assertEquals(testChannels, collConfig2.channels)
-        assertEquals(testResolver, collConfig2.conflictResolver)
-        assertEquals(testDocIds, collConfig2.documentIDs)
-        assertEquals(testPushFilter, collConfig2.pushFilter)
-        assertEquals(testPullFilter, collConfig2.pullFilter)
+        Assert.assertNotNull(collConfig2)
+        Assert.assertNotSame(collConfig1, collConfig2!!)
+        Assert.assertEquals(testChannels, collConfig2.channels)
+        Assert.assertEquals(testResolver, collConfig2.conflictResolver)
+        Assert.assertEquals(testDocIds, collConfig2.documentIDs)
+        Assert.assertEquals(testPushFilter, collConfig2.pushFilter)
+        Assert.assertEquals(testPullFilter, collConfig2.pullFilter)
     }
 
     @Test
@@ -218,19 +213,19 @@ class ConfigFactoryTest : BaseDbTest() {
         val config1 = ReplicatorConfigurationFactory.newConfig(testEndpoint)
         // config1 contains all default value
 
-        assertEquals(testEndpoint, config1.target)
-        assertEquals(ReplicatorType.PUSH_AND_PULL, config1.type)
-        assertFalse(config1.isContinuous)
-        assertNull(config1.authenticator)
-        assertNull(config1.headers)
-        assertEquals(Defaults.Replicator.MAX_ATTEMPTS_SINGLE_SHOT, config1.maxAttempts)
-        assertEquals(Defaults.Replicator.HEARTBEAT, config1.heartbeat)
-        assertTrue(config1.isAutoPurgeEnabled)
+        Assert.assertEquals(testEndpoint, config1.target)
+        Assert.assertEquals(ReplicatorType.PUSH_AND_PULL, config1.type)
+        Assert.assertFalse(config1.isContinuous)
+        Assert.assertNull(config1.authenticator)
+        Assert.assertNull(config1.headers)
+        Assert.assertEquals(Defaults.Replicator.MAX_ATTEMPTS_SINGLE_SHOT, config1.maxAttempts)
+        Assert.assertEquals(Defaults.Replicator.HEARTBEAT, config1.heartbeat)
+        Assert.assertTrue(config1.isAutoPurgeEnabled)
 
         val config2 = config1.newConfig(maxAttempts = 200)
 
-        assertNotSame(config1, config2)
-        assertEquals(Defaults.Replicator.MAX_ATTEMPTS_SINGLE_SHOT, config1.maxAttempts)
-        assertEquals(200, config2.maxAttempts)
+        Assert.assertNotSame(config1, config2)
+        Assert.assertEquals(Defaults.Replicator.MAX_ATTEMPTS_SINGLE_SHOT, config1.maxAttempts)
+        Assert.assertEquals(200, config2.maxAttempts)
     }
 }
