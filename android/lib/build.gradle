@@ -326,7 +326,7 @@ task checkstyle(type: Checkstyle) {
 pmd {
     toolVersion PMD_VERSION
     ruleSets = []
-}   
+}
 task pmd(type: Pmd) {
     description 'PMD'
     group 'verification'

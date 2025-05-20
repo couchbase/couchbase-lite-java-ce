@@ -37,12 +37,14 @@ val DatabaseConfigurationFactory: DatabaseConfiguration? = null
  */
 fun DatabaseConfiguration?.newConfig(
     databasePath: String? = null,
-    fullSync: Boolean? = null
+    fullSync: Boolean? = null,
+    mMapEnabled: Boolean? = null,
 ): DatabaseConfiguration {
     val config = DatabaseConfiguration()
 
     (databasePath ?: this?.directory)?.let { config.directory = it }
     (fullSync ?: this?.isFullSync)?.let { config.setFullSync(it) }
+    (mMapEnabled ?: this?.isMMapEnabled)?.let { config.setMMapEnabled(it) }
 
     return config
 }
