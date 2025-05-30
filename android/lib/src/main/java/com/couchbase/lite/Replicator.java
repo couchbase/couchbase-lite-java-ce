@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.couchbase.lite.internal.CouchbaseLiteInternal;
 import com.couchbase.lite.internal.core.C4Replicator;
+import com.couchbase.lite.internal.logging.Log;
 import com.couchbase.lite.internal.replicator.AndroidConnectivityObserver;
 import com.couchbase.lite.internal.replicator.NetworkConnectivityManager;
 
@@ -61,6 +62,17 @@ public final class Replicator extends AbstractReplicator {
 
     @Override
     protected void handleOffline(@NonNull ReplicatorActivityLevel prevState, boolean nowOnline) {
-        if (connectivityObserver != null) { connectivityObserver.handleOffline(prevState, nowOnline); }
+        final AndroidConnectivityObserver observer = connectivityObserver;
+        if (observer == null) { return; }
+
+        Log.d(
+            LogDomain.NETWORK,
+            "%s: offline state change for %s: %s -> %b",
+            getId(),
+            connectivityObserver,
+            prevState,
+            nowOnline);
+
+        observer.handleOffline(prevState, nowOnline);
     }
 }
