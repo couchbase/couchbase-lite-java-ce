@@ -137,6 +137,7 @@ CBL {
         Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_completedWrite;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_fromNative;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_gotHTTPResponse;
+        Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_gotPeerCertificate;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_opened;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Socket_received;
         Java_com_couchbase_lite_internal_core_impl_NativeC4_debug;
