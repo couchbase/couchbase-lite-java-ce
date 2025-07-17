@@ -19,9 +19,9 @@ buildscript {
         // if you change any of this, be sure to update etc/jenkins/install_android_toolchain.sh
         COMPILE_SDK_VERSION = 33
         BUILD_TOOLS_VERSION = '34.0.0'
-        NDK_VERSION = '25.1.8937393'
-        CMAKE_VERSION = '3.25.0'
         KOTLIN_VERSION = '1.9.24'
+        NDK_VERSION = '27.2.12479018'
+        CMAKE_VERSION = '3.30.5'
         CHECKSTYLE_VERSION = "8.42"
         PMD_VERSION = '6.55.0'
         SPOTBUGS_VERSION = '4.7.3'
