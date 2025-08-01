@@ -23,7 +23,7 @@ buildscript {
         CHECKSTYLE_VERSION = "8.42"
         PMD_VERSION = '6.55.0'
 
-        ANDROID_MIN_SDK = 22
+        ANDROID_MIN_SDK = 24
         ANDROID_TARGET_SDK = 30
 
         ROOT_DIR = "${projectDir}/../.."
