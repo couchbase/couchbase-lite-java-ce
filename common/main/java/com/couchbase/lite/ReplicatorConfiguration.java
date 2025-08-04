@@ -31,7 +31,14 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     //---------------------------------------------
 
     /**
-     * Create a Replicator Configuration
+     * Create a Replicator Configuration for the given database and target endpoint.
+     *
+     * <p>When using this constructor, the default collection of the provided
+     * database will be automatically included in the configuration.</p>
+     *
+     * <p>If you do not intend to replicate the default collection, use
+     * ReplicatorConfiguration(Endpoint) instead, and explicitly add
+     * the intended collections to avoid unintended behavior.</p>
      *
      * @param database the database to be synchronized
      * @param target   the endpoint with which to synchronize it
