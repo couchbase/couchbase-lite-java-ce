@@ -42,7 +42,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *
      * @param database the database to be synchronized
      * @param target   the endpoint with which to synchronize it
-     * @deprecated Use ReplicatorConfiguration(Endpoint)
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
@@ -53,11 +53,30 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     }
 
     /**
-     * Create a Replicator Configuration
+     * Create a Replicator Configuration for the given target endpoint
+     *
+     * <p>This constructor does not configure any collections by default.
+     *  Use {@link #addCollection(Collection, CollectionConfiguration)} or
+     *  {@link #addCollections(java.util.Collection, CollectionConfiguration)} to
+     *  configure collections to replicate.</p>
      *
      * @param target the target endpoint
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
      */
+    @Deprecated
     public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, null, target); }
+
+    /**
+     * Creates a Replicator Configuration with a set of collection configurations and
+     * the target endpoint.
+     *
+     * @param collections the collections with configurations to replicate
+     * @param target the target endpoint
+     */
+    public ReplicatorConfiguration(@NonNull java.util.Collection<CollectionConfiguration> collections,
+                                   @NonNull Endpoint target) {
+        super(null, createCollectionConfigMap(collections), target);
+    }
 
     /**
      * Create a Replicator Configuration
