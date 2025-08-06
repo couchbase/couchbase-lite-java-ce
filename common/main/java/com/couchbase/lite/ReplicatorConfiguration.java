@@ -42,7 +42,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *
      * @param database the database to be synchronized
      * @param target   the endpoint with which to synchronize it
-     * @deprecated Use ReplicatorConfiguration(java.util.Collection, Endpoint)
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
@@ -61,7 +61,7 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
      *  configure collections to replicate.</p>
      *
      * @param target the target endpoint
-     * @deprecated Use ReplicatorConfiguration(java.util.Collection, Endpoint)
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
      */
     @Deprecated
     public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, null, target); }
