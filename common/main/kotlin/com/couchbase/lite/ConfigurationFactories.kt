@@ -169,9 +169,7 @@ fun ReplicatorConfiguration?.newConfig(
     enableAutoPurge: Boolean? = null,
     acceptParentDomainCookies: Boolean? = null
 ): ReplicatorConfiguration {
-    val endPt =
-        target
-    val config = ReplicatorConfiguration(collections, endPt)
+    val config = ReplicatorConfiguration(this?.collectionConfigs?:collections, target)
 
     copyReplConfig(
         this,
