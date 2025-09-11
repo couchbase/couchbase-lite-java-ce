@@ -78,7 +78,13 @@ val ReplicatorConfigurationFactory: ReplicatorConfiguration? = null
  * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
+ * @deprecated Use ReplicatorConfigurationFactory?.newConfig(Endpoint, Set<CollectionConfiguration>, ...)
  */
+@Suppress("DEPRECATION")
+@Deprecated(
+    "Use ReplicatorConfiguration?.newConfig(Set<CollectionConfiguration>, Endpoint ...)",
+    replaceWith = ReplaceWith("ReplicatorConfiguration?.newConfig(Set<CollectionConfiguration>, Endpoint ...)")
+)
 fun ReplicatorConfiguration?.newConfig(
     target: Endpoint? = null,
     collections: Map<out kotlin.collections.Collection<Collection>, CollectionConfiguration?>? = null,
@@ -120,7 +126,69 @@ fun ReplicatorConfiguration?.newConfig(
         acceptParentDomainCookies
     )
 
-    (pinnedServerCertificate ?: this?.pinnedServerX509Certificate)?.let { config.setPinnedServerX509Certificate(it) }
+    (pinnedServerCertificate
+        ?: this?.pinnedServerX509Certificate)?.let { config.setPinnedServerX509Certificate(it) }
+
+    return config
+}
+
+/**
+ * Create a ReplicatorConfiguration, overriding the receiver's
+ * values with the passed parameters.
+ *
+ * Note: A document that is blocked by a document Id filter will not be auto-purged
+ *       regardless of the setting of the enableAutoPurge property
+ *
+ * @param target (required) The replication target endpoint.
+ * @param collections a set of collections configurations.
+ * @param type replicator type: push, pull, or push and pull: default is push and pull.
+ * @param continuous continuous flag: true for continuous, false by default.
+ * @param authenticator connection authenticator.
+ * @param headers extra HTTP headers to send in all requests to the remote target.
+ * @param pinnedServerCertificate target server's SSL certificate.
+ * @param maxAttempts max retry attempts after connection failure.
+ * @param maxAttemptWaitTime max time between retry attempts (exponential backoff).
+ * @param heartbeat heartbeat interval, in seconds.
+ * @param enableAutoPurge auto-purge enabled.
+ * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
+ *
+ * @see com.couchbase.lite.ReplicatorConfiguration
+ */
+
+fun ReplicatorConfiguration?.newConfig(
+    collections: Set<CollectionConfiguration>,
+    target: Endpoint,
+    type: ReplicatorType? = null,
+    continuous: Boolean? = null,
+    authenticator: Authenticator? = null,
+    headers: Map<String, String>? = null,
+    pinnedServerCertificate: X509Certificate? = null,
+    maxAttempts: Int? = null,
+    maxAttemptWaitTime: Int? = null,
+    heartbeat: Int? = null,
+    enableAutoPurge: Boolean? = null,
+    acceptParentDomainCookies: Boolean? = null
+): ReplicatorConfiguration {
+    val endPt =
+        target
+    val config = ReplicatorConfiguration(collections, endPt)
+
+    copyReplConfig(
+        this,
+        config,
+        type,
+        continuous,
+        authenticator,
+        headers,
+        maxAttempts,
+        maxAttemptWaitTime,
+        heartbeat,
+        enableAutoPurge,
+        acceptParentDomainCookies
+    )
+
+    (pinnedServerCertificate
+        ?: this?.pinnedServerX509Certificate)?.let { config.setPinnedServerX509Certificate(it) }
 
     return config
 }
@@ -170,12 +238,12 @@ fun DatabaseConfiguration?.create(databasePath: String? = null) = this.newConfig
  * @param acceptParentDomainCookies Advanced: accept cookies for parent domains.
  *
  * @see com.couchbase.lite.ReplicatorConfiguration
- * @deprecated Use ReplicatorConfigurationFactory().newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>, ...)
+ * @deprecated Use ReplicatorConfiguration?.newConfig(Set<CollectionConfiguration>, Endpoint ...)
  */
 @Suppress("DEPRECATION")
 @Deprecated(
-    "Use ReplicatorConfigurationFactory.newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>?, ...)",
-    replaceWith = ReplaceWith("ReplicatorConfigurationFactory.newConfig(Endpoint?, Map<Set<Collection>, CollectionConfiguration?>?, ...)")
+    "Use ReplicatorConfiguration?.newConfig(Set<CollectionConfiguration>, Endpoint ...)",
+    replaceWith = ReplaceWith("ReplicatorConfiguration?.newConfig(Set<CollectionConfiguration>, Endpoint ...)")
 )
 fun ReplicatorConfiguration?.create(
     database: Database? = null,

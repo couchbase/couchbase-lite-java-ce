@@ -120,8 +120,19 @@ class WorkManagerReplicatorConfiguration private constructor(replConfig: Replica
     companion object {
         /**
          * Factory method for WorkManagerReplicatorConfiguration.
+         * @deprecated Use from(collections: Set<CollectionConfiguration>, target: Endpoint)
          */
+
+        @Deprecated(
+            "Use from(collections: Set<CollectionConfiguration>, target: Endpoint)",
+            replaceWith = ReplaceWith("WorkManagerReplicatorConfiguration.from(collections: Set<CollectionConfiguration>, target: Endpoint)")
+        )
         fun from(target: Endpoint) = WorkManagerReplicatorConfiguration(ReplicatorConfiguration(target))
+
+        /**
+         * Factory method for WorkManagerReplicatorConfiguration.
+         */
+        fun from(collections: Set<CollectionConfiguration>, target: Endpoint) = WorkManagerReplicatorConfiguration(ReplicatorConfiguration(collections, target))
 
         /**
          * Factory method for WorkManagerReplicatorConfiguration.
