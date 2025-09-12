@@ -16,7 +16,6 @@
 package com.couchbase.lite;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Map;
 
@@ -51,11 +50,11 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
 
     // For Kotlin
-    ReplicatorConfiguration(@NonNull Endpoint target, @Nullable Map<Collection, CollectionConfiguration> collections) {
+    ReplicatorConfiguration(@NonNull Endpoint target, @NonNull Map<Collection, CollectionConfiguration> collections) {
         super(
-            (collections == null) ? null : AbstractDatabase.getDbForCollections(collections.keySet()),
-            collections,
-            target);
+                AbstractDatabase.getDbForCollections(collections.keySet()),
+                collections,
+                target);
     }
 
     @NonNull
