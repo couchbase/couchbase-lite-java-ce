@@ -90,7 +90,7 @@ class ConfigFactoryTest : BaseDbTest() {
             enableAutoPurge = false
         )
 
-        Assert.assertEquals(collConfig1.collection, config.collectionConfigs.map { it.collection }.first())
+        Assert.assertEquals(collConfig1.collection, config.collections.map { it.collection }.first())
         Assert.assertEquals(target, config.target)
         Assert.assertEquals(ReplicatorType.PUSH, config.type)
         Assert.assertTrue(config.isContinuous)
@@ -100,7 +100,7 @@ class ConfigFactoryTest : BaseDbTest() {
         Assert.assertEquals(100, config.heartbeat)
         Assert.assertEquals(false, config.isAutoPurgeEnabled)
 
-        val collConfig2 = config.collectionConfigs.first()
+        val collConfig2 = config.collections.first()
         Assert.assertNotNull(collConfig2)
         Assert.assertNotSame(collConfig1, collConfig2)
         Assert.assertEquals(testChannels, collConfig2.channels)
