@@ -66,7 +66,7 @@ class ConfigFactoryTest : BaseDbTest() {
 
     // Create config with explicitly configured default collection
     @Test
-    fun testReplConfigCollectionsWithDefault() {
+    fun testCreateReplicatorConfigurationWithCollections() {
         val target = testEndpoint
 
         val collConfig1 = CollectionConfigurationFactory.newConfig(
@@ -110,57 +110,8 @@ class ConfigFactoryTest : BaseDbTest() {
         Assert.assertEquals(testPullFilter, collConfig2.pullFilter)
     }
 
-    // Create config with a configured non-default collection
     @Test
-    fun testReplConfigCollectionsWithoutDefault() {
-        val collConfig1 = CollectionConfigurationFactory.newConfig(
-            testCollection,
-            channels = testChannels,
-            conflictResolver = testResolver,
-            documentIDs = testDocIds,
-            pushFilter = testPushFilter,
-            pullFilter = testPullFilter
-        )
-
-        val config = ReplicatorConfigurationFactory.newConfig(
-            setOf(collConfig1),
-            testEndpoint,
-            type = ReplicatorType.PUSH,
-            continuous = true,
-            authenticator = testAuthenticator,
-            headers = testHeaders,
-            maxAttempts = 20,
-            heartbeat = 100,
-            enableAutoPurge = false
-        )
-
-        Assert.assertEquals(testEndpoint, config.target)
-        Assert.assertEquals(ReplicatorType.PUSH, config.type)
-        Assert.assertTrue(config.isContinuous)
-        Assert.assertEquals(testAuthenticator, config.authenticator)
-        Assert.assertEquals(testHeaders, config.headers)
-        Assert.assertEquals(20, config.maxAttempts)
-        Assert.assertEquals(100, config.heartbeat)
-        Assert.assertEquals(false, config.isAutoPurgeEnabled)
-
-        val colls = config.collectionConfigs.map { it.collection }
-        Assert.assertNotNull(colls)
-        Assert.assertEquals(1, colls.size)
-        Assert.assertTrue(colls.contains(testCollection))
-
-        val collConfig2 = config.collectionConfigs.first()
-
-        Assert.assertNotNull(collConfig2)
-        Assert.assertNotSame(collConfig1, collConfig2)
-        Assert.assertEquals(testChannels, collConfig2.channels)
-        Assert.assertEquals(testResolver, collConfig2.conflictResolver)
-        Assert.assertEquals(testDocIds, collConfig2.documentIDs)
-        Assert.assertEquals(testPushFilter, collConfig2.pushFilter)
-        Assert.assertEquals(testPullFilter, collConfig2.pullFilter)
-    }
-
-    @Test
-    fun testReplicatorConfigurationFactoryDataSources() {
+    fun testReplicatorConfigurationDefaultValues() {
         val collectConfig = CollectionConfiguration.fromCollections(setOf(testCollection))
         val config1 = ReplicatorConfigurationFactory.newConfig(collectConfig, testEndpoint)
         // config1 contains all default value
