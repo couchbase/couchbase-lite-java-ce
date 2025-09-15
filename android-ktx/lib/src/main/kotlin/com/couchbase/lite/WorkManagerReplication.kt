@@ -121,7 +121,8 @@ class WorkManagerReplicatorConfiguration private constructor(replConfig: Replica
         /**
          * Factory method for WorkManagerReplicatorConfiguration.
          */
-        fun from(target: Endpoint) = WorkManagerReplicatorConfiguration(ReplicatorConfiguration(target))
+        fun from(collections: Set<CollectionConfiguration>, target: Endpoint) =
+            WorkManagerReplicatorConfiguration(ReplicatorConfiguration(collections, target))
 
         /**
          * Factory method for WorkManagerReplicatorConfiguration.
