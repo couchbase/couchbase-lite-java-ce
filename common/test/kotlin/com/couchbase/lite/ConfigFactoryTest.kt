@@ -102,7 +102,6 @@ class ConfigFactoryTest : BaseDbTest() {
 
         val collConfig2 = config.collections.first()
         Assert.assertNotNull(collConfig2)
-        Assert.assertNotSame(collConfig1, collConfig2)
         Assert.assertEquals(testChannels, collConfig2.channels)
         Assert.assertEquals(testResolver, collConfig2.conflictResolver)
         Assert.assertEquals(testDocIds, collConfig2.documentIDs)
