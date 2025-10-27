@@ -78,4 +78,8 @@ public final class CouchbaseLite {
     public static void init(boolean debug, @NonNull File rootDir, @NonNull File scratchDir) {
         CouchbaseLiteInternal.init(debug, rootDir, scratchDir);
     }
+
+    public static void shutdown() {
+        CouchbaseLiteInternal.shutdown();
+    }
 }
