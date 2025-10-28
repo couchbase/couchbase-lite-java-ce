@@ -79,6 +79,22 @@ public final class CouchbaseLite {
         CouchbaseLiteInternal.init(debug, rootDir, scratchDir);
     }
 
+    /**
+     * Shuts down Couchbase Lite's shared executors.
+     * Call when shutting down your application/container to allow clean JVM exit.
+     *
+     * <p>
+     * This method releases shared executors used by Couchbase Lite.
+     * It should be called when the host application or container is shutting down
+     * to allow the process to terminate cleanly without being blocked by
+     * active executors.
+     * </p>
+     *
+     * <p>
+     * After calling this method, Couchbase Lite cannot be used again until the
+     * process restarts or the runtime is reinitialized.
+     * </p>
+     */
     public static void shutdown() {
         CouchbaseLiteInternal.shutdown();
     }
