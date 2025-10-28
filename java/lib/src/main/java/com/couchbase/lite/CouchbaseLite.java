@@ -90,10 +90,9 @@ public final class CouchbaseLite {
      * active executors.
      * </p>
      *
-     * <p>
-     * After calling this method, Couchbase Lite cannot be used again until the
-     * process restarts or the runtime is reinitialized.
-     * </p>
+     * <p><b>Post-shutdown:</b> Any Couchbase Lite API calls will throw IllegalStateException.
+     * Reinitialize with {@link CouchbaseLite#init()} to use again.
+     *
      */
     public static void shutdown() {
         CouchbaseLiteInternal.shutdown();
