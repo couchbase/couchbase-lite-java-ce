@@ -90,8 +90,10 @@ public final class CouchbaseLite {
      * active executors.
      * </p>
      *
-     * <p><b>Post-shutdown:</b> Any Couchbase Lite API calls will throw IllegalStateException.
-     * Reinitialize with {@link CouchbaseLite#init()} to use again.
+     * <p>
+     * After this call, internal shared executors are stopped and no longer perform work.
+     * Couchbase Lite should not be used again until the process restarts.
+     * </p>
      *
      */
     public static void shutdown() {
