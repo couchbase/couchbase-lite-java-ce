@@ -99,5 +99,4 @@ public final class CouchbaseLite {
     public static void shutdown() {
         CouchbaseLiteInternal.shutdown();
     }
-
 }
