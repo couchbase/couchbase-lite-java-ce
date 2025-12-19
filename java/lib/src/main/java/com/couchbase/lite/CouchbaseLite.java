@@ -94,7 +94,6 @@ public final class CouchbaseLite {
      * After this call, internal shared executors are stopped and no longer perform work.
      * Couchbase Lite should not be used again until the process restarts.
      * </p>
-     *
      */
     public static void shutdown() {
         CouchbaseLiteInternal.shutdown();
