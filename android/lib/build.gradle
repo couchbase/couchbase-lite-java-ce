@@ -152,7 +152,7 @@ android {
                 cmake {
                     arguments '-DANDROID_STL=c++_static',
                         '-DANDROID_TOOLCHAIN=clang',
-                        '-DANDROID_PLATFORM=android-22',
+                        '-DANDROID_PLATFORM=android-24',
                         '-DCMAKE_BUILD_TYPE=Debug'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
@@ -172,7 +172,7 @@ android {
                 cmake {
                     arguments '-DANDROID_STL=c++_static',
                         '-DANDROID_TOOLCHAIN=clang',
-                        '-DANDROID_PLATFORM=android-22',
+                        '-DANDROID_PLATFORM=android-24',
                         '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
                     cppFlags "-std=c++11 -frtti -fexceptions -fPIC"
                 }
