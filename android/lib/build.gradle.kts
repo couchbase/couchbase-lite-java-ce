@@ -131,7 +131,7 @@ android {
                 }
             }
 
-            buildConfigField("boolean", "ENTERPRISE", "true")
+            buildConfigField("boolean", "ENTERPRISE", "false")
             buildConfigField("boolean", "CBL_DEBUG", "true")
         }
 
@@ -152,7 +152,7 @@ android {
                 }
             }
 
-            buildConfigField("boolean", "ENTERPRISE", "true")
+            buildConfigField("boolean", "ENTERPRISE", "false")
             buildConfigField("boolean", "CBL_DEBUG", "false")
         }
     }
