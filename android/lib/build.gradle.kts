@@ -1,19 +1,18 @@
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 import com.github.spotbugs.snom.SpotBugsTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.BufferedReader
 import java.io.FileReader
 import java.time.Instant
 import java.util.regex.Pattern
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.checkstyle)
-    alias(libs.plugins.pmd)
+    id("checkstyle")
+    id("pmd")
+    id("maven-publish")
     // AGP 9: the full SpotBugs plugin still expects the old Android BaseExtension; use the task-only base plugin here.
     alias(libs.plugins.spotbugs)
-    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.android.library)
 }
 
 
@@ -29,11 +28,11 @@ val cblProjectUrl = "https://github.com/couchbaselabs/couchbase-lite-java-ce-roo
 val cblIssuesUrl = "https://github.com/couchbaselabs/couchbase-lite-java-ce-root/issues"
 val cblSiteUrl = "https://developer.couchbase.com/mobile/"
 val buildTime = Instant.now().toString()
-val buildRelease = file("${rootDir}/../../version.txt").readText().trim()
+val projectRootDir = "$projectDir/../../.."
+val buildRelease = file("${projectRootDir}/version.txt").readText().trim()
 val buildNumber = if (project.hasProperty("buildNumber") && project.property("buildNumber") != null) project.property("buildNumber") as String else "SNAPSHOT"
 val buildVersion = "${buildRelease}-${buildNumber}"
 val buildCommit = getBuildId()
-val projectRootDir = rootProject.extra["ROOT_DIR"] as String
 val cblCommonRootDir = "${projectRootDir}/common"
 val cblCommonDir = "${cblCommonRootDir}/common"
 val cblCommonAndroidDir = "${cblCommonRootDir}/android"
@@ -202,11 +201,7 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
-    }
-}
+
 
 repositories {
     google()

@@ -15,10 +15,13 @@
 // Please try to keep this build file as similar to the other family build files
 // as is possible.
 //
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
 import com.github.spotbugs.snom.SpotBugsTask
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.internal.os.OperatingSystem
+import org.gradle.process.CommandLineArgumentProvider
 
 import java.util.regex.Pattern
 
@@ -29,16 +32,13 @@ import java.util.regex.Pattern
 
 plugins {
     id 'java-library'
-    id 'kotlin'
     id 'cpp'
     id 'java-library-distribution'
     id 'checkstyle'
     id 'pmd'
-    id 'com.github.spotbugs'
     id 'maven-publish'
-
-    // handy plugin for discovering task dependencies
-    // id "com.dorongold.task-tree" version "2.1.1"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.spotbugs)
 }
 
 
@@ -72,12 +72,12 @@ ext {
     CBL_CE_COMMON_DIR = "${CBL_CE_ROOT_DIR}/common"
     CBL_COMMON_ETC_DIR = "${CBL_COMMON_ROOT_DIR}/etc"
 
-    GENERATED_DIR = "${buildDir}/generated/sources"
-    REPORTS_DIR = "${buildDir}/reports"
-    ETC_DIR = "${buildDir}/../../etc"
+    GENERATED_DIR = "${layout.buildDirectory.get()}/generated/sources"
+    REPORTS_DIR = "${layout.buildDirectory.get()}/reports"
+    ETC_DIR = "${layout.buildDirectory.get()}/../../etc"
 
     CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
-    CBL_NATIVE_DIR = "${buildDir}/native"
+    CBL_NATIVE_DIR = "${layout.buildDirectory.get()}/native"
     CBL_JNI_INCLUDE_DIR = "${GENERATED_DIR}/include"
 
     DEPENDENCIES = ['okio', 'okhttp']
@@ -113,7 +113,7 @@ println "Building CBL Java ${BUILD_VERSION}@${BUILD_COMMIT}"
 group = CBL_GROUP
 version = BUILD_VERSION
 
-compileJava.options.encoding = "UTF-8"
+tasks.named('compileJava') { options.encoding = "UTF-8" }
 java {
     targetCompatibility JavaVersion.VERSION_1_8
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -180,9 +180,9 @@ task generateCBLVersion(type: Copy) {
     into "${GENERATED_DIR}/java/com/couchbase/lite/internal/core"
 }
 project.afterEvaluate {
-    sourcesJar.dependsOn generateCBLVersion
-    compileJava.dependsOn generateCBLVersion
-    compileKotlin.dependsOn generateCBLVersion
+    tasks.named('sourcesJar') { dependsOn tasks.named('generateCBLVersion') }
+    tasks.named('compileJava') { dependsOn tasks.named('generateCBLVersion') }
+    tasks.named('compileKotlin') { dependsOn tasks.named('generateCBLVersion') }
 }
 
 
@@ -191,7 +191,9 @@ project.afterEvaluate {
 // ----------------------------------------------------------------
 
 // For generating JNI headers:
-compileJava.options.compilerArgs += ["-h", CBL_JNI_INCLUDE_DIR]
+tasks.named('compileJava') {
+    options.compilerArgumentProviders.add({ ["-h", CBL_JNI_INCLUDE_DIR] } as CommandLineArgumentProvider)
+}
 
 // Native Components:
 model {
@@ -317,7 +319,7 @@ model {
 // Javadoc
 // ----------------------------------------------------------------
 
-javadoc {
+tasks.named('javadoc') {
     failOnError false
 
     exclude "**/internal/**"
@@ -420,33 +422,33 @@ task pmd(type: Pmd) {
 // is to disable the check.
 spotbugs { toolVersion = SPOTBUGS_VERSION }
 ['Html', 'Xml'].each { reportType ->
-    task("spotbugs${reportType}", type: SpotBugsTask) {
+    tasks.register("spotbugs${reportType}", SpotBugsTask) {
         description "Spotbugs with ${reportType} report"
         group 'verification'
 
-        dependsOn compileJava, processResources
+        dependsOn tasks.named('compileJava'), tasks.named('processResources')
 
-        effort = "max"
-        reportLevel = "medium"
+        effort = 'max'
+        reportLevel = 'medium'
         ignoreFailures = false
 
         sourceDirs = project.files(sourceSets.main.java.srcDirs)
 
-        classDirs = fileTree(dir: "${buildDir}/classes/java/main")
+        classDirs = fileTree(dir: "${layout.buildDirectory.get()}/classes/java/main")
 
-        tasks.findByName("compileJava").classpath.forEach { auxClassPaths += project.files(it) }
+        auxClassPaths.from(tasks.named('compileJava').map { it.classpath })
 
         excludeFilter = file("${CBL_COMMON_ETC_DIR}/spotbugs/spotbugs.xml")
         onlyAnalyze = ['com.couchbase.lite.-']
 
         reports {
-            xml {
+            create("xml") {
                 required = (reportType == "Xml")
-                outputLocation = file("${REPORTS_DIR}//spotbugs.xml")
+                outputLocation = file("${REPORTS_DIR}/spotbugs.xml")
             }
-            html {
+            create("html") {
                 required = (reportType == "Html")
-                outputLocation = file("${REPORTS_DIR}//spotbugs.html")
+                outputLocation = file("${REPORTS_DIR}/spotbugs.html")
                 stylesheet = 'fancy-hist.xsl'
             }
         }
@@ -458,10 +460,10 @@ spotbugs { toolVersion = SPOTBUGS_VERSION }
 // Testing
 // ----------------------------------------------------------------
 
-compileTestJava.options.encoding = "UTF-8"
+tasks.named('compileTestJava') { options.encoding = "UTF-8" }
 
-compileKotlin.kotlinOptions.jvmTarget = "1.8"
-compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+tasks.named('compileKotlin') { kotlinOptions.jvmTarget = "1.8" }
+tasks.named('compileTestKotlin') { kotlinOptions.jvmTarget = "1.8" }
 
 kotlin { kotlinDaemonJvmArgs = ["-Xmx3072m", "-Xms512m"] }
 
@@ -492,7 +494,7 @@ test {
 // Jar
 // ----------------------------------------------------------------
 
-jar { archivesBaseName = JAR_ARTIFACT }
+base { archivesName = JAR_ARTIFACT }
 
 
 // ----------------------------------------------------------------
@@ -616,12 +618,12 @@ task ciPublish(dependsOn: ['generatePomFileForCouchbaseLiteJavaPublication', 'pu
 
 // ordering (roughly last to first)
 project.afterEvaluate {
-    tasks.withType(Javadoc) { shouldRunAfter test }
-    test.shouldRunAfter smokeTest
-    testClasses.shouldRunAfter tasks.withType(SpotBugsTask)
+    tasks.withType(Javadoc) { shouldRunAfter tasks.named('test') }
+    tasks.named('test') { shouldRunAfter tasks.named('smokeTest') }
+    tasks.named('testClasses') { shouldRunAfter tasks.withType(SpotBugsTask) }
     tasks.withType(SpotBugsTask) { shouldRunAfter tasks.withType(Pmd) }
     tasks.withType(Pmd) { shouldRunAfter tasks.withType(Checkstyle) }
-    tasks.withType(Checkstyle) { shouldRunAfter compileJava }
+    tasks.withType(Checkstyle) { shouldRunAfter tasks.named('compileJava') }
 }
 
 // This task copies LiteCore binaries from their local cache <root>/common/lite-core

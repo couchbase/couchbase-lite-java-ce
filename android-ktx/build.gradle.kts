@@ -1,6 +1,4 @@
 //
-// build.gradle.kts
-//
 // Copyright (c) 2017, 2018, 2019, 2020 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

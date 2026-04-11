@@ -1,3 +1,19 @@
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            from(files("../../gradle/libs.versions.toml"))
+        }
+    }
+}
+
 // This project contains two distinct applications:
 // 1) the CBL-Android-EE source and the code to build, unit-test and publish it to maven
 // 2) an independent application that runs automated tests on the application build in #1
