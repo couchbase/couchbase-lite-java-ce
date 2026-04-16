@@ -163,7 +163,7 @@ android {
                 setOf(
                     "${cblCommonDir}/main/java",                   // Common
                     "${cblCommonAndroidDir}/main/java",           // Common Android
-                    "${cblCECommonDir}/main/java",                // EE Common
+                    "${cblCECommonDir}/main/java",                // CE Common
                     "src/main/java"
                 )
             )
@@ -176,6 +176,14 @@ android {
         }
         getByName("androidTest") {
             java.directories.addAll(
+                setOf(
+                    "${cblCommonDir}/test/java",                   // Common tests
+                    "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
+                    "${cblCECommonDir}/test/java",                // CE Common tests
+                    "src/androidTest/java"                           // CE Android tests
+                )
+            )
+            kotlin.directories.addAll(
                 setOf(
                     "${cblCommonDir}/test/java",                   // Common tests
                     "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
