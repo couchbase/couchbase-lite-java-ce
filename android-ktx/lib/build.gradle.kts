@@ -126,7 +126,7 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("${cblCommonAndroidKtxDir}/main/AndroidManifest.xml")
-            java.directories.addAll(setOf(
+            kotlin.directories.addAll(setOf(
                 "${cblCommonDir}/main/kotlin",
                 "${cblCommonAndroidKtxDir}/main/kotlin",
                 "${cblCECommonDir}/main/kotlin",
@@ -140,11 +140,13 @@ android {
         getByName("androidTest") {
             java.directories.addAll(setOf(
                 "${cblCommonDir}/test/java",
+                "${cblCommonAndroidDir}/androidTest/java"
+            ))
+            kotlin.directories.addAll(setOf(
+                "${cblCommonDir}/test/java",
                 "${cblCommonAndroidDir}/androidTest/java",
                 "${cblCommonDir}/test/kotlin",
-                "${cblCECommonDir}/test/java",
                 "${cblCECommonDir}/test/kotlin",
-                "${cblCEAndroidDir}/lib/src/androidTest/java",
                 "${cblCommonAndroidKtxDir}/androidTest/kotlin",
                 "src/androidTest/kotlin"
             ))
