@@ -95,6 +95,10 @@ android {
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
 
+        aarMetadata {
+            minCompileSdk = libs.versions.minSdk.get().toInt()
+        }
+
         @Suppress("UnstableApiUsage")
         externalNativeBuild {
             cmake { targets("LiteCoreJNI") }
