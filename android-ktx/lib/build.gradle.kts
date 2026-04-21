@@ -102,6 +102,10 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
 
+        aarMetadata {
+            minCompileSdk = libs.versions.minSdk.get().toInt()
+        }
+
         buildConfigField("String", "VERSION_NAME", "\"${buildVersion}\"")
         buildConfigField("String", "BUILD_TIME", "\"${buildTime}\"")
         buildConfigField("String", "BUILD_COMMIT", "\"${buildCommit}\"")
