@@ -162,7 +162,7 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("${cblCommonAndroidDir}/main/AndroidManifest.xml")
-            java.directories.addAll(
+            java.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/main/java",                   // Common
                     "${cblCommonAndroidDir}/main/java",           // Common Android
@@ -170,15 +170,15 @@ android {
                     "src/main/java"
                 )
             )
-            res.directories.add(
+            res.setSrcDirs(setOf(
                 "${cblCommonAndroidDir}/main/res"                // Common resources
-            )
+            ))
         }
         getByName("debug") {
             manifest.srcFile("${cblCommonAndroidDir}/debug/AndroidManifest.xml")
         }
         getByName("androidTest") {
-            java.directories.addAll(
+            java.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/java",                   // Common tests
                     "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
@@ -186,7 +186,7 @@ android {
                     "src/androidTest/java"                           // CE Android tests
                 )
             )
-            kotlin.directories.addAll(
+            kotlin.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/java",                   // Common tests
                     "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
@@ -194,15 +194,15 @@ android {
                     "src/androidTest/java"                           // CE Android tests
                 )
             )
-            assets.directories.addAll(
+            assets.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/assets",                 // Common assets
                     "${cblCECommonDir}/test/assets"               // CE Common assets
                 )
             )
-            res.directories.add(
+            res.setSrcDirs(setOf(
                 "${cblCommonAndroidDir}/androidTest/res"      // Common test resources
-            )
+            ))
         }
     }
 

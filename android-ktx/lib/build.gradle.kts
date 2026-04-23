@@ -127,23 +127,23 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("${cblCommonAndroidKtxDir}/main/AndroidManifest.xml")
-            kotlin.directories.addAll(setOf(
+            kotlin.setSrcDirs(setOf(
                 "${cblCommonDir}/main/kotlin",
                 "${cblCommonAndroidKtxDir}/main/kotlin",
                 "${cblCECommonDir}/main/kotlin",
                 "src/main/kotlin"
             ))
-            res.directories.add("${cblCommonAndroidKtxDir}/main/res")
+            res.setSrcDirs(setOf("${cblCommonAndroidKtxDir}/main/res"))
         }
         getByName("debug") {
             manifest.srcFile("${cblCommonAndroidKtxDir}/debug/AndroidManifest.xml")
         }
         getByName("androidTest") {
-            java.directories.addAll(setOf(
+            java.setSrcDirs(setOf(
                 "${cblCommonDir}/test/java",
                 "${cblCommonAndroidDir}/androidTest/java"
             ))
-            kotlin.directories.addAll(setOf(
+            kotlin.setSrcDirs(setOf(
                 "${cblCommonDir}/test/java",
                 "${cblCommonAndroidDir}/androidTest/java",
                 "${cblCommonDir}/test/kotlin",
@@ -151,8 +151,8 @@ android {
                 "${cblCommonAndroidKtxDir}/androidTest/kotlin",
                 "src/androidTest/kotlin"
             ))
-            assets.directories.add("${cblCommonDir}/test/assets")
-            res.directories.add("${cblCommonAndroidKtxDir}/androidTest/res")
+            assets.setSrcDirs(setOf("${cblCommonDir}/test/assets"))
+            res.setSrcDirs(setOf("${cblCommonAndroidKtxDir}/androidTest/res"))
         }
     }
 }
