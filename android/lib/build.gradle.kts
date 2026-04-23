@@ -10,7 +10,6 @@ plugins {
     id("checkstyle")
     id("pmd")
     id("maven-publish")
-    // AGP 9: the full SpotBugs plugin still expects the old Android BaseExtension; use the task-only base plugin here.
     alias(libs.plugins.spotbugs)
     alias(libs.plugins.android.library)
 }
@@ -401,8 +400,7 @@ afterEvaluate {
     tasks.named<Javadoc>("javadoc") {
         dependsOn(
             tasks.named("generateReleaseBuildConfig"),
-            tasks.named("generateReleaseRFile"),
-            tasks.named("compileReleaseKotlin")
+            tasks.named("generateReleaseRFile")
         )
 
         classpath += project.files(android.sourceSets.getByName("main").java.srcDirs.joinToString(File.pathSeparator))
@@ -417,8 +415,6 @@ afterEvaluate {
             dependsOn(
                 tasks.named("generateDebugRFile"),
                 tasks.named("generateReleaseRFile"),
-                tasks.named("compileDebugKotlin"),
-                tasks.named("compileReleaseKotlin"),
                 tasks.named("compileDebugJavaWithJavac")
             )
 

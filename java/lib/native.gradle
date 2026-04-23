@@ -1,0 +1,248 @@
+//
+// native.gradle
+//
+// Native build configuration using the Gradle Software Model.
+// Applied from build.gradle.kts because the model{} DSL block is not
+// bindable in Kotlin DSL for Gradle 9.x.
+//
+
+import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.os.OperatingSystem
+import org.gradle.process.CommandLineArgumentProvider
+
+
+// ----------------------------------------------------------------
+// Constants (local to this script)
+// ----------------------------------------------------------------
+
+def JAVA_HOME = Jvm.current().javaHome
+def JAVA_INCLUDE = "${JAVA_HOME}/include"
+
+def ROOT_DIR = "${projectDir}/../../.."
+def CBL_COMMON_ROOT_DIR = "${ROOT_DIR}/common"
+def CBL_COMMON_DIR = "${CBL_COMMON_ROOT_DIR}/common"
+
+def GENERATED_DIR = "${layout.buildDirectory.get()}/generated/sources"
+def ETC_DIR = "${layout.buildDirectory.get()}/../../etc"
+
+def CBL_CORE_NATIVE_DIR = "${CBL_COMMON_ROOT_DIR}/lite-core"
+def CBL_NATIVE_DIR = "${layout.buildDirectory.get()}/native"
+def CBL_JNI_INCLUDE_DIR = "${GENERATED_DIR}/include"
+
+def PLATFORM = "???"
+if (OperatingSystem.current().isWindows()) { PLATFORM = "windows" }
+else if (OperatingSystem.current().isLinux()) { PLATFORM = "linux" }
+else if (OperatingSystem.current().isMacOsX()) { PLATFORM = "macos" }
+
+
+// ----------------------------------------------------------------
+// JNI header generation
+// ----------------------------------------------------------------
+
+tasks.named('compileJava') {
+    options.compilerArgumentProviders.add({ ["-h", CBL_JNI_INCLUDE_DIR] } as CommandLineArgumentProvider)
+}
+
+
+// ----------------------------------------------------------------
+// Native Components (Software Model)
+// ----------------------------------------------------------------
+
+model {
+    platforms {
+        windows {
+            architecture "x86_64"
+            operatingSystem "windows"
+        }
+        linux {
+            architecture "x86_64"
+            operatingSystem "linux"
+        }
+        osx_x86_64 {
+            architecture "x86_64"
+            operatingSystem "osx"
+        }
+        osx_aarch64 {
+            architecture "osx_aarch64"
+            operatingSystem "osx"
+        }
+    }
+
+    toolChains {
+        visualCpp(VisualCpp)
+
+        clang(Clang) {
+            target("osx_aarch64") {
+                cppCompiler.withArguments { args -> args << "-arch" << "arm64" }
+                linker.withArguments { args -> args << "-arch" << "arm64" }
+            }
+            target("osx_x86-64") {
+                cppCompiler.withArguments { args -> args << "-arch" << "x86_64" }
+                linker.withArguments { args -> args << "-arch" << "x86_64" }
+            }
+        }
+
+        gcc(Gcc)
+    }
+
+    repositories {
+        libs(PrebuiltLibraries) {
+            liteCore {
+                binaries.withType(SharedLibraryBinary) {
+                    def os = targetPlatform.operatingSystem
+                    if (os.windows) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.dll")
+                        sharedLibraryLinkFile = file("${CBL_CORE_NATIVE_DIR}/windows/x86_64/lib/LiteCore.lib")
+                    }
+                    else if (os.linux) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/linux/x86_64/lib/libLiteCore.so")
+                    }
+                    else if (os.macOsX) {
+                        headers.srcDir file("${CBL_CORE_NATIVE_DIR}/macos/universal/include")
+                        sharedLibraryFile = file("${CBL_CORE_NATIVE_DIR}/macos/universal/lib/libLiteCore.dylib")
+                    }
+                }
+            }
+        }
+    }
+
+    components {
+        LiteCoreJNI(NativeLibrarySpec) {
+            if (PLATFORM != "macos") { targetPlatform PLATFORM }
+            else {
+                targetPlatform "osx_aarch64"
+                targetPlatform "osx_x86_64"
+            }
+
+            sources {
+                cpp {
+                    source {
+                        srcDir "${CBL_COMMON_DIR}/main/cpp"
+                        include "**/*.cc"
+                    }
+                    lib library: 'liteCore', linkage: 'shared'
+                }
+            }
+
+            binaries.withType(StaticLibraryBinarySpec) { buildable = false }
+
+            binaries.withType(SharedLibraryBinarySpec) { binary ->
+                createBuildJNILibraryTask(binary.sharedLibraryFile, targetPlatform, CBL_NATIVE_DIR)
+            }
+
+            binaries.all {
+                if (targetPlatform.operatingSystem.windows) {
+                    cppCompiler.args "-I${CBL_JNI_INCLUDE_DIR}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}"
+                    cppCompiler.args "-I${JAVA_INCLUDE}/win32"
+                    cppCompiler.args '/MD'
+                    cppCompiler.args '/EHsc'
+                    cppCompiler.args '/wd4068'
+                    cppCompiler.args '/std:c++17'
+                    cppCompiler.args '-D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR'
+                    linker.args "/def:${ETC_DIR}/ld/jni_win.ld"
+                }
+                else if (targetPlatform.operatingSystem.linux) {
+                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
+                    cppCompiler.args '-I', JAVA_INCLUDE
+                    cppCompiler.args '-I', "${JAVA_INCLUDE}/linux"
+                    cppCompiler.args '-std=c++17'
+                    linker.args "-Wl,--version-script=${ETC_DIR}/ld/jni_gnu.ld"
+                }
+                else if (targetPlatform.operatingSystem.macOsX) {
+                    cppCompiler.args '-I', CBL_JNI_INCLUDE_DIR
+                    cppCompiler.args '-I', JAVA_INCLUDE
+                    cppCompiler.args '-I', "${JAVA_INCLUDE}/darwin"
+                    cppCompiler.args '-std=c++17'
+                    cppCompiler.args '-stdlib=libc++'
+                    linker.args '-stdlib=libc++'
+                    linker.args "-Wl,-exported_symbols_list,${ETC_DIR}/ld/jni_osx.ld"
+                }
+            }
+        }
+    }
+}
+
+
+// ----------------------------------------------------------------
+// Native library copy tasks
+// ----------------------------------------------------------------
+
+task copyLiteCore(type: Copy) {
+    from(CBL_CORE_NATIVE_DIR) {
+        exclude "**/include"
+        exclude "**/pkgconfig"
+        exclude "**/icu"
+
+        if (PLATFORM == "windows") {
+            include "windows/x86_64/lib/LiteCore.dll"
+        }
+        else if (PLATFORM == "macos") {
+            include "macos/universal/lib/libLiteCore.dylib"
+        }
+        else if (PLATFORM == "linux") {
+            include "linux/x86_64/lib/libLiteCore.so"
+
+            include "windows/x86_64/lib/LiteCore.dll"
+            include "windows/x86_64/lib/LiteCore.dll.MD5"
+            include "windows/x86_64/lib/LiteCoreJNI.dll"
+            include "windows/x86_64/lib/LiteCoreJNI.dll.MD5"
+
+            include "macos/universal/lib/libLiteCore.dylib"
+            include "macos/universal/lib/libLiteCore.dylib.MD5"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib"
+            include "macos/x86_64/lib/libLiteCoreJNI.dylib.MD5"
+            include "macos/aarch64/lib/libLiteCoreJNI.dylib"
+            include "macos/aarch64/lib/libLiteCoreJNI.dylib.MD5"
+        }
+    }
+
+    into "${CBL_NATIVE_DIR}/libs"
+}
+
+task signNativeLibs(dependsOn: ["copyLiteCore"]) {
+    doLast {
+        fileTree(dir: CBL_NATIVE_DIR).each { lib ->
+            def fPath = lib.getPath()
+            if (!(fPath.endsWith(".MD5") || new File("${fPath}.MD5").exists())) { ant.checksum(file: lib) }
+        }
+    }
+    processResources.dependsOn([tasks.named('signNativeLibs')])
+}
+
+
+// ----------------------------------------------------------------
+// Extensions
+// ----------------------------------------------------------------
+
+def createBuildJNILibraryTask(library, platform, nativeDir) {
+    tasks.whenTaskAdded { task ->
+        def taskName = task.name.toLowerCase()
+        def platformName = platform.name.toLowerCase()
+        if ((taskName == "litecorejnisharedlibrary") || (taskName == "litecorejni${platformName}sharedlibrary")) {
+            task.dependsOn(compileJava)
+            tasks.create(name: "copyJni${platformName}", type: Copy, dependsOn: task) {
+                from library
+                into "${nativeDir}/libs/${getOS(platform)}/${getArch(platform)}/lib"
+                signNativeLibs.dependsOn([tasks.named("copyJni${platformName}")])
+            }
+        }
+    }
+}
+
+def getOS(platform) {
+    if (platform.operatingSystem.isWindows()) { return "windows" }
+    else if (platform.operatingSystem.isLinux()) { return "linux" }
+    else if (platform.operatingSystem.isMacOsX()) { return "macos" }
+    else { return "${platform.operatingSystem.name}" }
+}
+
+def getArch(platform) {
+    if (platform.operatingSystem.isWindows()) { return "x86_64" }
+    else if (platform.operatingSystem.isLinux()) { return "x86_64" }
+    else if (platform.operatingSystem.isMacOsX() && (platform.name == "osx_aarch64")) { return "aarch64" }
+    else if (platform.operatingSystem.isMacOsX() && (platform.name == "osx_x86_64")) { return "x86_64" }
+    else { return "x86_64" }
+}

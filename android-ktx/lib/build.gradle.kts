@@ -17,7 +17,7 @@
 //
 
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 import java.io.BufferedReader
 import java.io.FileReader
 import java.time.Instant
@@ -26,6 +26,7 @@ import java.util.regex.Pattern
 plugins {
     id("maven-publish")
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.dokka)
 }
 
@@ -87,11 +88,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
-    }
+    kotlinOptions { jvmTarget = "11" }
 
     packaging {
         resources.excludes += "META-INF/library_release.kotlin_module"
