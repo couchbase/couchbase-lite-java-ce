@@ -17,7 +17,7 @@
 //
 
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 import java.io.BufferedReader
 import java.io.FileReader
 import java.time.Instant
@@ -26,6 +26,7 @@ import java.util.regex.Pattern
 plugins {
     id("maven-publish")
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.dokka)
 }
 
@@ -87,11 +88,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
-    }
+    kotlinOptions { jvmTarget = "11" }
 
     packaging {
         resources.excludes += "META-INF/library_release.kotlin_module"
@@ -130,23 +127,23 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("${cblCommonAndroidKtxDir}/main/AndroidManifest.xml")
-            kotlin.directories.addAll(setOf(
+            kotlin.setSrcDirs(setOf(
                 "${cblCommonDir}/main/kotlin",
                 "${cblCommonAndroidKtxDir}/main/kotlin",
                 "${cblCECommonDir}/main/kotlin",
                 "src/main/kotlin"
             ))
-            res.directories.add("${cblCommonAndroidKtxDir}/main/res")
+            res.setSrcDirs(setOf("${cblCommonAndroidKtxDir}/main/res"))
         }
         getByName("debug") {
             manifest.srcFile("${cblCommonAndroidKtxDir}/debug/AndroidManifest.xml")
         }
         getByName("androidTest") {
-            java.directories.addAll(setOf(
+            java.setSrcDirs(setOf(
                 "${cblCommonDir}/test/java",
                 "${cblCommonAndroidDir}/androidTest/java"
             ))
-            kotlin.directories.addAll(setOf(
+            kotlin.setSrcDirs(setOf(
                 "${cblCommonDir}/test/java",
                 "${cblCommonAndroidDir}/androidTest/java",
                 "${cblCommonDir}/test/kotlin",
@@ -154,8 +151,8 @@ android {
                 "${cblCommonAndroidKtxDir}/androidTest/kotlin",
                 "src/androidTest/kotlin"
             ))
-            assets.directories.add("${cblCommonDir}/test/assets")
-            res.directories.add("${cblCommonAndroidKtxDir}/androidTest/res")
+            assets.setSrcDirs(setOf("${cblCommonDir}/test/assets"))
+            res.setSrcDirs(setOf("${cblCommonAndroidKtxDir}/androidTest/res"))
         }
     }
 }

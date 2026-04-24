@@ -10,7 +10,6 @@ plugins {
     id("checkstyle")
     id("pmd")
     id("maven-publish")
-    // AGP 9: the full SpotBugs plugin still expects the old Android BaseExtension; use the task-only base plugin here.
     alias(libs.plugins.spotbugs)
     alias(libs.plugins.android.library)
 }
@@ -163,7 +162,7 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("${cblCommonAndroidDir}/main/AndroidManifest.xml")
-            java.directories.addAll(
+            java.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/main/java",                   // Common
                     "${cblCommonAndroidDir}/main/java",           // Common Android
@@ -171,15 +170,15 @@ android {
                     "src/main/java"
                 )
             )
-            res.directories.add(
+            res.setSrcDirs(setOf(
                 "${cblCommonAndroidDir}/main/res"                // Common resources
-            )
+            ))
         }
         getByName("debug") {
             manifest.srcFile("${cblCommonAndroidDir}/debug/AndroidManifest.xml")
         }
         getByName("androidTest") {
-            java.directories.addAll(
+            java.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/java",                   // Common tests
                     "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
@@ -187,7 +186,7 @@ android {
                     "src/androidTest/java"                           // CE Android tests
                 )
             )
-            kotlin.directories.addAll(
+            kotlin.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/java",                   // Common tests
                     "${cblCommonAndroidDir}/androidTest/java",    // Common Android tests
@@ -195,15 +194,15 @@ android {
                     "src/androidTest/java"                           // CE Android tests
                 )
             )
-            assets.directories.addAll(
+            assets.setSrcDirs(
                 setOf(
                     "${cblCommonDir}/test/assets",                 // Common assets
                     "${cblCECommonDir}/test/assets"               // CE Common assets
                 )
             )
-            res.directories.add(
+            res.setSrcDirs(setOf(
                 "${cblCommonAndroidDir}/androidTest/res"      // Common test resources
-            )
+            ))
         }
     }
 
@@ -401,8 +400,7 @@ afterEvaluate {
     tasks.named<Javadoc>("javadoc") {
         dependsOn(
             tasks.named("generateReleaseBuildConfig"),
-            tasks.named("generateReleaseRFile"),
-            tasks.named("compileReleaseKotlin")
+            tasks.named("generateReleaseRFile")
         )
 
         classpath += project.files(android.sourceSets.getByName("main").java.srcDirs.joinToString(File.pathSeparator))
@@ -417,8 +415,6 @@ afterEvaluate {
             dependsOn(
                 tasks.named("generateDebugRFile"),
                 tasks.named("generateReleaseRFile"),
-                tasks.named("compileDebugKotlin"),
-                tasks.named("compileReleaseKotlin"),
                 tasks.named("compileDebugJavaWithJavac")
             )
 
