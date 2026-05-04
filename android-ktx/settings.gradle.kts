@@ -26,3 +26,22 @@ if (providers.gradleProperty("automatedTests").map { it.toBoolean() }.getOrElse(
 } else {
     include(":lib")
 }
+
+// Set includeCBLAndroidSource=true in gradle.properties to use ../android source instead of Maven.
+val includeCBLAndroidSource = providers.gradleProperty("includeCBLAndroidSource")
+    .map(String::toBoolean)
+    .getOrElse(false)
+
+if (includeCBLAndroidSource) {
+    // Rename this build's :lib to avoid conflict with project(":lib") in the Android build.
+    project(":lib").name = "android-ktx"
+
+    includeBuild("../android") {
+        name = "couchbase-lite-android-build"
+
+        dependencySubstitution {
+            substitute(module("com.couchbase.lite:couchbase-lite-android"))
+                .using(project(":lib"))
+        }
+    }
+}
