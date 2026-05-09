@@ -28,9 +28,8 @@ if (providers.gradleProperty("automatedTests").map { it.toBoolean() }.getOrElse(
 }
 
 // Set includeCBLAndroidSource=true in gradle.properties to use ../android source instead of Maven.
-val includeCBLAndroidSource = providers.gradleProperty("includeCBLAndroidSource")
-    .map(String::toBoolean)
-    .getOrElse(false)
+val includeCBLAndroidSource =
+    providers.gradleProperty("includeCBLAndroidSource").orNull.toBoolean()
 
 if (includeCBLAndroidSource) {
     // Rename this build's :lib to avoid conflict with project(":lib") in the Android build.

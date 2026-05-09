@@ -63,6 +63,9 @@ if (!buildVersion.matches(Regex("""^\d{1,2}\.\d{1,2}\.\d{1,2}([ab.]\d)?-.*""")))
     throw InvalidUserDataException("!!! Bad version: $buildVersion")
 }
 
+val includeCBLAndroidSource =
+    providers.gradleProperty("includeCBLAndroidSource").orNull.toBoolean()
+
 val testFilter = if (!project.hasProperty("testFilter")) null
     else (project.property("testFilter") as String).replace("\\s".toRegex(), "")
 val mavenUrl = if (!project.hasProperty("mavenUrl")) null else project.property("mavenUrl") as String
@@ -188,6 +191,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.work.testing)
+
+    if (includeCBLAndroidSource) { androidTestImplementation(libs.okhttp) }
 }
 
 
