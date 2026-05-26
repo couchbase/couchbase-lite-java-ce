@@ -11,6 +11,8 @@ CBL {
         Java_com_couchbase_lite_internal_core_C4TestUtils_getDocID;
         Java_com_couchbase_lite_internal_core_C4TestUtils_getDocument;
         Java_com_couchbase_lite_internal_core_C4TestUtils_getFlags;
+        Java_com_couchbase_lite_internal_core_C4TestUtils_getFullTextMatch;
+        Java_com_couchbase_lite_internal_core_C4TestUtils_getFullTextMatchCount;
         Java_com_couchbase_lite_internal_core_C4TestUtils_getIndexOptions;
         Java_com_couchbase_lite_internal_core_C4TestUtils_getLevel;
         Java_com_couchbase_lite_internal_core_C4TestUtils_getPrivateUUID;
