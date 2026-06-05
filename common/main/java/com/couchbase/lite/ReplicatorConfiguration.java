@@ -16,10 +16,12 @@
 package com.couchbase.lite;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Map;
 
 import com.couchbase.lite.internal.ImmutableReplicatorConfiguration;
+import com.couchbase.lite.internal.utils.Preconditions;
 
 
 public final class ReplicatorConfiguration extends AbstractReplicatorConfiguration {
@@ -27,6 +29,42 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     //---------------------------------------------
     // Constructors
     //---------------------------------------------
+
+    /**
+     * Create a Replicator Configuration for the given database and target endpoint.
+     *
+     * <p>When using this constructor, the default collection of the provided
+     * database will be automatically included in the configuration.</p>
+     *
+     * <p>If you do not intend to replicate the default collection, use
+     * ReplicatorConfiguration(Endpoint) instead, and explicitly add
+     * the intended collections to avoid unintended behavior.</p>
+     *
+     * @param database the database to be synchronized
+     * @param target   the endpoint with which to synchronize it
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
+     */
+    @Deprecated
+    public ReplicatorConfiguration(@NonNull Database database, @NonNull Endpoint target) {
+        super(
+            Preconditions.assertNotNull(database, "database"),
+            configureDefaultCollection(database),
+            target);
+    }
+
+    /**
+     * Create a Replicator Configuration for the given target endpoint
+     *
+     * <p>This constructor does not configure any collections by default.
+     *  Use {@link #addCollection(Collection, CollectionConfiguration)} or
+     *  {@link #addCollections(java.util.Collection, CollectionConfiguration)} to
+     *  configure collections to replicate.</p>
+     *
+     * @param target the target endpoint
+     * @deprecated Use ReplicatorConfiguration(java.util.Collection&lt;CollectionConfiguration&gt;, Endpoint)
+     */
+    @Deprecated
+    public ReplicatorConfiguration(@NonNull Endpoint target) { super(null, null, target); }
 
     /**
      * Creates a Replicator Configuration with a set of collection configurations and
@@ -50,11 +88,11 @@ public final class ReplicatorConfiguration extends AbstractReplicatorConfigurati
     ReplicatorConfiguration(@NonNull ImmutableReplicatorConfiguration config) { super(config); }
 
     // For Kotlin
-    ReplicatorConfiguration(@NonNull Endpoint target, @NonNull Map<Collection, CollectionConfiguration> collections) {
+    ReplicatorConfiguration(@NonNull Endpoint target, @Nullable Map<Collection, CollectionConfiguration> collections) {
         super(
-                AbstractDatabase.getDbForCollections(collections.keySet()),
-                collections,
-                target);
+            (collections == null) ? null : AbstractDatabase.getDbForCollections(collections.keySet()),
+            collections,
+            target);
     }
 
     @NonNull
