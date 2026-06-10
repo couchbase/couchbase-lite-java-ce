@@ -182,6 +182,7 @@ dependencies {
     compileOnly(libs.androidx.annotation)
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.core)
     implementation(libs.androidx.work.runtime.ktx)
     implementation("com.couchbase.lite:${cblAndroidLib}:${buildVersion}")
 

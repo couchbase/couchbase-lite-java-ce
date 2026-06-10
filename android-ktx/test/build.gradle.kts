@@ -24,6 +24,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 
@@ -160,6 +161,7 @@ dependencies {
     compileOnly(libs.androidx.annotation)
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.core)
 
     // Work Manager support
     implementation(libs.androidx.work.runtime.ktx)
