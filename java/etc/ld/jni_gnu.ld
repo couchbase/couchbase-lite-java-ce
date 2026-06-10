@@ -128,6 +128,7 @@ CBL {
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_free;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_getPendingDocIds;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_getStatus;
+        Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_getCorrelationId;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_isDocumentPending;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_setHostReachable;
         Java_com_couchbase_lite_internal_core_impl_NativeC4Replicator_setOptions;
