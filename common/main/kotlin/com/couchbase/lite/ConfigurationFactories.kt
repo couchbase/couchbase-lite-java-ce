@@ -100,7 +100,7 @@ fun ReplicatorConfiguration?.newConfig(
     val endPt =
         target ?: this?.target ?: throw IllegalArgumentException("A ReplicatorConfiguration must specify an endpoint")
     val config = if (collections == null) {
-        ReplicatorConfiguration(endPt, getCollectionConfigs(this))
+        ReplicatorConfiguration(endPt, this?.let { getCollectionConfigs(it) })
     } else {
         val rc = ReplicatorConfiguration(endPt)
         // Lint will flip out if you try to use `forEach` here.
