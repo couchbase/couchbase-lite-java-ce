@@ -121,6 +121,7 @@ class ConfigFactoryTest : BaseDbTest() {
         val target = testEndpoint
 
         val collConfig1 = CollectionConfigurationFactory.newConfig(
+            testDatabase.defaultCollection,
             channels = testChannels,
             conflictResolver = testResolver,
             documentIDs = testDocIds,
@@ -164,6 +165,7 @@ class ConfigFactoryTest : BaseDbTest() {
     @Test
     fun testReplConfigCollectionsWithoutDefault() {
         val collConfig1 = CollectionConfigurationFactory.newConfig(
+            testCollection,
             channels = testChannels,
             conflictResolver = testResolver,
             documentIDs = testDocIds,
@@ -194,7 +196,7 @@ class ConfigFactoryTest : BaseDbTest() {
         val colls = config.collectionConfigs
         Assert.assertNotNull(colls)
         Assert.assertEquals(1, colls.size)
-        Assert.assertTrue(colls.contains(testCollection))
+        Assert.assertTrue(colls.map { it.collection }.contains(testCollection))
 
         val collConfig2 = config.getCollectionConfiguration(testCollection)
 
