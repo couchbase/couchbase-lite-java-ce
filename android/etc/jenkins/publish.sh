@@ -41,5 +41,11 @@ curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-javad
 curl --remote-name "${MAVEN_URL}/${LIB_NAME}/${BUILD}/${LIB_NAME}-${BUILD}-sources.jar"
 popd
 
+# Unstripped native libs (full symbols, same BuildID as the stripped libs in the
+# AAR).  Not published to Maven; staged here for the Jenkins archive step.
+# Feed to addr2line / etc/ensym_linux.pl to symbolicate field crashes.
+echo "======== Copy native symbols to staging directory"
+cp lib/build/outputs/native-symbols/*.zip "${ARTIFACTS}/" || echo "WARNING: no native symbols to archive"
+
 echo "======== PUBLICATION COMPLETE Couchbase Lite Android, Community Edition"
 

@@ -103,6 +103,12 @@ android {
             cmake { targets("LiteCoreJNI") }
         }
 
+        // Restrict the native build to specific ABIs, e.g. -PnativeAbis=arm64-v8a
+        // Defaults to all ABIs (no filter) so CI builds are unchanged.
+        (project.findProperty("nativeAbis") as String?)
+            ?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
+            ?.let { ndk { abiFilters.addAll(it) } }
+
         buildConfigField("String", "VERSION_NAME", "\"${buildVersion}\"")
         buildConfigField("String", "BUILD_TIME", "\"${buildTime}\"")
         buildConfigField("String", "BUILD_COMMIT", "\"${buildCommit}\"")
@@ -513,7 +519,19 @@ tasks.register("ciCheck") {
     dependsOn("checkstyle", "lint", "pmd", "spotbugsXml", "test")
 }
 tasks.register("ciBuild") {
-    dependsOn("assembleRelease")
+    dependsOn("assembleRelease", "packageNativeSymbols")
+}
+
+// Archive the unstripped release .so (full symbols, same BuildID as the stripped
+// lib in the AAR) so crashes from shipped builds can be symbolicated.  Kept out
+// of the published AAR on purpose; archive this zip from CI alongside the AAR.
+tasks.register<Zip>("packageNativeSymbols") {
+    dependsOn("mergeReleaseNativeLibs")
+    archiveFileName.set("$cblArtifactId-$buildVersion-native-symbols.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("outputs/native-symbols"))
+    from(layout.buildDirectory.dir("intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")) {
+        include("**/*.so")
+    }
 }
 tasks.register("ciPublish") {
     dependsOn("javadocJar", "generatePomFileForLibReleasePublication", "publishLibReleasePublicationToMavenRepository")
